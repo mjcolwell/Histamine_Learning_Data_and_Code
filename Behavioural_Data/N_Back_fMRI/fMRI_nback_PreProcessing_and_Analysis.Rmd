@@ -1,0 +1,568 @@
+---
+title: "N-back Preprocessing"
+date:"22/03/2024"
+output: html_document
+---
+### N-back behavioural data analysis scripts for the PEACE Study ('Pitolisant Effects on Affect and Cognition Exploratory Study') (NCT05849675). 
+
+This an R Markdown file was created by Michael Colwell (michael.colwell@psych.ox.ac.uk / ORCID 0000-0001-7846-2879), based on a task from the same author: https://github.com/mjcolwell/n-back_oxford/releases/tag/Python
+
+#This script includes: 
+
+- Preprocessing of raw behavioural files from the in-scanner task
+- Main behavioural analysis 
+- Supplementary analysis
+
+For the DDM analysis of the N-back task, and associated neuroimaging analysis, please see the 'NBack_DDM/NBack_DDM.Rmd' file.
+
+##Required R packages
+
+You will need the following packages installed and loaded before executing the below code chunks. 
+
+```{r libraries, echo=FALSE, include=FALSE}
+library(dplyr)
+library(tidyverse)
+library(gtools)
+library(knitr)
+library(data.table)
+library(ggplot2)
+library(car)
+library(ggbeeswarm)
+library(ggrepel)
+library(readxl)
+library(data.table)
+library(openxlsx)
+library(ggpubr)
+library(sdamr)
+library(rstatix)
+library("ez")
+library(ggsignif)
+library(RColorBrewer)
+library(emmeans)
+library(plotrix)
+library(sdamr)
+library(cowplot)
+library(psycho)
+library(ggridges)
+library(viridis)
+library(ggstance)
+library(ggdist)
+library(gghalves)
+library(ggpp)
+library(effectsize)
+library(lme4)
+library(lmerTest)
+```
+
+##Begin preprocessing: Setting directory, merging files and deleting unnecessary columns
+
+You will first need to point to the directory of your task files, typically in the 'data' subfolder where the
+psychopy task is located. **Please edit the path directory below after the setwd function.**
+
+The next lines in the chunk of code will allow you to merge all data files (.csv) in the directory assigned above to a dataframe, and then delete extraneous columns from the dataframe.
+
+**Potential error**: "Error in rbind(deparse.level, ...) : numbers of columns of arguments do not match"
+**Solution**: One of the .csv files may not have run beyond the practice section, therefore not enough columns
+have generated. Delete this file and then continue.
+
+```{r b0, echo=FALSE, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+
+rm(list = ls()) # clear the workspace
+
+# Load in files in directory, create a list of each, and then merge theme into one large df.
+
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/N_Back_fMRI")
+
+N_back_files <- list.files(pattern = glob2rx("*N-Back*.csv")) # create a list of files containing the word 'Back'.
+
+N_back <- N_back_files %>%
+  map_dfr(~ read.csv(.x, stringsAsFactors = FALSE, colClasses = c(key_resp.keys = "character")))
+
+N_back <- N_back %>% rename(Participant.ID = participant)
+
+N_back <- N_back %>% dplyr::select(Participant.ID, Task.Version..1.or.2., Instructions, Correctness, key_resp.keys, key_resp.corr, key_resp.rt, CondFile, LettersDisplayed)
+
+# Note that the 'correctness'; column refers to the actual key they should have pressed for the actual trials and that 'correctnessP' refers to the actual key they should have pressed for the practice trials.
+
+# Converting RT units
+
+N_back <- N_back %>%
+  mutate(key_resp.rt = key_resp.rt * 1000) # change the reaction times to ms.
+```
+##Extracting DDM files (optional)
+
+```{r b0, echo=FALSE, include=TRUE}
+DDM <- N_back
+
+DDM <- DDM %>% filter(!is.na(key_resp.corr))
+
+DDM <- DDM %>% mutate(
+  response = case_when(
+    (key_resp.keys == "1") ~ "0",
+    (key_resp.keys == "2") ~ "1"
+  )
+)
+
+DDM <- DDM %>%
+  mutate(
+    condition = case_when(
+      Instructions == "Rule: Press 'right' when you see the letter 'x' or 'X'." ~ "0-back",
+      Instructions == "Rule: Press 'right' when you see the same letter that appeared 1 letter ago (1-back).    " ~ "1-back",
+      Instructions == "Rule: Press 'right' when you see the same letter that appeared 2 letters ago (2-back).  " ~ "2-back",
+      Instructions == "Rule: Press 'right' when you see the same letter that appeared 3 letters ago (3-back).   " ~ "3-back"
+    ),
+    stim = case_when(
+      Correctness == "1" ~ "0",
+      Correctness == "2" ~ "1"
+    )
+  )
+
+# DDM$subj_idx <- gsub("P00", "", DDM$Participant.ID)
+
+# DDM$subj_idx <- gsub("P0", "", DDM$subj_idx)
+
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/Allocation_and_Demographics")
+
+Allocation_and_Demographics <- read.csv("Allocation_And_Demo.csv")
+
+Allocation_and_Demographics$Participant.ID <- as.factor(Allocation_and_Demographics$Participant.ID)
+
+DDM <- merge(DDM, Allocation_and_Demographics, by = "Participant.ID")
+
+DDM$subj_idx <- DDM$Participant.ID
+
+DDM$rt <- DDM$key_resp.rt / 1000
+
+DDM <- DDM %>% select(rt, response, subj_idx, condition, correct = key_resp.corr, stim, Allocation)
+
+write.csv(DDM, "C:/Users/micha/Desktop/NBack_DDM/DDM_Full.csv", row.names = TRUE)
+
+
+####
+
+DDM_0back <- DDM %>% filter(grepl("0-back", condition))
+
+DDM_0back$condition <- "1"
+
+write.csv(DDM_0back, "C:/Users/micha/Desktop/NBack_DDM/DDM_0back.csv", row.names = TRUE)
+
+####
+
+DDM_1back <- DDM %>% filter(grepl("1-back", condition))
+
+DDM_1back$condition <- "1"
+
+write.csv(DDM_1back, "C:/Users/micha/Desktop/NBack_DDM/DDM_1back.csv", row.names = TRUE)
+
+####
+
+DDM_2back <- DDM %>% filter(grepl("2-back", condition))
+
+DDM_2back$condition <- "1"
+
+write.csv(DDM_2back, "C:/Users/micha/Desktop/NBack_DDM/DDM_2back.csv", row.names = TRUE)
+
+
+####
+
+DDM_3back <- DDM %>% filter(grepl("3-back", condition))
+
+DDM_3back$condition <- "1"
+
+write.csv(DDM_3back, "C:/Users/micha/Desktop/NBack_DDM/DDM_3back.csv", row.names = TRUE)
+```
+
+##Further parsing the dataframe 
+
+The following chunks will allow you to further parse the data, including generating omission/commission error checks based on conditions set in the file.
+
+```{r b0, echo=FALSE, include=TRUE}
+# Creating a df which converts correct/incorrect outputs to columns based on trial type + turning 'instructions' into the relevant n-back factor.
+
+N_back_first_tidy <- N_back %>%
+  mutate(
+    Result = case_when(
+      (Correctness == "1" & key_resp.corr == "1") ~ "no_qtarget_corr",
+      (Correctness == "1" & key_resp.corr == "0") ~ "no_qtarget_incorr",
+      (Correctness == "2" & key_resp.corr == "1") ~ "qtarget_corr",
+      (Correctness == "2" & key_resp.corr == "0") ~ "qtarget_incorr"
+    ),
+    n_back = case_when(
+      (Instructions == "Rule: Press 'right' when you see the letter 'x' or 'X'.") ~ "0-back",
+      (Instructions == "Rule: Press 'right' when you see the same letter that appeared 1 letter ago (1-back).    ") ~ "1-back",
+      (Instructions == "Rule: Press 'right' when you see the same letter that appeared 2 letters ago (2-back).  ") ~ "2-back",
+      (Instructions == "Rule: Press 'right' when you see the same letter that appeared 3 letters ago (3-back).   ") ~ "3-back"
+    )
+  )
+
+# Outputing the result & identifying the number of "n" in n-back tests and output as the form of "n-back"
+
+N_back_first_tidy <- N_back_first_tidy %>% dplyr::select(Participant.ID, n_back, LettersDisplayed, key_resp.corr, Result, key_resp.rt, key_resp.corr)
+# Selecting the necessary items
+
+N_back_first_tidy <- N_back_first_tidy %>% rename(CharacterDisplayed = LettersDisplayed, KeyResponse_correct = key_resp.corr, ResponseTime = key_resp.rt, Total_Acc = key_resp.corr)
+# Renaming the columns
+
+## Calculating the correctness
+
+N_back_Correctness_Total <- N_back_first_tidy %>%
+  mutate(
+    no_qtarget_corr_total = case_when(
+      (Result == "no_qtarget_corr") ~ 1,
+      (Result == "no_qtarget_incorr") ~ 0
+    ),
+    no_qtarget_incorr_total = case_when(
+      (Result == "no_qtarget_corr") ~ 0,
+      (Result == "no_qtarget_incorr") ~ 1
+    ),
+    qtarget_corr_total = case_when(
+      (Result == "qtarget_corr") ~ 1,
+      (Result == "qtarget_incorr") ~ 0
+    ),
+    qtarget_incorr_total = case_when(
+      (Result == "qtarget_corr") ~ 0,
+      (Result == "qtarget_incorr") ~ 1
+    )
+  )
+
+# Transforming the output to the "0/1" form
+
+N_back_Correctness_Total <- N_back_Correctness_Total %>% dplyr::select(Participant.ID, n_back, no_qtarget_corr_total, no_qtarget_incorr_total, qtarget_corr_total, qtarget_incorr_total, ResponseTime, Total_Acc)
+# Selecting the necessary items
+
+
+## Summarising scores according to participant ID and n-back
+N_back_Summary_Table <- N_back_Correctness_Total %>%
+  group_by(Participant.ID, n_back) %>%
+  summarize(
+    mean_RT_all = mean(ResponseTime, na.rm = TRUE),
+    mean_RT_qtar = mean(ResponseTime, na.rm = TRUE),
+    mean_RT_non_qtar = mean(ResponseTime, na.rm = TRUE),
+    qtarget_corr_acc = sum(qtarget_corr_total, na.rm = TRUE),
+    qtarget_incorr_acc = sum(qtarget_incorr_total, na.rm = TRUE),
+    qtarget_corr_acc_perc = (sum(qtarget_corr_total, na.rm = TRUE) / 10) * 100,
+    no_qtarget_incorr_acc = sum(no_qtarget_incorr_total, na.rm = TRUE),
+    no_qtarget_corr_acc = sum(no_qtarget_corr_total, na.rm = TRUE),
+    Overall_acc = sum(Total_Acc, na.rm = TRUE),
+    Overall_acc_perc = (sum(Total_Acc, na.rm = TRUE) / 40) * 100
+  )
+
+N_back_Summary_Table$qtarget_adjusted_score <- N_back_Summary_Table$qtarget_corr_acc - N_back_Summary_Table$no_qtarget_incorr_acc
+
+N_back_Summary_Table$qtarget_adjusted_score_2 <- (N_back_Summary_Table$qtarget_corr_acc - N_back_Summary_Table$qtarget_incorr_acc) + (N_back_Summary_Table$no_qtarget_corr_acc - N_back_Summary_Table$no_qtarget_incorr_acc)
+
+# Find minimum value (or just pick a small offset)
+min_val <- min(N_back_Summary_Table$qtarget_adjusted_score, na.rm = TRUE)
+offset <- abs(min_val) + 1 # ensures everything is > 0
+
+# Apply log transform
+N_back_Summary_Table$log_adjusted_score <- log(N_back_Summary_Table$qtarget_adjusted_score + offset)
+
+##
+min_val <- min(N_back_Summary_Table$qtarget_adjusted_score_2, na.rm = TRUE)
+offset <- abs(min_val) + 1 # ensures everything is > 0
+
+N_back_Summary_Table$log_adjusted_score_2 <- log(N_back_Summary_Table$qtarget_adjusted_score_2 + offset)
+
+# Remove NAs from non-block inputs
+
+N_back_Summary_Table <- N_back_Summary_Table %>%
+  filter(!is.na(n_back))
+
+# Fix IDs to allow for merging with the allocation sheet later.
+
+N_back_Summary_Table <- N_back_Summary_Table %>%
+  mutate(Participant.ID = str_replace(Participant.ID, "_real", ""))
+
+# Create SDT indices
+
+indices <- dprime(N_back_Summary_Table$qtarget_corr_acc, N_back_Summary_Table$qtarget_incorr_acc, N_back_Summary_Table$no_qtarget_incorr_acc, N_back_Summary_Table$no_qtarget_corr_acc, n_distractors = FALSE)
+
+N_back_Summary_Table <- cbind(N_back_Summary_Table, indices)
+```
+
+```{r b0, echo=FALSE, include=TRUE}
+## Data quality checks
+
+# Function to detect outliers
+is_outlier <- function(x) {
+  return(x < quantile(x, 0.25) - 3.0 * IQR(x) | x > quantile(x, 0.75) + 3.0 * IQR(x))
+}
+
+# Example dataframe
+# Assuming you have a dataframe named N_back_Summary_Table with columns n_back, qtarget_corr_acc, and Participant.ID
+
+# Plotting queued targets
+QueuedTargets <- ggplot(N_back_Summary_Table, aes(x = as.factor(n_back), y = qtarget_corr_acc_perc)) +
+  geom_boxplot(outlier.shape = NA) + # Hide outlier points in boxplot
+  geom_point(data = N_back_Summary_Table[is_outlier(N_back_Summary_Table$qtarget_corr_acc_perc), ], aes(color = Participant.ID)) +
+  geom_text_repel(data = N_back_Summary_Table[is_outlier(N_back_Summary_Table$qtarget_corr_acc_perc), ], aes(label = Participant.ID), color = "black", size = 3) + # Label outliers
+  labs(
+    title = "",
+    y = "\nAccuracy for queued targets (%)\n",
+    x = "\nWorking Memory Load\n"
+  ) +
+  theme_minimal() +
+  theme(text = element_text(size = 16))
+
+# Plotting all targets accuracy
+AllTargets <- ggplot(N_back_Summary_Table, aes(x = as.factor(n_back), y = Overall_acc_perc)) +
+  geom_boxplot(outlier.shape = NA) + # Hide outlier points in boxplot
+  geom_point(data = N_back_Summary_Table[is_outlier(N_back_Summary_Table$Overall_acc_perc), ], aes(color = Participant.ID)) + # Highlight outliers
+  geom_text_repel(data = N_back_Summary_Table[is_outlier(N_back_Summary_Table$Overall_acc_perc), ], aes(label = Participant.ID), color = "black", size = 3) + # Label outliers
+  labs(
+    title = "",
+    y = "\nAccuracy for all targets (%)\n",
+    x = "\nWorking Memory Load\n"
+  ) +
+  theme_minimal() +
+  theme(text = element_text(size = 16))
+
+# Plotting RT overall
+RT_All <- ggplot(N_back_Summary_Table, aes(x = as.factor(n_back), y = mean_RT_all)) +
+  geom_boxplot(outlier.shape = NA) + # Hide outlier points in boxplot
+  geom_point(data = N_back_Summary_Table[is_outlier(N_back_Summary_Table$mean_RT_all), ], aes(color = Participant.ID)) + # Highlight outliers
+  geom_text_repel(data = N_back_Summary_Table[is_outlier(N_back_Summary_Table$mean_RT_all), ], aes(label = Participant.ID), color = "black", size = 3) + # Label outliers
+  labs(
+    title = "",
+    y = "\nResponse time for correct targets (ms)\n",
+    x = "\nWorking Memory Load\n"
+  ) +
+  theme_minimal() +
+  theme(text = element_text(size = 16))
+``````
+
+```{r b0, echo=FALSE, include=TRUE}
+# Demographics/Allocation addition
+
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/Allocation_and_Demographics")
+
+Allocation_and_Demographics <- read.csv("Allocation_And_Demo.csv")
+
+Allocation_and_Demographics$Participant.ID <- as.factor(Allocation_and_Demographics$Participant.ID)
+
+MasterNBackWide <- merge(N_back_Summary_Table, Allocation_and_Demographics, by = "Participant.ID")
+
+# Removal of outliers agreed prior to unblinding. These are outliers who performed poorly on the task or displayed irrecoverably high motion during task performance or complained they were unable to see the stimuli due to improper vision correction. No behavioural outliers were observed in the data quality report. Results remain significant without exclusions, with a group * task condition interaction on overall accuracy.
+
+removal_df <- subset(MasterNBackWide, Participant.ID != "P001" & Participant.ID != "P009" & Participant.ID != "P011" & Participant.ID != "P025" & Participant.ID != "P037" & Participant.ID != "P059")
+
+MasterNBackWide <- droplevels(removal_df)
+```
+
+#Figures for publication
+
+```{r}
+# Behavioural data
+
+# Overall accuracy
+
+QtarAcc_Fig <- MasterNBackWide %>%
+  group_by(Allocation, n_back) %>%
+  summarize(value = mean(Overall_acc_perc), SE = std.error(Overall_acc_perc)) %>%
+  ggplot(aes(n_back, value, group = Allocation)) +
+  scale_color_brewer(palette = "Set2") +
+  geom_errorbar(aes(x = n_back, ymin = value - SE, ymax = value + SE, color = Allocation), width = 0.25) +
+  geom_point(aes(color = Allocation, shape = Allocation), size = 2.4, alpha = 0.8) +
+  geom_line(aes(color = Allocation, linetype = Allocation), size = 1.4) +
+  geom_ribbon(aes(
+    ymin = value - SE,
+    ymax = value + SE, fill = Allocation
+  ), color = NA, alpha = 0.095, show.legend = FALSE) +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "bonferroni",
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 2),
+    margin_top = 0.05
+  ) +
+  scale_color_brewer(palette = "Set2") +
+  scale_fill_brewer(palette = "Set2") +
+  labs(title = "") +
+  ylab("Accuracy (%)\n") +
+  xlab("") +
+  theme_minimal() +
+  theme(legend.position = "none", axis.text = element_text(size = 14), axis.text.x = element_blank(), axis.title = element_text(size = 16)) +
+  scale_shape_manual(values = c(19, 15))
+
+########
+
+# RT for correct trials
+
+RT_Fig <- MasterNBackWide %>%
+  group_by(Allocation, n_back) %>%
+  summarize(value = mean(mean_RT_all), SE = std.error(mean_RT_all)) %>%
+  ggplot(aes(n_back, value, group = Allocation)) +
+  scale_color_brewer(palette = "Set2") +
+  geom_errorbar(aes(x = n_back, ymin = value - SE, ymax = value + SE, color = Allocation), width = 0.25) +
+  geom_point(aes(color = Allocation, shape = Allocation), size = 2.4, alpha = 0.8) +
+  geom_line(aes(color = Allocation, linetype = Allocation), size = 1.4) +
+  geom_ribbon(aes(
+    ymin = value - SE,
+    ymax = value + SE, fill = Allocation
+  ), color = NA, alpha = 0.095, show.legend = FALSE) +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "bonferroni",
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 2),
+    margin_top = 0.05
+  ) +
+  scale_color_brewer(palette = "Set2") +
+  scale_fill_brewer(palette = "Set2") +
+  labs(title = "") +
+  ylab("Time to correct choice (ms)\n") +
+  xlab("") +
+  theme_minimal() +
+  theme(legend.position = "none", axis.text = element_text(size = 14), axis.title = element_text(size = 16)) +
+  scale_shape_manual(values = c(19, 15))
+```
+##ANOVA and EMM analysis
+
+```{r pressure, echo=FALSE}
+# Behavioural analysis
+
+# Accuracy analysis - All targets (%)
+
+# Due to high non-normality, EMM values were bootstrapped (in addition to log-transormed. For interpretability, figures show non-log transformed values.)
+
+MasterNBackWide$Overall_acc_perc_log <- log(MasterNBackWide$Overall_acc_perc)
+
+Acc_Model_All <- aov(Overall_acc_perc_log ~ Allocation * n_back + Error(Participant.ID), data = MasterNBackWide)
+
+summary(Acc_Model_All)
+
+model_linear <- lmer(Overall_acc_perc_log ~ Allocation * n_back + (1 | Participant.ID), data = MasterNBackWide)
+
+summary(model_linear)
+
+eta_squared(model_linear, ci = 0.95, alternative = "two.sided")
+
+# Returns: contrast, estimate, SE_boot, CI_lower, CI_upper, p_boot  (+ optional SE_wald)
+bootstrap_emm_contrasts <- function(model, nsim = 5000, seed = 111, include_wald_se = TRUE) {
+  set.seed(seed)
+
+  # 1) Point estimates & (optional) Wald SE from current model
+  emm_ref <- emmeans(model, ~ Allocation | n_back)
+  contr_ref <- as.data.frame(pairs(emm_ref, adjust = "none")) # all within-condition pairs
+  est <- contr_ref$estimate
+  labs <- paste(contr_ref$contrast, "|", contr_ref$condition)
+  K <- length(est)
+
+  SE_wald <- if (include_wald_se) contr_ref$SE else NULL
+
+  # 2) Bootstrap the SAME contrasts
+  boot_contr <- bootMer(
+    model,
+    FUN = function(fit) {
+      cr <- as.data.frame(pairs(emmeans(fit, ~ Allocation | n_back), adjust = "none"))
+      as.numeric(cr$estimate) # numeric length K
+    },
+    nsim = nsim,
+    use.u = TRUE,
+    type = "parametric",
+    seed = seed
+  )
+
+  boot_mat <- as.matrix(boot_contr$t) # B x K
+  stopifnot(ncol(boot_mat) == K)
+  B <- nrow(boot_mat)
+
+  # 3) Bootstrap SEs and percentile CIs
+  SE_boot <- apply(boot_mat, 2, sd, na.rm = TRUE)
+  ci <- apply(boot_mat, 2, quantile, probs = c(.025, .975), na.rm = TRUE)
+
+  # 4) Two-sided bootstrap p-values (+1 correction avoids exact zeros)
+  p_boot <- sapply(seq_len(K), function(j) {
+    dj <- boot_mat[, j]
+    lo <- sum(dj <= 0, na.rm = TRUE)
+    hi <- sum(dj >= 0, na.rm = TRUE)
+    2 * min((lo + 1) / (B + 1), (hi + 1) / (B + 1))
+  })
+
+  out <- tibble(
+    contrast = labs,
+    estimate = est,
+    SE_boot  = SE_boot,
+    CI_lower = ci[1, ],
+    CI_upper = ci[2, ],
+    p_boot   = p_boot
+  )
+
+  if (include_wald_se) {
+    out <- mutate(out, SE_wald = SE_wald, .after = estimate)
+  }
+
+  out
+}
+
+# Run it
+results <- bootstrap_emm_contrasts(model_linear, nsim = 5000, seed = 111)
+results
+
+########
+
+# Effect remains significant without log transformation:
+
+Acc_Model_All <- aov(Overall_acc_perc ~ Allocation * n_back + Error(Participant.ID), data = MasterNBackWide)
+
+summary(Acc_Model_All)
+
+########
+
+# RT analysis
+
+Acc_Model_All <- aov(mean_RT_all ~ Allocation * n_back + Error(Participant.ID), data = MasterNBackWide)
+
+summary(Acc_Model_All)
+
+model_linear <- lmer(mean_RT_all ~ Allocation + n_back + Allocation:n_back + (1 | Participant.ID), data = MasterNBackWide)
+
+eta_squared(model_linear, ci = 0.95, alternative = "two.sided")
+
+###########
+
+# Additional Signal Detection Theory indices were analyses, however they were not reported as the DDM analysis were considered more informative explanation of behavioural patterns. Dprime shows a similar group effect as
+# drift rate (v) -- see 'NBack_DDM/NBack_DDM.Rmd' for further details.
+
+# Dprime analysis - SDT
+
+Dprime_model <- aov(dprime ~ Allocation + n_back + Allocation:n_back + Error(Participant.ID), data = MasterNBackWide)
+
+summary(Dprime_model)
+
+# Calculate estimated marginal means (EMMs) for Allocation*Condition interaction
+model_linear <- lmer(dprime ~ Allocation + n_back + Allocation:n_back + (1 | Participant.ID), data = MasterNBackWide)
+
+eta_squared(model_linear, ci = 0.95, alternative = "two.sided")
+
+EMM_2 <- emmeans(model_linear, ~Allocation)
+
+# Calculate pairwise comparisons for the specified contrasts
+pairwise_comparisons <- pairs(EMM_2, adjust = "holm")
+
+summary(pairwise_comparisons)
+
+effect_size <- eff_size(EMM_2, sigma = sigma(model_linear), edf = df.residual(model_linear))
+
+summary(effect_size)
+
+MasterNBackWide %>%
+  group_by(n_back, Allocation) %>%
+  get_summary_stats(dprime, type = "mean_sd")
+
+# Beta criterion analysis - SDT
+
+Beta_model <- aov(beta ~ Allocation + n_back + Allocation:n_back + Error(Participant.ID), data = MasterNBackWide)
+
+summary(Beta_model)
+
+model_linear <- lmer(beta ~ Allocation + n_back + Allocation:n_back + (1 | Participant.ID), data = MasterNBackWide)
+
+eta_squared(model_linear, ci = 0.95, alternative = "two.sided")
+
+# Not sig
+
+#####
+```
+
+````

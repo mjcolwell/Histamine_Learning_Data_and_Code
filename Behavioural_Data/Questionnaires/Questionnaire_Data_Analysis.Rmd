@@ -1,0 +1,1107 @@
+---
+title: "Questionnaire_Analysis"
+author: "Michael Colwell"
+date: "2024-07-09"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Analysis script for Questionnaire data (PEACE Study), by Michael Colwell (michael.colwell@psych.ox.ac.uk / michaelcolwell92@gmail.com)
+
+These scripts analyse questionnaire data collected on the day of drug or placebo administration.
+
+Most of these data have two relevant time-points -- before administration of the drug/placebo (pre) and four hours post-administration (post). The subjective cognition questionnaire
+was collected at four timepoints.
+
+If you have any questions about this script, please feel free to email the author.
+
+```{r cars}
+library(dplyr)
+library(tidyverse)
+library(gtools)
+library(knitr)
+library(data.table)
+library(ggplot2)
+library(car)
+library(ggbeeswarm)
+library(ggrepel)
+library(readxl)
+library(data.table)
+library(openxlsx)
+library(ggpubr)
+library(sdamr)
+library(rstatix)
+library("ez")
+library(ggsignif)
+library(RColorBrewer)
+library(emmeans)
+library(plotrix)
+library(sdamr)
+library(cowplot)
+library(psycho)
+library(ggridges)
+library(viridis)
+library(ggstance)
+library(ggdist)
+library(gghalves)
+library(ggpp)
+library(effectsize)
+library(lme4)
+library(lmerTest)
+library(fmsb)
+```
+
+## Initial cleaning and combination with allocation/demographics information.
+
+```{r pressure, echo=FALSE}
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/Questionnaires/")
+
+Questionnaires_df <- read.csv("PEACE_Study_Questionnaires_Combined.csv")
+
+# Participant data for P049 at baseline is missing -- presumed issue with data collection software. Omitted from analysis. Data for participant P059 is also removed due to data quality
+# and compliance concerns -- results do not meaningfully changes with or without their inclusion.
+
+removal_df <- subset(Questionnaires_df, Participant.ID != "P049")
+
+Questionnaires_df <- droplevels(removal_df)
+
+# Add in demographics information
+
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/Allocation_and_Demographics")
+
+Allocation_and_Demographics <- read.csv("Allocation_And_Demo.csv")
+
+Allocation_and_Demographics$Participant.ID <- as.factor(Allocation_and_Demographics$Participant.ID)
+
+Questionnaires_df_master <- merge(Questionnaires_df, Allocation_and_Demographics, by = "Participant.ID")
+
+Questionnaires_df_master_post <- Questionnaires_df_master %>% filter(!str_detect(PRE.POST, "PRE"))
+Questionnaires_df_master_pre <- Questionnaires_df_master %>% filter(!str_detect(PRE.POST, "POST"))
+
+## Load in subjective cognition df
+
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/Questionnaires/")
+
+SUBCOG_df <- read.csv("Subjective_Cognition_Combined.csv")
+
+# Participant P049 was removed due to missing baseline data values
+
+removal_df <- subset(SUBCOG_df, Participant.ID != "P049")
+
+SUBCOG_df <- droplevels(removal_df)
+
+SUBCOG_df_master <- merge(SUBCOG_df, Allocation_and_Demographics, by = "Participant.ID")
+```
+
+
+```{r pressure, echo=FALSE}
+# Final data parsing before analysis -- splitting the data to prepare for baseline-adjusted ANCOVA analysis.
+
+# Side effects analysis
+
+# Note that we will not include the items for 'sexual side effects' and 'insomnia' in the write-up due to the acute nature of the experimental design.
+
+ANCOdf1 <- Questionnaires_df_master_post[c("Allocation", "Participant.ID", "Appetite.decreased.SE", "Appetite.increased.SE", "Drowsiness.fatigue.SE", "Insomnia.SE", "Sexual.side.effects.SE", "Sweating.SE", "Tremors.SE", "Agitation.SE", "Anxiety.Nervousness.SE", "Diarrhoea.SE", "Dry.mouth.SE", "Indigestion.SE", "Nausea.SE", "Upset.stomach", "SE.Total")]
+
+ANCOdf1 <- rename(ANCOdf1, Appetite.decreased.SE.Post = Appetite.decreased.SE)
+ANCOdf1 <- rename(ANCOdf1, Appetite.increased.SE.Post = Appetite.increased.SE)
+ANCOdf1 <- rename(ANCOdf1, Drowsiness.fatigue.SE.Post = Drowsiness.fatigue.SE)
+ANCOdf1 <- rename(ANCOdf1, Insomnia.SE.Post = Insomnia.SE)
+ANCOdf1 <- rename(ANCOdf1, Sexual.side.effects.SE.Post = Sexual.side.effects.SE)
+ANCOdf1 <- rename(ANCOdf1, Sweating.SE.Post = Sweating.SE)
+ANCOdf1 <- rename(ANCOdf1, Tremors.SE.Post = Tremors.SE)
+ANCOdf1 <- rename(ANCOdf1, Agitation.SE.Post = Agitation.SE)
+ANCOdf1 <- rename(ANCOdf1, Anxiety.Nervousness.SE.Post = Anxiety.Nervousness.SE)
+ANCOdf1 <- rename(ANCOdf1, Diarrhoea.SE.Post = Diarrhoea.SE)
+ANCOdf1 <- rename(ANCOdf1, Dry.mouth.SE.Post = Dry.mouth.SE)
+ANCOdf1 <- rename(ANCOdf1, Indigestion.SE.Post = Indigestion.SE)
+ANCOdf1 <- rename(ANCOdf1, Nausea.SE.Post = Nausea.SE)
+ANCOdf1 <- rename(ANCOdf1, Upset.stomach.Post = Upset.stomach)
+ANCOdf1 <- rename(ANCOdf1, SE.Total.Post = SE.Total)
+
+
+ANCOdf2 <- Questionnaires_df_master_pre[c("Allocation", "Participant.ID", "Appetite.decreased.SE", "Appetite.increased.SE", "Drowsiness.fatigue.SE", "Insomnia.SE", "Sexual.side.effects.SE", "Sweating.SE", "Tremors.SE", "Agitation.SE", "Anxiety.Nervousness.SE", "Diarrhoea.SE", "Dry.mouth.SE", "Indigestion.SE", "Nausea.SE", "Upset.stomach", "SE.Total")]
+
+ANCOdf2 <- rename(ANCOdf2, Appetite.decreased.SE.Pre = Appetite.decreased.SE)
+ANCOdf2 <- rename(ANCOdf2, Appetite.increased.SE.Pre = Appetite.increased.SE)
+ANCOdf2 <- rename(ANCOdf2, Drowsiness.fatigue.SE.Pre = Drowsiness.fatigue.SE)
+ANCOdf2 <- rename(ANCOdf2, Insomnia.SE.Pre = Insomnia.SE)
+ANCOdf2 <- rename(ANCOdf2, Sexual.side.effects.SE.Pre = Sexual.side.effects.SE)
+ANCOdf2 <- rename(ANCOdf2, Sweating.SE.Pre = Sweating.SE)
+ANCOdf2 <- rename(ANCOdf2, Tremors.SE.Pre = Tremors.SE)
+ANCOdf2 <- rename(ANCOdf2, Agitation.SE.Pre = Agitation.SE)
+ANCOdf2 <- rename(ANCOdf2, Anxiety.Nervousness.SE.Pre = Anxiety.Nervousness.SE)
+ANCOdf2 <- rename(ANCOdf2, Diarrhoea.SE.Pre = Diarrhoea.SE)
+ANCOdf2 <- rename(ANCOdf2, Dry.mouth.SE.Pre = Dry.mouth.SE)
+ANCOdf2 <- rename(ANCOdf2, Indigestion.SE.Pre = Indigestion.SE)
+ANCOdf2 <- rename(ANCOdf2, Nausea.SE.Pre = Nausea.SE)
+ANCOdf2 <- rename(ANCOdf2, Upset.stomach.Pre = Upset.stomach)
+ANCOdf2 <- rename(ANCOdf2, SE.Total.Pre = SE.Total)
+
+ANCOdfcomp <- left_join(ANCOdf1, ANCOdf2, by = c("Participant.ID", "Allocation"))
+
+# Baseline-adjusted ANCOVA analysis of main questionnaire data (excluding subjective cognition data)
+
+# Appetite - Decrease
+
+ANCOVA_Appetite_down <- aov(Appetite.decreased.SE.Post ~ Allocation + Appetite.decreased.SE.Pre + Error(Participant.ID), data = ANCOdfcomp)
+
+summary(ANCOVA_Appetite_down)
+
+ANCOdfcomp %>%
+  group_by(Allocation) %>%
+  get_summary_stats(Appetite.decreased.SE.Post, type = "mean_sd")
+
+# Appetite - Increase
+
+ANCOVA_Appetite_up <- aov(Appetite.increased.SE.Post ~ Allocation + Appetite.increased.SE.Pre + Error(Participant.ID), data = ANCOdfcomp)
+
+summary(ANCOVA_Appetite_up)
+
+ANCOdfcomp %>%
+  group_by(Allocation) %>%
+  get_summary_stats(Appetite.increased.SE.Pre, type = "mean_sd")
+
+# Drowsiness/Fatigue
+
+ANCOVA_Drowsiness <- aov(Drowsiness.fatigue.SE.Post ~ Allocation + Drowsiness.fatigue.SE.Pre + Error(Participant.ID), data = ANCOdfcomp)
+
+summary(ANCOVA_Drowsiness)
+
+ANCOdfcomp %>%
+  group_by(Allocation) %>%
+  get_summary_stats(Drowsiness.fatigue.SE.Pre, type = "mean_sd")
+
+
+# Insomnia - Not reported as did not sample sleeping during the VAS time period.
+
+ANCOVA_Insom <- aov(Insomnia.SE.Post ~ Allocation + Insomnia.SE.Pre + Error(Participant.ID), data = ANCOdfcomp)
+
+summary(ANCOVA_Insom)
+
+# Sexual side effects - Not reported as not appropriate during the VAS time period.
+
+ANCOVA_Se <- aov(Sexual.side.effects.SE.Post ~ Allocation + Sexual.side.effects.SE.Pre + Error(Participant.ID), data = ANCOdfcomp)
+
+summary(ANCOVA_Se)
+
+# Sweating
+
+ANCOVA_Sweat <- aov(Sweating.SE.Post ~ Allocation + Sweating.SE.Pre + Error(Participant.ID), data = ANCOdfcomp)
+
+summary(ANCOVA_Sweat)
+
+ANCOdfcomp %>%
+  group_by(Allocation) %>%
+  get_summary_stats(Sweating.SE.Post, type = "mean_sd")
+
+# Tremors
+
+ANCOVA_Tremors <- aov(Tremors.SE.Post ~ Allocation + Tremors.SE.Pre + Error(Participant.ID), data = ANCOdfcomp)
+
+summary(ANCOVA_Tremors)
+
+ANCOdfcomp %>%
+  group_by(Allocation) %>%
+  get_summary_stats(Tremors.SE.Post, type = "mean_sd")
+
+# Agitation
+
+ANCOVA_Ag <- aov(Agitation.SE.Post ~ Allocation + Agitation.SE.Pre + Error(Participant.ID), data = ANCOdfcomp)
+
+summary(ANCOVA_Ag) # Score for for pre is '0' so automatically ejected from the model.
+
+ANCOdfcomp %>%
+  group_by(Allocation) %>%
+  get_summary_stats(Agitation.SE.Post, type = "mean_sd")
+
+# Anxiety.Nervousness
+
+ANCOVA_Anx_Nervous <- aov(Anxiety.Nervousness.SE.Post ~ Allocation + Anxiety.Nervousness.SE.Pre + Error(Participant.ID), data = ANCOdfcomp)
+
+summary(ANCOVA_Anx_Nervous)
+
+ANCOdfcomp %>%
+  group_by(Allocation) %>%
+  get_summary_stats(Anxiety.Nervousness.SE.Post, type = "mean_sd")
+
+# Diarrhea
+
+ANCOVA_Diar <- aov(Diarrhoea.SE.Post ~ Allocation + Diarrhoea.SE.Pre + Error(Participant.ID), data = ANCOdfcomp)
+
+summary(ANCOVA_Diar) # Score for for pre is '0' so automatically ejected from the model.
+
+ANCOdfcomp %>%
+  group_by(Allocation) %>%
+  get_summary_stats(Diarrhoea.SE.Pre, type = "mean_sd")
+
+# Dry mouth
+
+ANCOVA_Dry_Mouth <- aov(Dry.mouth.SE.Post ~ Allocation + Dry.mouth.SE.Pre + Error(Participant.ID), data = ANCOdfcomp)
+
+summary(ANCOVA_Dry_Mouth)
+
+ANCOdfcomp %>%
+  group_by(Allocation) %>%
+  get_summary_stats(Dry.mouth.SE.Post, type = "mean_sd")
+
+# Indigestion
+
+ANCOVA_Indigestion <- aov(Indigestion.SE.Post ~ Allocation + Indigestion.SE.Pre + Error(Participant.ID), data = ANCOdfcomp)
+
+summary(ANCOVA_Indigestion)
+
+ANCOdfcomp %>%
+  group_by(Allocation) %>%
+  get_summary_stats(Indigestion.SE.Post, type = "mean_sd")
+
+# Nausea
+
+ANCOVA_Nausea <- aov(Nausea.SE.Post ~ Allocation + Nausea.SE.Pre + Error(Participant.ID), data = ANCOdfcomp)
+
+summary(ANCOVA_Nausea)
+
+ANCOdfcomp %>%
+  group_by(Allocation) %>%
+  get_summary_stats(Nausea.SE.Post, type = "mean_sd")
+
+# Upset.stomach
+
+ANCOVA_UpsStom <- aov(Upset.stomach.Post ~ Allocation + Upset.stomach.Pre + Error(Participant.ID), data = ANCOdfcomp)
+
+summary(ANCOVA_UpsStom)
+
+ANCOdfcomp %>%
+  group_by(Allocation) %>%
+  get_summary_stats(Upset.stomach.Post, type = "mean_sd")
+
+# Side effects overall
+
+ANCOVA_SE_overall <- aov(SE.Total.Post ~ Allocation + SE.Total.Pre + Error(Participant.ID), data = ANCOdfcomp)
+
+summary(ANCOVA_SE_overall)
+
+ANCOdfcomp %>%
+  group_by(Allocation) %>%
+  get_summary_stats(SE.Total.Post, type = "mean_sd")
+
+#####
+```
+```{r pressure, echo=FALSE}
+# Side effects figure(s)
+# Ap - Down
+
+Questionnaires_df_master_post$Appetite.decreased.SE <- as.factor(Questionnaires_df_master_post$Appetite.decreased.SE)
+
+frequency_table <- Questionnaires_df_master_post %>%
+  count(Allocation, Appetite.decreased.SE) %>%
+  mutate(percent = n / sum(n) * 100 * 2)
+
+App_Down <- frequency_table %>%
+  ggplot(aes(y = fct_rev(Allocation), x = percent, fill = Appetite.decreased.SE)) +
+  geom_col() +
+  labs(x = " ", y = "Decreased appetite\n") +
+  scale_fill_manual(
+    values = c("0" = "#009e73", "1" = "#f0e442", "2" = "#e69f00", "3" = "#d55e00"),
+    labels = c("0" = "Not at all", "1" = "Somewhat", "2" = "Moderately", "3" = "Very much")
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_blank(), axis.title.y = element_text(size = 12), axis.text.y = element_text(size = 10), legend.position = "none")
+
+# Ap - Up
+
+Questionnaires_df_master_post$Appetite.increased.SE <- as.factor(Questionnaires_df_master_post$Appetite.increased.SE)
+
+frequency_table_2 <- Questionnaires_df_master_post %>%
+  count(Allocation, Appetite.increased.SE) %>%
+  mutate(percent = n / sum(n) * 100 * 2)
+
+App_Up <- frequency_table_2 %>%
+  ggplot(aes(y = fct_rev(Allocation), x = percent, fill = Appetite.increased.SE)) +
+  geom_col() +
+  labs(x = " ", y = "Increased appetite\n") +
+  theme_minimal() +
+  scale_fill_manual(
+    values = c("0" = "#009e73", "1" = "#f0e442", "2" = "#e69f00", "3" = "#d55e00"),
+    labels = c("0" = "Not at all", "1" = "Somewhat", "2" = "Moderately", "3" = "Very much")
+  ) +
+  theme(axis.text.x = element_blank(), axis.title.y = element_text(size = 12), axis.text.y = element_text(size = 10), legend.position = "none")
+
+# Drowsiness.Fatigue
+
+Questionnaires_df_master_post$Drowsiness.fatigue.SE <- as.factor(Questionnaires_df_master_post$Drowsiness.fatigue.SE)
+
+frequency_table_2 <- Questionnaires_df_master_post %>%
+  count(Allocation, Drowsiness.fatigue.SE) %>%
+  mutate(percent = n / sum(n) * 100 * 2)
+
+Drowsiness.fatigue <- frequency_table_2 %>%
+  ggplot(aes(y = fct_rev(Allocation), x = percent, fill = Drowsiness.fatigue.SE)) +
+  geom_col() +
+  labs(x = " ", y = "Drowsiness / fatigue\n") +
+  theme_minimal() +
+  scale_fill_manual(
+    values = c("0" = "#009e73", "1" = "#f0e442", "2" = "#e69f00", "3" = "#d55e00"),
+    labels = c("0" = "Not at all", "1" = "Somewhat", "2" = "Moderately", "3" = "Very much")
+  ) +
+  theme(axis.text.x = element_blank(), axis.title.y = element_text(size = 12), axis.text.y = element_text(size = 10), legend.position = "none")
+
+# Sweating
+
+Questionnaires_df_master_post$Sweating.SE <- as.factor(Questionnaires_df_master_post$Sweating.SE)
+
+frequency_table_2 <- Questionnaires_df_master_post %>%
+  count(Allocation, Sweating.SE) %>%
+  mutate(percent = n / sum(n) * 100 * 2)
+
+Sweating <- frequency_table_2 %>%
+  ggplot(aes(y = fct_rev(Allocation), x = percent, fill = Sweating.SE)) +
+  geom_col() +
+  labs(x = " ", y = "Sweating\n") +
+  theme_minimal() +
+  scale_fill_manual(
+    values = c("0" = "#009e73", "1" = "#f0e442", "2" = "#e69f00", "3" = "#d55e00"),
+    labels = c("0" = "Not at all", "1" = "Somewhat", "2" = "Moderately", "3" = "Very much")
+  ) +
+  theme(axis.text.x = element_blank(), axis.title.y = element_text(size = 12), axis.text.y = element_text(size = 10), legend.position = "none")
+
+# Tremors
+
+Questionnaires_df_master_post$Tremors.SE <- as.factor(Questionnaires_df_master_post$Tremors.SE)
+
+frequency_table_2 <- Questionnaires_df_master_post %>%
+  count(Allocation, Tremors.SE) %>%
+  mutate(percent = n / sum(n) * 100 * 2)
+
+Tremors <- frequency_table_2 %>%
+  ggplot(aes(y = fct_rev(Allocation), x = percent, fill = Tremors.SE)) +
+  geom_col() +
+  labs(x = " ", y = "Tremors\n") +
+  theme_minimal() +
+  scale_fill_manual(
+    values = c("0" = "#009e73", "1" = "#f0e442", "2" = "#e69f00", "3" = "#d55e00"),
+    labels = c("0" = "Not at all", "1" = "Somewhat", "2" = "Moderately", "3" = "Very much")
+  ) +
+  theme(axis.text.x = element_blank(), axis.title.y = element_text(size = 12), axis.text.y = element_text(size = 10), legend.position = "none")
+
+# Agitation
+
+Questionnaires_df_master_post$Agitation.SE <- as.factor(Questionnaires_df_master_post$Agitation.SE)
+
+frequency_table_2 <- Questionnaires_df_master_post %>%
+  count(Allocation, Agitation.SE) %>%
+  mutate(percent = n / sum(n) * 100 * 2)
+
+Agit <- frequency_table_2 %>%
+  ggplot(aes(y = fct_rev(Allocation), x = percent, fill = Agitation.SE)) +
+  geom_col() +
+  labs(x = " ", y = "Agitation\n") +
+  theme_minimal() +
+  scale_fill_manual(
+    values = c("0" = "#009e73", "1" = "#f0e442", "2" = "#e69f00", "3" = "#d55e00"),
+    labels = c("0" = "Not at all", "1" = "Somewhat", "2" = "Moderately", "3" = "Very much")
+  ) +
+  theme(axis.text.x = element_blank(), axis.title.y = element_text(size = 12), axis.text.y = element_text(size = 10), legend.position = "none")
+
+# Anxiety.Nervousness
+
+Questionnaires_df_master_post$Anxiety.Nervousness.SE <- as.factor(Questionnaires_df_master_post$Anxiety.Nervousness.SE)
+
+frequency_table_2 <- Questionnaires_df_master_post %>%
+  count(Allocation, Anxiety.Nervousness.SE) %>%
+  mutate(percent = n / sum(n) * 100 * 2)
+
+Anx <- frequency_table_2 %>%
+  ggplot(aes(y = fct_rev(Allocation), x = percent, fill = Anxiety.Nervousness.SE)) +
+  geom_col() +
+  labs(x = " ", y = "Anxiety\n") +
+  theme_minimal() +
+  scale_fill_manual(
+    values = c("0" = "#009e73", "1" = "#f0e442", "2" = "#e69f00", "3" = "#d55e00"),
+    labels = c("0" = "Not at all", "1" = "Somewhat", "2" = "Moderately", "3" = "Very much")
+  ) +
+  theme(axis.text.x = element_blank(), axis.title.y = element_text(size = 12), axis.text.y = element_text(size = 10), legend.position = "none")
+
+# Diarrhoea
+
+Questionnaires_df_master_post$Diarrhoea.SE <- as.factor(Questionnaires_df_master_post$Diarrhoea.SE)
+
+frequency_table_2 <- Questionnaires_df_master_post %>%
+  count(Allocation, Diarrhoea.SE) %>%
+  mutate(percent = n / sum(n) * 100 * 2)
+
+Diarr <- frequency_table_2 %>%
+  ggplot(aes(y = fct_rev(Allocation), x = percent, fill = Diarrhoea.SE)) +
+  geom_col() +
+  labs(x = " ", y = "Diarrhoea\n") +
+  theme_minimal() +
+  scale_fill_manual(
+    values = c("0" = "#009e73", "1" = "#f0e442", "2" = "#e69f00", "3" = "#d55e00"),
+    labels = c("0" = "Not at all", "1" = "Somewhat", "2" = "Moderately", "3" = "Very much")
+  ) +
+  theme(axis.text.x = element_blank(), axis.title.y = element_text(size = 12), axis.text.y = element_text(size = 10), legend.position = "none")
+
+# Dry mouth
+
+Questionnaires_df_master_post$Dry.mouth.SE <- as.factor(Questionnaires_df_master_post$Dry.mouth.SE)
+
+frequency_table_2 <- Questionnaires_df_master_post %>%
+  count(Allocation, Dry.mouth.SE) %>%
+  mutate(percent = n / sum(n) * 100 * 2)
+
+DryM <- frequency_table_2 %>%
+  ggplot(aes(y = fct_rev(Allocation), x = percent, fill = Dry.mouth.SE)) +
+  geom_col() +
+  labs(x = " ", y = "Dry mouth\n") +
+  theme_minimal() +
+  scale_fill_manual(
+    values = c("0" = "#009e73", "1" = "#f0e442", "2" = "#e69f00", "3" = "#d55e00"),
+    labels = c("0" = "Not at all", "1" = "Somewhat", "2" = "Moderately", "3" = "Very much")
+  ) +
+  theme(axis.text.x = element_blank(), axis.title.y = element_text(size = 12), axis.text.y = element_text(size = 10), legend.position = "none")
+
+# Indigestion
+
+Questionnaires_df_master_post$Indigestion.SE <- as.factor(Questionnaires_df_master_post$Indigestion.SE)
+
+frequency_table_2 <- Questionnaires_df_master_post %>%
+  count(Allocation, Indigestion.SE) %>%
+  mutate(percent = n / sum(n) * 100 * 2)
+
+Indi <- frequency_table_2 %>%
+  ggplot(aes(y = fct_rev(Allocation), x = percent, fill = Indigestion.SE)) +
+  geom_col() +
+  labs(x = " ", y = "Indigestion\n") +
+  theme_minimal() +
+  scale_fill_manual(
+    values = c("0" = "#009e73", "1" = "#f0e442", "2" = "#e69f00", "3" = "#d55e00"),
+    labels = c("0" = "Not at all", "1" = "Somewhat", "2" = "Moderately", "3" = "Very much")
+  ) +
+  theme(axis.text.x = element_blank(), axis.title.y = element_text(size = 12), axis.text.y = element_text(size = 10), legend.position = "none")
+
+# Nausea
+
+Questionnaires_df_master_post$Nausea.SE <- as.factor(Questionnaires_df_master_post$Nausea.SE)
+
+frequency_table_2 <- Questionnaires_df_master_post %>%
+  count(Allocation, Nausea.SE) %>%
+  mutate(percent = n / sum(n) * 100 * 2)
+
+Nausea <- frequency_table_2 %>%
+  ggplot(aes(y = fct_rev(Allocation), x = percent, fill = Nausea.SE)) +
+  geom_col() +
+  labs(x = " ", y = "Nausea\n") +
+  theme_minimal() +
+  scale_fill_manual(
+    values = c("0" = "#009e73", "1" = "#f0e442", "2" = "#e69f00", "3" = "#d55e00"),
+    labels = c("0" = "Not at all", "1" = "Somewhat", "2" = "Moderately", "3" = "Very much")
+  ) +
+  theme(axis.text.x = element_blank(), axis.title.y = element_text(size = 12), axis.text.y = element_text(size = 10), legend.position = "none")
+
+# Upset stomach
+
+Questionnaires_df_master_post$Upset.stomach <- as.factor(Questionnaires_df_master_post$Upset.stomach)
+
+frequency_table_2 <- Questionnaires_df_master_post %>%
+  count(Allocation, Upset.stomach) %>%
+  mutate(percent = n / sum(n) * 100 * 2)
+
+UpsStom <- frequency_table_2 %>%
+  ggplot(aes(y = fct_rev(Allocation), x = percent, fill = Upset.stomach)) +
+  geom_col() +
+  labs(x = " ", y = "Upset stomach\n") +
+  theme_minimal() +
+  scale_fill_manual(
+    values = c("0" = "#009e73", "1" = "#f0e442", "2" = "#e69f00", "3" = "#d55e00"),
+    labels = c("0" = "Not at all", "1" = "Somewhat", "2" = "Moderately", "3" = "Very much")
+  ) +
+  theme(axis.text.x = element_blank(), axis.title.y = element_text(size = 12), axis.text.y = element_text(size = 10), legend.position = "none")
+
+# SE Total
+
+Questionnaires_df_master_post$SE.Total <- as.factor(Questionnaires_df_master_post$SE.Total)
+
+frequency_table_2 <- Questionnaires_df_master_post %>%
+  count(Allocation, SE.Total) %>%
+  mutate(percent = n / sum(n) * 100 * 2)
+
+SE_Total <- frequency_table_2 %>%
+  ggplot(aes(y = fct_rev(Allocation), x = percent, fill = SE.Total)) +
+  geom_col() +
+  labs(x = " ", y = "Side effects aggregate\n") +
+  theme_minimal() +
+  scale_fill_manual(
+    values = c("0" = "#009e73", "1" = "#f0e442", "2" = "#e69f00", "3" = "#d55e00"),
+    labels = c("0" = "Not at all", "1" = "Somewhat", "2" = "Moderately", "3" = "Very much")
+  ) +
+  theme(axis.text.x = element_blank(), axis.title.y = element_text(size = 12), axis.text.y = element_text(size = 10), legend.position = "none")
+
+# Combine all
+
+CombinedPlots <- plot_grid(Agit, Anx, App_Down, App_Up, Diarr, Drowsiness.fatigue, DryM, Indi, Nausea, Sweating, Tremors, UpsStom, align = "v", nrow = 6, ncol = 2, label_size = 20)
+```
+
+
+```{r pressure, echo=FALSE}
+# Final data parsing before analysis -- splitting the data to prepare for baseline-adjusted ANCOVA analysis.
+
+# STAI (state), VAS, PANAS and state hedonia questionnaire analysis
+
+ANCOdf1 <- Questionnaires_df_master_post[c("Allocation", "Participant.ID", "STAI.S.Total", "PANAS.negative", "PANAS.positive", "VAS.negative", "VAS.positive", "DARS.Total")]
+
+ANCOdf1 <- rename(ANCOdf1, STAI.S.Total.Post = STAI.S.Total)
+ANCOdf1 <- rename(ANCOdf1, PANAS.negative.Post = PANAS.negative)
+ANCOdf1 <- rename(ANCOdf1, PANAS.positive.Post = PANAS.positive)
+ANCOdf1 <- rename(ANCOdf1, VAS.negative.Post = VAS.negative)
+ANCOdf1 <- rename(ANCOdf1, VAS.positive.Post = VAS.positive)
+ANCOdf1 <- rename(ANCOdf1, DARS.Total.Post = DARS.Total)
+
+ANCOdf2 <- Questionnaires_df_master_pre[c("Allocation", "Participant.ID", "STAI.S.Total", "PANAS.negative", "PANAS.positive", "VAS.negative", "VAS.positive", "DARS.Total")]
+
+ANCOdf2 <- rename(ANCOdf2, STAI.S.Total.Pre = STAI.S.Total)
+ANCOdf2 <- rename(ANCOdf2, PANAS.negative.Pre = PANAS.negative)
+ANCOdf2 <- rename(ANCOdf2, PANAS.positive.Pre = PANAS.positive)
+ANCOdf2 <- rename(ANCOdf2, VAS.negative.Pre = VAS.negative)
+ANCOdf2 <- rename(ANCOdf2, VAS.positive.Pre = VAS.positive)
+ANCOdf2 <- rename(ANCOdf2, DARS.Total.Pre = DARS.Total)
+
+ANCOdfcomp <- left_join(ANCOdf1, ANCOdf2, by = c("Participant.ID", "Allocation"))
+
+# STAI.S
+
+ANCOVA_STAI.S <- aov(STAI.S.Total.Post ~ Allocation + STAI.S.Total.Pre + Error(Participant.ID), data = ANCOdfcomp)
+
+summary(ANCOVA_STAI.S)
+
+ANCOdfcomp %>%
+  group_by(Allocation) %>%
+  get_summary_stats(STAI.S.Total.Pre, type = "mean_sd")
+
+# PANAS.Neg
+
+ANCOVA_PANAS.Neg <- aov(PANAS.negative.Post ~ Allocation + PANAS.negative.Pre + Error(Participant.ID), data = ANCOdfcomp)
+
+summary(ANCOVA_PANAS.Neg)
+
+ANCOdfcomp %>%
+  group_by(Allocation) %>%
+  get_summary_stats(PANAS.negative.Post, type = "mean_sd")
+
+# PANAS.Pos
+
+ANCOVA_PANAS.Pos <- aov(PANAS.positive.Post ~ Allocation + PANAS.positive.Pre + Error(Participant.ID), data = ANCOdfcomp)
+
+summary(ANCOVA_PANAS.Pos)
+
+ANCOdfcomp %>%
+  group_by(Allocation) %>%
+  get_summary_stats(PANAS.positive.Pre, type = "mean_sd")
+
+# VAS.Neg
+
+ANCOVA_VAS.Neg <- aov(VAS.negative.Post ~ Allocation + VAS.negative.Pre + Error(Participant.ID), data = ANCOdfcomp)
+
+summary(ANCOVA_VAS.Neg)
+
+ANCOdfcomp %>%
+  group_by(Allocation) %>%
+  get_summary_stats(VAS.negative.Post, type = "mean_sd")
+
+# VAS.Pos
+
+ANCOVA_VAS.Pos <- aov(VAS.positive.Post ~ Allocation + VAS.positive.Pre + Error(Participant.ID), data = ANCOdfcomp)
+
+summary(ANCOVA_VAS.Pos)
+
+ANCOdfcomp %>%
+  group_by(Allocation) %>%
+  get_summary_stats(VAS.positive.Post, type = "mean_sd")
+
+# DARS
+
+ANCOVA_DARS <- aov(DARS.Total.Post ~ Allocation + DARS.Total.Pre + Error(Participant.ID), data = ANCOdfcomp)
+
+summary(ANCOVA_DARS)
+
+ANCOdfcomp %>%
+  group_by(Allocation) %>%
+  get_summary_stats(DARS.Total.Post, type = "mean_sd")
+
+### All non-significant
+```
+```{r pressure, echo=FALSE}
+# Further plots for self-report measures
+
+State_Anxiety_plot <- Questionnaires_df_master_post %>% ggplot(aes(x = Allocation, y = STAI.S.Total, fill = Allocation)) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "bonferroni",
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 0.20, " " = 2),
+    margin_top = 0.05, textsize = 12
+  ) +
+  labs(title = " ") +
+  ylab("State anxiety score (STAI)\n") +
+  xlab(" ") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+DARS_plot <- Questionnaires_df_master_post %>% ggplot(aes(x = Allocation, y = DARS.Total, fill = Allocation)) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "bonferroni",
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 0.20, " " = 2),
+    margin_top = 0.05, textsize = 12
+  ) +
+  labs(title = " ") +
+  ylab("Anhedonia score (DARS)\n") +
+  xlab(" ") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+PANAS_Neg <- Questionnaires_df_master_post %>% ggplot(aes(x = Allocation, y = PANAS.negative, fill = Allocation)) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "bonferroni",
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 0.20, " " = 2),
+    margin_top = 0.05, textsize = 12
+  ) +
+  labs(title = " ") +
+  ylab("Negative items (PANAS)\n") +
+  xlab(" ") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+PANAS_Pos <- Questionnaires_df_master_post %>% ggplot(aes(x = Allocation, y = PANAS.positive, fill = Allocation)) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "bonferroni",
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 0.20, " " = 2),
+    margin_top = 0.05, textsize = 12
+  ) +
+  labs(title = " ") +
+  ylab("Positive items (PANAS)\n") +
+  xlab(" ") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+VAS_neg <- Questionnaires_df_master_post %>% ggplot(aes(x = Allocation, y = VAS.negative, fill = Allocation)) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "bonferroni",
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 0.20, " " = 2),
+    margin_top = 0.05, textsize = 12
+  ) +
+  labs(title = " ") +
+  ylab("Negative items (VAS)\n") +
+  xlab(" ") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+VAS_pos <- Questionnaires_df_master_post %>% ggplot(aes(x = Allocation, y = VAS.positive, fill = Allocation)) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "bonferroni",
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 0.20, " " = 2),
+    margin_top = 0.05, textsize = 12
+  ) +
+  labs(title = " ") +
+  ylab("Positive items (VAS)\n") +
+  xlab(" ") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+CombinedPlots_2 <- plot_grid(DARS_plot, PANAS_Neg, PANAS_Pos, State_Anxiety_plot, VAS_neg, VAS_pos, align = "v", ncol = 3, label_size = 20)
+````
+
+```{r pressure, echo=FALSE}
+# All items
+
+Vas_Pos_Model <- with(SUBCOG_df_master, lmer(SUBCOG.Aggregate.Perc.2 ~ Allocation + Time + Allocation:Time + (1 | Participant.ID),
+  control = lmerControl(optimizer = "bobyqa")
+))
+
+summary(Vas_Pos_Model, conf.int = TRUE)
+
+confint(Vas_Pos_Model, method = "Wald")
+
+##
+
+Vas_Pos_Model <- with(SUBCOG_df_master, lmer(SUBCOG.Motiv.Perc ~ Allocation + Time + Allocation:Time + (1 | Participant.ID),
+  control = lmerControl(optimizer = "bobyqa")
+))
+
+summary(Vas_Pos_Model, conf.int = TRUE)
+
+confint(Vas_Pos_Model, method = "Wald")
+
+##
+
+Vas_Pos_Model <- with(SUBCOG_df_master, lmer(SUBCOG.Mood ~ Allocation + Time + Allocation:Time + (1 | Participant.ID),
+  control = lmerControl(optimizer = "bobyqa")
+))
+
+summary(Vas_Pos_Model, conf.int = TRUE)
+
+confint(Vas_Pos_Model, method = "Wald")
+
+##
+
+Vas_Pos_Model <- with(SUBCOG_df_master, lmer(SUBCOG.Execu.Perc ~ Allocation + Time + Allocation:Time + (1 | Participant.ID),
+  control = lmerControl(optimizer = "bobyqa")
+))
+
+summary(Vas_Pos_Model, conf.int = TRUE)
+
+confint(Vas_Pos_Model, method = "Wald")
+
+# Significant interaction - Post-hoc EMM
+
+SUBCOG_df_master$Time <- as.numeric(SUBCOG_df_master$Time)
+
+SUBCOG_df_master$Time <- as.factor(SUBCOG_df_master$Time)
+
+model_linear <- lmer(SUBCOG.Execu.Perc ~ Allocation + Time + Allocation:Time + (1 | Participant.ID), data = SUBCOG_df_master)
+
+eta_squared(model_linear, ci = 0.95, alternative = "two.sided")
+
+EMM_2 <- emmeans(model_linear, ~ Allocation | Time)
+
+pairwise_comparisons <- pairs(EMM_2, adjust = "holm")
+
+summary(pairwise_comparisons)
+
+# No significant difference in pairwise comparisons across individual timepoints.
+
+effect_size <- eff_size(EMM_2, sigma = sigma(model_linear), edf = df.residual(model_linear))
+
+summary(effect_size)
+
+##
+
+Vas_Pos_Model <- with(SUBCOG_df_master, lmer(SUBCOG.Att.Perc ~ Allocation + Time + Allocation:Time + (1 | Participant.ID),
+  control = lmerControl(optimizer = "bobyqa")
+))
+
+summary(Vas_Pos_Model, conf.int = TRUE)
+
+confint(Vas_Pos_Model, method = "Wald")
+
+##
+
+Vas_Pos_Model <- with(SUBCOG_df_master, lmer(SUBCOG.Memory.Perc ~ Allocation + Time + Allocation:Time + (1 | Participant.ID),
+  control = lmerControl(optimizer = "bobyqa")
+))
+
+summary(Vas_Pos_Model, conf.int = TRUE)
+
+confint(Vas_Pos_Model, method = "Wald")
+
+# Supplementary Fig 17
+
+SUBCOG_agg_fig <- SUBCOG_df_master %>%
+  group_by(Allocation, Time) %>%
+  summarize(value = mean(SUBCOG.Aggregate.Perc.2), SE = std.error(SUBCOG.Aggregate.Perc.2), .groups = "drop") %>%
+  ggplot(aes(Time, value, group = Allocation)) +
+  scale_color_brewer(palette = "Set2") +
+  geom_errorbar(aes(x = Time, ymin = value - SE, ymax = value + SE, color = Allocation), width = 0.25) +
+  geom_point(aes(color = Allocation, shape = Allocation), size = 2.5, alpha = 0.8) +
+  geom_line(aes(color = Allocation, linetype = Allocation), size = 1.2) +
+  geom_ribbon(aes(
+    ymin = value - SE,
+    ymax = value + SE, fill = Allocation
+  ), color = NA, alpha = 0.095, show.legend = FALSE) +
+  scale_shape_manual(values = c(19, 15)) +
+  scale_fill_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 2),
+    margin_top = 0.05
+  ) +
+  labs(title = "") +
+  ylab("Subjective cognition aggregate (%)\n") +
+  xlab("\nTime\n") +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    axis.text.y = element_text(size = 15),
+    axis.text.x = element_blank(),
+    axis.title.y = element_text(size = 15),
+    axis.title.x = element_blank()
+  )
+
+SUBCOG_motiv_fig <- SUBCOG_df_master %>%
+  group_by(Allocation, Time) %>%
+  summarize(value = mean(SUBCOG.Motiv.Perc), SE = std.error(SUBCOG.Motiv.Perc), .groups = "drop") %>%
+  ggplot(aes(Time, value, group = Allocation)) +
+  scale_color_brewer(palette = "Set2") +
+  geom_errorbar(aes(x = Time, ymin = value - SE, ymax = value + SE, color = Allocation), width = 0.25) +
+  geom_point(aes(color = Allocation, shape = Allocation), size = 2.5, alpha = 0.8) +
+  geom_line(aes(color = Allocation, linetype = Allocation), size = 1.2) +
+  geom_ribbon(aes(
+    ymin = value - SE,
+    ymax = value + SE, fill = Allocation
+  ), color = NA, alpha = 0.095, show.legend = FALSE) +
+  scale_shape_manual(values = c(19, 15)) +
+  scale_fill_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 2),
+    margin_top = 0.05
+  ) +
+  labs(title = "") +
+  ylab("Motivation subscale (%)\n") +
+  xlab("\nTime\n") +
+  theme_minimal() +
+  ylim(57, 65) +
+  theme(
+    legend.position = "none",
+    axis.text.y = element_text(size = 15),
+    axis.text.x = element_blank(),
+    axis.title.y = element_text(size = 15),
+    axis.title.x = element_blank(),
+  )
+
+SUBCOG_mood_fig <- SUBCOG_df_master %>%
+  group_by(Allocation, Time) %>%
+  summarize(value = mean(SUBCOG.Mood), SE = std.error(SUBCOG.Mood), .groups = "drop") %>%
+  ggplot(aes(Time, value, group = Allocation)) +
+  scale_color_brewer(palette = "Set2") +
+  geom_errorbar(aes(x = Time, ymin = value - SE, ymax = value + SE, color = Allocation), width = 0.25) +
+  geom_point(aes(color = Allocation, shape = Allocation), size = 2.5, alpha = 0.8) +
+  geom_line(aes(color = Allocation, linetype = Allocation), size = 1.2) +
+  geom_ribbon(aes(
+    ymin = value - SE,
+    ymax = value + SE, fill = Allocation
+  ), color = NA, alpha = 0.095, show.legend = FALSE) +
+  scale_shape_manual(values = c(19, 15)) +
+  scale_fill_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 2),
+    margin_top = 0.05
+  ) +
+  labs(title = "") +
+  ylab("Mood subscale (%)\n") +
+  xlab("\nTime\n") +
+  ylim(52, 65) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    axis.text.y = element_text(size = 15),
+    axis.text.x = element_blank(),
+    axis.title.y = element_text(size = 15),
+    axis.title.x = element_blank(),
+  )
+
+SUBCOG_exec_fig <- SUBCOG_df_master %>%
+  group_by(Allocation, Time) %>%
+  summarize(value = mean(SUBCOG.Execu.Perc), SE = std.error(SUBCOG.Execu.Perc), .groups = "drop") %>%
+  ggplot(aes(Time, value, group = Allocation)) +
+  scale_color_brewer(palette = "Set2") +
+  geom_errorbar(aes(x = Time, ymin = value - SE, ymax = value + SE, color = Allocation), width = 0.25) +
+  geom_point(aes(color = Allocation, shape = Allocation), size = 2.5, alpha = 0.8) +
+  geom_line(aes(color = Allocation, linetype = Allocation), size = 1.2) +
+  geom_ribbon(aes(
+    ymin = value - SE,
+    ymax = value + SE, fill = Allocation
+  ), color = NA, alpha = 0.095, show.legend = FALSE) +
+  scale_shape_manual(values = c(19, 15)) +
+  scale_fill_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 2),
+    margin_top = 0.05
+  ) +
+  labs(title = "") +
+  ylab("Executive function subscale (%)\n") +
+  xlab("\nTime\n") +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    axis.text.y = element_text(size = 15),
+    axis.text.x = element_blank(),
+    axis.title.y = element_text(size = 15),
+    axis.title.x = element_blank(),
+  )
+
+SUBCOG_att_fig <- SUBCOG_df_master %>%
+  group_by(Allocation, Time) %>%
+  summarize(value = mean(SUBCOG.Att.Perc), SE = std.error(SUBCOG.Att.Perc), .groups = "drop") %>%
+  ggplot(aes(Time, value, group = Allocation)) +
+  scale_color_brewer(palette = "Set2") +
+  geom_errorbar(aes(x = Time, ymin = value - SE, ymax = value + SE, color = Allocation), width = 0.25) +
+  geom_point(aes(color = Allocation, shape = Allocation), size = 2.5, alpha = 0.8) +
+  geom_line(aes(color = Allocation, linetype = Allocation), size = 1.2) +
+  geom_ribbon(aes(
+    ymin = value - SE,
+    ymax = value + SE, fill = Allocation
+  ), color = NA, alpha = 0.095, show.legend = FALSE) +
+  scale_shape_manual(values = c(19, 15)) +
+  scale_fill_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 2),
+    margin_top = 0.05
+  ) +
+  labs(title = "") +
+  ylab("Selective attention subscale (%)\n") +
+  xlab("\nTime\n") +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    axis.text.y = element_text(size = 15),
+    axis.text.x = element_blank(),
+    axis.title.y = element_text(size = 15),
+    axis.title.x = element_blank()
+  )
+
+SUBCOG_mem_fig <- SUBCOG_df_master %>%
+  group_by(Allocation, Time) %>%
+  summarize(value = mean(SUBCOG.Memory.Perc), SE = std.error(SUBCOG.Memory.Perc), .groups = "drop") %>%
+  ggplot(aes(Time, value, group = Allocation)) +
+  scale_color_brewer(palette = "Set2") +
+  geom_errorbar(aes(x = Time, ymin = value - SE, ymax = value + SE, color = Allocation), width = 0.25) +
+  geom_point(aes(color = Allocation, shape = Allocation), size = 2.5, alpha = 0.8) +
+  geom_line(aes(color = Allocation, linetype = Allocation), size = 1.2) +
+  geom_ribbon(aes(
+    ymin = value - SE,
+    ymax = value + SE, fill = Allocation
+  ), color = NA, alpha = 0.095, show.legend = FALSE) +
+  scale_shape_manual(values = c(19, 15)) +
+  scale_fill_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 2),
+    margin_top = 0.05
+  ) +
+  labs(title = "") +
+  ylab("Memory subscale (%)\n") +
+  xlab("\nTime\n") +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    axis.text.y = element_text(size = 15),
+    axis.text.x = element_blank(),
+    axis.title.y = element_text(size = 15),
+    axis.title.x = element_blank()
+  )
+
+SuppFig17 <- plot_grid(SUBCOG_motiv_fig, SUBCOG_mood_fig, SUBCOG_exec_fig, SUBCOG_att_fig, SUBCOG_mem_fig, SUBCOG_agg_fig, align = "v", ncol = 3, label_size = 20)
+```

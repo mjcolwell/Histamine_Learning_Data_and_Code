@@ -1,0 +1,1149 @@
+---
+title: "N-back Preprocessing"
+author: "Michael Colwell"
+date: '22/03/2024'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### N-back DDM + neuroimaging data processing  scripts for the PEACE Study ('Pitolisant Effects on Affect and Cognition Exploratory Study') (NCT05849675). 
+
+This an R Markdown file was created by Michael Colwell (michael.colwell@psych.ox.ac.uk / ORCID 0000-0001-7846-2879), based on a task from the same author: https://github.com/mjcolwell/n-back_oxford/releases/tag/Python
+
+#This script includes: 
+
+- Preprocessing of DDM parameter values
+- DDM inferrential analysis (between-groups)
+- DDM parameter recovery
+- DDM posterior predictive checks
+- Secondary DDM analysis: Non-decision time (median-split) and task performance analysis
+- DDM parameter v ~ fMRI beta value (linear model of increasing complexity) analysis
+- Supplementary analysis
+
+For the behavioural (non-model) analysis of the N-back task, and associated neuroimaging analysis, please see the 'N_Back_fMRI/fMRI_nback_PreProcessing_and_Analysis.Rmd' file.
+
+## Quality check and analysis scripts for OMT data in FENCOG project.
+
+```{r libraries, echo=FALSE, include=FALSE}
+library(dplyr)
+library(tidyverse)
+library(gtools)
+library(knitr)
+library(data.table)
+library(ggplot2)
+library(car)
+library(ggbeeswarm)
+library(ggrepel)
+library(readxl)
+library(data.table)
+library(openxlsx)
+library(ggpubr)
+library(rstatix)
+library("ez")
+library(ggsignif)
+library(RColorBrewer)
+library(emmeans)
+library(plotrix)
+library(sdamr)
+library(cowplot)
+library(lme4)
+library(stringr)
+library(effectsize)
+library(lmerTest)
+library(ggridges)
+library(viridis)
+library(ggstance)
+library(ggdist)
+library(gghalves)
+library(ggpp)
+library(readxl)
+library(purrr)
+library(broom)
+library(ggExtra)
+library(moments)
+```
+
+## Set Dir and load in file
+
+```{r b0, echo=FALSE, include=TRUE}
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/NBack_DDM")
+
+MasterDDM <- read.csv("Group_Data_Levels.csv", header = TRUE, stringsAsFactors = FALSE)
+```
+
+##Parsing + Demographic inclusion
+
+```{r b0, echo=FALSE, include=TRUE}
+# Log transform decision policy to maintain consistency across DDM analyses
+
+MasterDDM$a.1. <- log(MasterDDM$a)
+
+# Arcscin transform non-decision time to maintain consistency across analyses
+MasterDDM$t.a <- asin(sqrt(MasterDDM$t))
+
+## Demographics
+
+MasterDDM_2 <- MasterDDM
+
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/Allocation_and_Demographics/")
+
+Demographics <- read.csv("Allocation_And_Demo.csv")
+
+Demographics$Participant.ID <- as.factor(Demographics$Participant.ID)
+
+MasterDDM <- merge(MasterDDM, Demographics, by = "Participant.ID")
+
+removal_df <- subset(MasterDDM, Participant.ID != "P001" & Participant.ID != "P009" & Participant.ID != "P011" & Participant.ID != "P025" & Participant.ID != "P037" & Participant.ID != "P059")
+
+# Removal of outliers agreed prior to unblinding. These are outliers who performed poorly on the task or displayed irrecoverably high motion during task performance or complained they were unable to see the stimuli due to improper vision correction. No behavioural outliers were observed in the data quality report.
+
+MasterDDM <- droplevels(removal_df)
+```
+
+##Graphs for publication
+
+```{r Chunk 7 - Generation of figures for report, echo=FALSE}
+ci95 <- function(x) {
+  error <- qt(0.975, df = length(x) - 1) * sd(x) / sqrt(length(x))
+  return(error)
+}
+
+v_Fig <- MasterDDM %>%
+  group_by(Allocation, condition) %>%
+  summarize(value = mean(v), SE = std.error(v)) %>%
+  ggplot(aes(condition, value, group = Allocation)) +
+  scale_color_brewer(palette = "Set2") +
+  geom_errorbar(aes(x = condition, ymin = value - SE, ymax = value + SE, color = Allocation), width = 0.25) +
+  geom_point(aes(color = Allocation, shape = Allocation), size = 2.4, alpha = 0.8) +
+  geom_line(aes(color = Allocation, linetype = Allocation), size = 1.4) +
+  geom_ribbon(aes(
+    ymin = value - SE,
+    ymax = value + SE, fill = Allocation
+  ), color = NA, alpha = 0.095, show.legend = FALSE) +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "bonferroni",
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 2),
+    margin_top = 0.05
+  ) +
+  scale_color_brewer(palette = "Set2") +
+  scale_fill_brewer(palette = "Set2") +
+  labs(title = "") +
+  ylab("Drift rate v\n") +
+  xlab("") +
+  theme_minimal() +
+  theme(legend.position = "none", axis.text = element_text(size = 14), axis.title = element_text(size = 16)) +
+  scale_shape_manual(values = c(19, 15))
+
+t_Fig <- MasterDDM %>%
+  group_by(Allocation, condition) %>%
+  summarize(value = mean(t.a), SE = std.error(t.a)) %>%
+  ggplot(aes(condition, value, group = Allocation)) +
+  scale_color_brewer(palette = "Set2") +
+  geom_errorbar(aes(x = condition, ymin = value - SE, ymax = value + SE, color = Allocation), width = 0.25) +
+  geom_point(aes(color = Allocation, shape = Allocation), size = 2.4, alpha = 0.8) +
+  geom_line(aes(color = Allocation, linetype = Allocation), size = 1.4) +
+  geom_ribbon(aes(
+    ymin = value - SE,
+    ymax = value + SE, fill = Allocation
+  ), color = NA, alpha = 0.095, show.legend = FALSE) +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "bonferroni",
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 2),
+    margin_top = 0.05
+  ) +
+  scale_color_brewer(palette = "Set2") +
+  scale_fill_brewer(palette = "Set2") +
+  labs(title = "") +
+  ylab("Non-decision time TeR\n") +
+  xlab("") +
+  theme_minimal() +
+  theme(legend.position = "left", axis.text = element_text(size = 14), axis.title = element_text(size = 16), axis.text.x = element_blank()) +
+  scale_shape_manual(values = c(19, 15))
+
+a_Fig <- MasterDDM %>%
+  group_by(Allocation, condition) %>%
+  summarize(value = mean(a.1.), SE = std.error(a.1.)) %>%
+  ggplot(aes(condition, value, group = Allocation)) +
+  scale_color_brewer(palette = "Set2") +
+  geom_errorbar(aes(x = condition, ymin = value - SE, ymax = value + SE, color = Allocation), width = 0.25) +
+  geom_point(aes(color = Allocation, shape = Allocation), size = 2.4, alpha = 0.8) +
+  geom_line(aes(color = Allocation, linetype = Allocation), size = 1.4) +
+  geom_ribbon(aes(
+    ymin = value - SE,
+    ymax = value + SE, fill = Allocation
+  ), color = NA, alpha = 0.095, show.legend = FALSE) +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "bonferroni",
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 2),
+    margin_top = 0.05
+  ) +
+  scale_color_brewer(palette = "Set2") +
+  scale_fill_brewer(palette = "Set2") +
+  labs(title = "") +
+  ylab("Log decision policy (a)\n") +
+  xlab("") +
+  theme_minimal() +
+  theme(legend.position = "None", axis.text = element_text(size = 14), axis.title = element_text(size = 16)) +
+  scale_shape_manual(values = c(19, 15))
+````
+  
+
+```{r b0, echo=FALSE, include=TRUE}
+# ANCOVA model setup and analysis
+
+# Drift rate
+
+ANCOVA_v <- aov(v ~ Allocation + condition + Allocation:condition + Error(Participant.ID), data = MasterDDM)
+
+summary(ANCOVA_v)
+
+# Significant
+
+model_linear <- lmer(v ~ Allocation + condition + Allocation:condition + (1 | Participant.ID), data = MasterDDM)
+
+summary(model_linear)
+
+anova(model_linear, type = 2) # Type III ANOVA-like table
+
+eta_squared(model_linear, ci = 0.95, alternative = "two.sided")
+
+EMM_2 <- emmeans(model_linear, ~ Allocation | condition)
+
+confint(model_linear, method = "Wald")
+
+# Calculate pairwise comparisons for the specified contrasts
+pairwise_comparisons <- pairs(EMM_2, adjust = "holm")
+
+summary(pairwise_comparisons)
+
+effect_size <- eff_size(EMM_2, sigma = sigma(model_linear), edf = df.residual(model_linear))
+
+summary(effect_size)
+
+#########
+
+# Decision policy
+
+ANCOVA_Boundary <- aov(a ~ Allocation + condition + Allocation:condition + Error(Participant.ID), data = MasterDDM)
+
+summary(ANCOVA_Boundary)
+
+# Not significant
+
+# Non-decision time.
+
+ANCOVA_Drift <- aov(t.a ~ Allocation + condition + Allocation:condition + Error(Participant.ID), data = MasterDDM)
+
+summary(ANCOVA_Drift)
+
+# Significant
+
+model_linear <- lmer(t.a ~ Allocation + condition + Allocation:condition + (1 | Participant.ID), data = MasterDDM)
+
+summary(model_linear)
+
+anova(model_linear, type = 2) # Type III ANOVA-like table
+
+eta_squared(model_linear, ci = 0.95, alternative = "two.sided")
+
+EMM_2 <- emmeans(model_linear, ~ Allocation | condition)
+
+confint(model_linear, method = "Wald")
+
+# Calculate pairwise comparisons for the specified contrasts
+pairwise_comparisons <- pairs(EMM_2, adjust = "holm")
+
+summary(pairwise_comparisons)
+
+effect_size <- eff_size(EMM_2, sigma = sigma(model_linear), edf = df.residual(model_linear))
+
+summary(effect_size)
+
+####
+```
+
+```{r b0, echo=FALSE, include=TRUE}
+###
+
+# DDM parameter v ~ fMRI beta value (linear model of increasing complexity) analysis
+
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/ROI_Data/")
+
+ROI_sign <- read.csv("n_back_sig_clusters_PE.csv")
+
+Master_Scatter_f <- MasterDDM %>%
+  group_by(Participant.ID, Allocation) %>%
+  summarize(
+    v = mean(v, na.rm = TRUE),
+    t.1. = mean(t.a, na.rm = TRUE),
+    st = mean(st, na.rm = TRUE)
+  )
+
+
+Master_Scatter_f <- merge(Master_Scatter_f, ROI_sign, by = "Participant.ID")
+
+###
+
+LM_1 <- lm(v ~ H3R_Linear, data = Master_Scatter_f)
+
+summary(LM_1)
+
+cor_result <- cor.test(Master_Scatter_f$v, Master_Scatter_f$H3R_Linear)
+
+eta_squared(LM_1, ci = 0.95, alternative = "two.sided")
+
+# Fit regression within each sample
+regression_results <- Master_Scatter_f %>%
+  group_by(Allocation) %>%
+  group_map(~ tidy(lm(v ~ H3R_Linear, data = .x)))
+
+# Combine into one data frame
+regression_df <- bind_rows(regression_results, .id = "Participant.ID")
+
+# Summarize posterior over betas
+beta_summary <- regression_df %>%
+  group_by(term) %>%
+  summarise(
+    mean = mean(estimate),
+    lower = quantile(estimate, 0.025),
+    upper = quantile(estimate, 0.975)
+  )
+
+# Figure 4G
+
+# Compute correlation coefficient and p-value
+cor_result <- cor.test(Master_Scatter_f$v, Master_Scatter_f$H3R_Linear)
+
+# Create the scatterplot
+Scatterplot_check2 <- ggplot(data = Master_Scatter_f, aes(x = v, y = H3R_Linear)) +
+  geom_smooth(method = "lm", se = TRUE, color = "black", fill = "lightgray", alpha = 0.3) + # Enable CI shading
+  labs(
+    x = "\nDrift Rate v\n",
+    y = "\nLinear Complexity Signal (Left DLPFC)\n"
+  ) +
+  annotate("text",
+    x = Inf, y = -Inf, hjust = 1, vjust = -0.5, size = 5,
+    label = paste(
+      "r =", round(cor_result$estimate, 3),
+      "\np =", ifelse(cor_result$p.value < 0.001, 0.001, format(cor_result$p.value, scientific = FALSE, digits = 3))
+    )
+  ) +
+  geom_point(size = 3.25, color = "#2E5984", alpha = 0.75) +
+  theme_minimal() +
+  theme(
+    axis.title.y = element_text(size = 16),
+    axis.title.x = element_text(size = 16),
+    axis.text.y = element_text(size = 15),
+    axis.text.x = element_text(size = 15)
+  )
+
+Figure_4G <- ggMarginal(Scatterplot_check2, type = "density", linetype = "blank", fill = "lightblue", color = "black", alpha = 0.8)
+```
+
+
+```{r b0, echo=FALSE, include=TRUE}
+#### PE Estimates figures
+
+# Supplementary Figure 11
+
+Linear_Beta <- Master_Scatter_f %>% ggplot(aes(x = Allocation, y = Linear_L_Caud_New, fill = Allocation)) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "holm",
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 0.20, " " = 2),
+    margin_top = 0.05, textsize = 12
+  ) +
+  labs(title = " ") +
+  ylab("Increasing Complexity lDLPFC Beta\n") +
+  xlab("") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+DLPFC_Beta <- Master_Scatter_f %>% ggplot(aes(x = Allocation, y = L_DLPFC_2B, fill = Allocation)) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "holm",
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 0.20, " " = 2),
+    margin_top = 0.05, textsize = 12
+  ) +
+  labs(title = " ") +
+  ylab("lDLPFC beta (0>2-back)\n") +
+  xlab("") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+Hipp_Beta <- Master_Scatter_f %>% ggplot(aes(x = Allocation, y = TWOBACK_Hipp, fill = Allocation)) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "holm",
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 0.20, " " = 2),
+    margin_top = 0.05, textsize = 12
+  ) +
+  labs(title = " ") +
+  ylab("Bil. Hippocampus beta (0>2-back)\n") +
+  xlab("") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+SN_Beta <- Master_Scatter_f %>% ggplot(aes(x = Allocation, y = TWOBACK_SN, fill = Allocation)) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "holm",
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 0.20, " " = 2),
+    margin_top = 0.05, textsize = 12
+  ) +
+  labs(title = " ") +
+  ylab("Substantia Nigra beta (0>2-back)\n") +
+  xlab("") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+Basalf_Beta <- Master_Scatter_f %>% ggplot(aes(x = Allocation, y = TWOBACK_Basal_F, fill = Allocation)) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "holm",
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 0.20, " " = 2),
+    margin_top = 0.05, textsize = 12
+  ) +
+  labs(title = " ") +
+  ylab("Basal forebrain beta (0>2-back)\n\n") +
+  xlab("") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+three_back_beta <- Master_Scatter_f %>% ggplot(aes(x = Allocation, y = Caud_L_New_3Back, fill = Allocation)) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "holm",
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 0.20, " " = 2),
+    margin_top = 0.05, textsize = 12
+  ) +
+  labs(title = " ") +
+  ylab("Left DLPFC beta (0>3-back)\n\n") +
+  xlab("") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+
+one_back_beta <- Master_Scatter_f %>% ggplot(aes(x = Allocation, y = Caud_L_New_1Back, fill = Allocation)) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "holm",
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 0.20, " " = 2),
+    margin_top = 0.05, textsize = 12
+  ) +
+  labs(title = " ") +
+  ylab("Left DLPFC beta (0>1-back)\n\n") +
+  xlab("") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+Supp.Fig.11 <- plot_grid(Linear_Beta, one_back_beta, DLPFC_Beta, three_back_beta, Hipp_Beta, SN_Beta, Basalf_Beta)
+```
+
+
+```{r b0, echo=FALSE, include=TRUE}
+# Initial Posterior Predictive Checks - Synthetic and real data comparison
+
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/NBack_DDM")
+
+PP_Data <- read.csv("posterior_nback_data.csv", header = TRUE, stringsAsFactors = FALSE)
+
+# Define new row names (make sure the length matches the number of rows)
+
+PP_Combined_Summary <- PP_Data %>%
+  group_by(subj_idx, condition, Data_Type) %>%
+  summarise(Response.time = mean(rt, na.rm = TRUE), Accuracy = mean(correct, na.rm = TRUE))
+
+# Figure 3C
+
+# PP check graph - RT
+
+RT_Graph <- ggplot(PP_Combined_Summary, aes(x = Response.time, fill = Data_Type, linetype = Data_Type)) +
+  geom_density(alpha = 0.4, size = 1.1) +
+  theme_minimal() +
+  xlab("\nTime to Choice (ms)\n") +
+  ylab("\nP(Density)\n") +
+  xlim(NA, 2) +
+  theme(legend.position = "none", text = element_text(size = 14), axis.title = element_text(size = 16))
+
+# PP check graph - Accuracy
+
+Correct_Graph <- ggplot(PP_Combined_Summary, aes(x = Accuracy, fill = Data_Type, linetype = Data_Type)) +
+  geom_density(alpha = 0.4, size = 1.1) +
+  theme_minimal() +
+  xlab("\nOverall Accuracy\n") +
+  ylab("\nP(Density)\n") +
+  theme(legend.position = "none", text = element_text(size = 14), axis.title = element_text(size = 16))
+
+combined <- plot_grid(RT_Graph, Correct_Graph, cols = 1)
+
+#################################
+```
+
+
+
+```{r b0, echo=FALSE, include=TRUE}
+# Parameter recovery - loading in file + graph generation
+
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/NBack_DDM/")
+
+MasterDDM_sim <- read.csv("param_recovery.csv", header = TRUE, stringsAsFactors = FALSE)
+
+MasterDDM_sim$a <- log(MasterDDM_sim$a)
+
+# Graph generation
+
+##### Param recovery plots(Supplementaty Fig. 8)
+
+MasterDDM_sim$Blank <- "Blank"
+
+BoundarySep <- MasterDDM_sim %>% ggplot(aes(x = Blank, y = a, fill = Blank)) +
+  stat_slab(
+    side = "right", scale = 0.5, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  scale_color_manual(values = c("#828283")) +
+  scale_fill_manual(values = c("#828283")) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  labs(title = " ") +
+  ylab("Log boundary separation (a)") +
+  xlab("") +
+  theme_minimal() +
+  theme(legend.position = "none", text = element_text(size = 14), axis.title.y = element_text(size = 17), strip.text = element_blank(), axis.text.x = element_blank()) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(
+    position = position_jitternudge(
+      jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+    ), aes(color = Blank, shape = Blank),
+    size = 4.4, stroke = 0.2, alpha = 0.5
+  ) +
+  scale_shape_manual(values = c(19, 15)) +
+  geom_hline(yintercept = log(0.5), linetype = "dashed", color = "orange", size = 1)
+
+DriftRate <- MasterDDM_sim %>% ggplot(aes(x = Blank, y = v, fill = Blank)) +
+  stat_slab(
+    side = "right", scale = 0.5, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  scale_color_manual(values = c("#828283")) +
+  scale_fill_manual(values = c("#828283")) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  labs(title = " ") +
+  ylab("Drift rate (v)") +
+  xlab("") +
+  theme_minimal() +
+  theme(legend.position = "none", text = element_text(size = 14), axis.title.y = element_text(size = 17), strip.text = element_blank(), axis.text.x = element_blank()) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(
+    position = position_jitternudge(
+      jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+    ), aes(color = Blank, shape = Blank),
+    size = 4.4, stroke = 0.2, alpha = 0.5
+  ) +
+  scale_shape_manual(values = c(19, 15)) +
+  geom_hline(yintercept = 0.45, linetype = "dashed", color = "orange", size = 1) +
+  ylim(NA, 2.9)
+
+NonDec <- MasterDDM_sim %>% ggplot(aes(x = Blank, y = asin(sqrt(MasterDDM_sim$t)), fill = Blank)) +
+  stat_slab(
+    side = "right", scale = 0.5, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  scale_color_manual(values = c("#828283")) +
+  scale_fill_manual(values = c("#828283")) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  labs(title = " ") +
+  ylab("Non-decision time (Ter)") +
+  xlab("") +
+  theme_minimal() +
+  theme(legend.position = "none", text = element_text(size = 14), axis.title.y = element_text(size = 17), strip.text = element_blank(), axis.text.x = element_blank()) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(
+    position = position_jitternudge(
+      jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+    ), aes(color = Blank, shape = Blank),
+    size = 4.4, stroke = 0.2, alpha = 0.5
+  ) +
+  scale_shape_manual(values = c(19, 15)) +
+  geom_hline(yintercept = asin(sqrt(0.15)), linetype = "dashed", color = "orange", size = 1)
+
+var_v <- MasterDDM_sim %>% ggplot(aes(x = Blank, y = sv, fill = Blank)) +
+  stat_slab(
+    side = "right", scale = 0.5, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  scale_color_manual(values = c("#828283")) +
+  scale_fill_manual(values = c("#828283")) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  labs(title = " ") +
+  ylab("Inter-trial drift rate variability (sv)") +
+  xlab("") +
+  theme_minimal() +
+  theme(legend.position = "none", text = element_text(size = 14), axis.title.y = element_text(size = 17), strip.text = element_blank(), axis.text.x = element_blank()) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(
+    position = position_jitternudge(
+      jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+    ), aes(color = Blank, shape = Blank),
+    size = 4.4, stroke = 0.2, alpha = 0.5
+  ) +
+  scale_shape_manual(values = c(19, 15)) +
+  geom_hline(yintercept = 2, linetype = "dashed", color = "orange", size = 1)
+
+var_ter <- MasterDDM_sim %>% ggplot(aes(x = Blank, y = st, fill = Blank)) +
+  stat_slab(
+    side = "right", scale = 0.5, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  scale_color_manual(values = c("#828283")) +
+  scale_fill_manual(values = c("#828283")) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  labs(title = " ") +
+  ylab("Inter-trial non-decision time variability (st)") +
+  xlab("") +
+  theme_minimal() +
+  theme(legend.position = "none", text = element_text(size = 14), axis.title.y = element_text(size = 17), strip.text = element_blank(), axis.text.x = element_blank()) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(
+    position = position_jitternudge(
+      jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+    ), aes(color = Blank, shape = Blank),
+    size = 4.4, stroke = 0.2, alpha = 0.5
+  ) +
+  scale_shape_manual(values = c(19, 15)) +
+  geom_hline(yintercept = 0.2, linetype = "dashed", color = "orange", size = 1)
+
+SuppFig8 <- plot_grid(BoundarySep, DriftRate, NonDec, var_v, var_ter, align = "v", ncol = 5, labels = c(""), label_size = 20)
+```
+
+
+
+```{r b0, echo=FALSE, include=TRUE}
+# Secondary DDM analysis: Non-decision time (median-split) and task performance analysis - posterior analysis
+
+# Parse PP df
+
+Posterior_Summaries <- PP_Data
+
+Posterior_Summaries <- Posterior_Summaries %>%
+  rename(Participant.ID = subj_idx)
+
+Posterior_Summaries <- Posterior_Summaries %>%
+  mutate(qtarget_corr_acc = case_when(
+    stimulus == 1 & correct == 1 ~ 1,
+    stimulus == 1 & correct == 0 ~ 0,
+    TRUE ~ NA_real_
+  ))
+
+Posterior_Summaries <- Posterior_Summaries %>%
+  mutate(no_qtarget_incorr_acc = case_when(
+    stimulus == 0 & correct == 1 ~ 0,
+    stimulus == 0 & correct == 0 ~ 1,
+    TRUE ~ NA_real_
+  ))
+
+Posterior_Summaries_Avg <- Posterior_Summaries %>%
+  group_by(Participant.ID, condition, Data_Type) %>%
+  summarise(
+    response.time = mean(rt, na.rm = TRUE),
+    response = sum(response, na.rm = TRUE),
+    correct = mean(correct, na.rm = TRUE),
+    stimulus = sum(stimulus, na.rm = TRUE),
+  )
+
+Posterior_Summaries_Avg$correct <- Posterior_Summaries_Avg$correct * 100
+
+Posterior_Summaries_Avg$correct_log <- log(Posterior_Summaries_Avg$correct)
+
+posterior_draws_avg <- subset(Posterior_Summaries_Avg, Data_Type != "Real")
+
+removal_df <- subset(posterior_draws_avg, Participant.ID != "P001" & Participant.ID != "P009" & Participant.ID != "P011" & Participant.ID != "P025" & Participant.ID != "P037" & Participant.ID != "P059")
+
+posterior_draws_avg <- droplevels(removal_df)
+
+posterior_draws_avg_w_params <- merge(posterior_draws_avg, MasterDDM, by = c("Participant.ID", "condition"), all = TRUE)
+
+# Non-decision time: within-subjects median split
+
+posterior_draws_avg_w_params <- posterior_draws_avg_w_params %>%
+  group_by(Participant.ID) %>%
+  mutate(
+    t_med_i = median(t.a, na.rm = TRUE),
+    t_bin   = if_else(t.a < t_med_i, "Low", "High"),
+    t_bin   = factor(t_bin, levels = c("Low", "High"))
+  ) %>%
+  ungroup() %>%
+  select(-t_med_i)
+
+posterior_draws_avg_w_params$t_bin <- factor(
+  posterior_draws_avg_w_params$t_bin,
+  levels = c("High", "Low")
+)
+
+# Checking distribution values
+
+x <- posterior_draws_avg_w_params$correct
+
+# skewness
+skew_val <- skewness(x, na.rm = TRUE)
+
+kurt_val <- kurtosis(x, na.rm = TRUE) # excess kurtosis by default
+
+c(skew_val = skew_val, kurt_val = kurt_val)
+
+# To keep consistency with observed data, accuracy values were log-transformed:
+
+posterior_draws_avg_w_params$correct_log <- log(posterior_draws_avg_w_params$correct)
+
+# Figure for publication - Figure 3C - lower right
+
+Figure3C_lowerright <- posterior_draws_avg_w_params %>%
+  group_by(t_bin, condition) %>%
+  summarize(value = mean(correct), SE = std.error(correct)) %>%
+  ggplot(aes(condition, value, group = t_bin)) +
+  scale_color_brewer(palette = "Set2") +
+  geom_errorbar(aes(x = condition, ymin = value - SE, ymax = value + SE, color = t_bin), width = 0.25) +
+  geom_point(aes(color = t_bin, shape = t_bin), size = 2.4, alpha = 0.8) +
+  geom_line(aes(color = t_bin, linetype = t_bin), size = 1.4) +
+  geom_ribbon(aes(
+    ymin = value - SE,
+    ymax = value + SE, fill = t_bin
+  ), color = NA, alpha = 0.095, show.legend = FALSE) +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "bonferroni",
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 2),
+    margin_top = 0.05
+  ) +
+  scale_color_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1") +
+  labs(title = "") +
+  ylab("Posterior accuracy (%)\n") +
+  xlab("") +
+  theme_minimal() +
+  theme(legend.position = "None", axis.text = element_text(size = 14), axis.title = element_text(size = 16)) +
+  scale_shape_manual(values = c(19, 15))
+
+# Inferential analysis
+
+ANCOVA_Drift <- aov(correct_log ~ t_bin + condition + t_bin:condition + Error(Participant.ID), data = posterior_draws_avg_w_params)
+
+summary(ANCOVA_Drift)
+
+model_linear <- lmer(correct_log ~ t_bin + condition + t_bin:condition + (1 | Participant.ID), data = posterior_draws_avg_w_params)
+
+# Due to high non-normality, EMM values were bootstrapped (in addition to log-transormed. For interpretability, figures show non-log transformed values.)
+
+# Returns: contrast, estimate, SE_boot, CI_lower, CI_upper, p_boot  (+ optional SE_wald)
+bootstrap_emm_contrasts <- function(model, nsim = 5000, seed = 111, include_wald_se = TRUE) {
+  set.seed(seed)
+
+  # 1) Point estimates & (optional) Wald SE from current model
+  emm_ref <- emmeans(model, ~ t_bin | condition)
+  contr_ref <- as.data.frame(pairs(emm_ref, adjust = "none")) # all within-condition pairs
+  est <- contr_ref$estimate
+  labs <- paste(contr_ref$contrast, "|", contr_ref$condition)
+  K <- length(est)
+
+  SE_wald <- if (include_wald_se) contr_ref$SE else NULL
+
+  # 2) Bootstrap the SAME contrasts
+  boot_contr <- bootMer(
+    model,
+    FUN = function(fit) {
+      cr <- as.data.frame(pairs(emmeans(fit, ~ t_bin | condition), adjust = "none"))
+      as.numeric(cr$estimate) # numeric length K
+    },
+    nsim = nsim,
+    use.u = TRUE,
+    type = "parametric",
+    seed = seed
+  )
+
+  boot_mat <- as.matrix(boot_contr$t) # B x K
+  stopifnot(ncol(boot_mat) == K)
+  B <- nrow(boot_mat)
+
+  # 3) Bootstrap SEs and percentile CIs
+  SE_boot <- apply(boot_mat, 2, sd, na.rm = TRUE)
+  ci <- apply(boot_mat, 2, quantile, probs = c(.025, .975), na.rm = TRUE)
+
+  # 4) Two-sided bootstrap p-values (+1 correction avoids exact zeros)
+  p_boot <- sapply(seq_len(K), function(j) {
+    dj <- boot_mat[, j]
+    lo <- sum(dj <= 0, na.rm = TRUE)
+    hi <- sum(dj >= 0, na.rm = TRUE)
+    2 * min((lo + 1) / (B + 1), (hi + 1) / (B + 1))
+  })
+
+  out <- tibble(
+    contrast = labs,
+    estimate = est,
+    SE_boot  = SE_boot,
+    CI_lower = ci[1, ],
+    CI_upper = ci[2, ],
+    p_boot   = p_boot
+  )
+
+  if (include_wald_se) {
+    out <- mutate(out, SE_wald = SE_wald, .after = estimate)
+  }
+
+  out
+}
+
+# Run it
+results <- bootstrap_emm_contrasts(model_linear, nsim = 5000, seed = 111)
+results
+
+### Checking RT effects across ter bins
+
+ANCOVA_Drift <- aov(response.time ~ t_bin + condition + t_bin:condition + Error(Participant.ID), data = posterior_draws_avg_w_params)
+
+summary(ANCOVA_Drift)
+
+
+### Checking continuous t.a values relationship with performance.
+
+ANCOVA_Drift <- lmer(t.a ~ correct_log * condition + (1 | Participant.ID), data = posterior_draws_avg_w_params)
+
+summary(ANCOVA_Drift)
+
+standardize_parameters(ANCOVA_Drift)
+
+# Remains significant with allocation included:
+
+ANCOVA_Drift <- lmer(t.a ~ correct_log * condition + Allocation + (1 | Participant.ID), data = posterior_draws_avg_w_params)
+
+summary(ANCOVA_Drift)
+
+standardize_parameters(ANCOVA_Drift)
+```
+
+```{r b0, echo=FALSE, include=TRUE}
+# Secondary DDM analysis: Non-decision time (median-split) and task performance analysis - observed data analysis
+
+# Checking distribution
+
+# numeric vector (your variable of interest)
+x <- MasterDDM$Overall_acc_perc
+
+# skewness
+skew_val <- skewness(x, na.rm = TRUE)
+
+kurt_val <- kurtosis(x, na.rm = TRUE) # excess kurtosis by default
+
+c(skew_val = skew_val, kurt_val = kurt_val)
+
+# ensure t.a is numeric
+MasterDDM <- MasterDDM %>% mutate(t.a = as.numeric(t.a))
+
+# Non-decision time: within-subjects median split
+
+MasterDDM <- MasterDDM %>%
+  group_by(Participant.ID) %>%
+  mutate(
+    t_med_i = median(t.a, na.rm = TRUE),
+    t_bin   = if_else(t.a < t_med_i, "Low", "High"),
+    t_bin   = factor(t_bin, levels = c("Low", "High"))
+  ) %>%
+  ungroup() %>%
+  select(-t_med_i)
+
+# quick sanity checks
+table(MasterDDM$t_bin, useNA = "ifany")
+MasterDDM %>%
+  count(Participant.ID, t_bin) %>%
+  tidyr::pivot_wider(names_from = t_bin, values_from = n, values_fill = 0) %>%
+  print(n = 10)
+
+# As with main analysis, accuracy values were log-transformed
+
+MasterDDM$Overall_acc_perc_log <- log(MasterDDM$Overall_acc_perc)
+
+# Inferential analysis
+
+ANCOVA_Drift <- aov(Overall_acc_perc_log ~ t_bin + condition + t_bin:condition + Error(Participant.ID), data = MasterDDM)
+
+summary(ANCOVA_Drift)
+
+# Results are significant with allocation included as a regressor.
+model_linear <- lmer(Overall_acc_perc_log ~ t_bin + condition + t_bin:condition + (1 | Participant.ID), data = MasterDDM)
+
+# Due to high non-normality, EMM values were bootstrapped (in addition to log-tranfsormed. For interpretability, figures show non-log transformed values.)
+
+# Returns: contrast, estimate, SE_boot, CI_lower, CI_upper, p_boot  (+ optional SE_wald)
+bootstrap_emm_contrasts <- function(model, nsim = 5000, seed = 111, include_wald_se = TRUE) {
+  set.seed(seed)
+
+  # 1) Point estimates & (optional) Wald SE from current model
+  emm_ref <- emmeans(model, ~ t_bin | condition)
+  contr_ref <- as.data.frame(pairs(emm_ref, adjust = "none")) # all within-condition pairs
+  est <- contr_ref$estimate
+  labs <- paste(contr_ref$contrast, "|", contr_ref$condition)
+  K <- length(est)
+
+  SE_wald <- if (include_wald_se) contr_ref$SE else NULL
+
+  # 2) Bootstrap the SAME contrasts
+  boot_contr <- bootMer(
+    model,
+    FUN = function(fit) {
+      cr <- as.data.frame(pairs(emmeans(fit, ~ t_bin | condition), adjust = "none"))
+      as.numeric(cr$estimate) # numeric length K
+    },
+    nsim = nsim,
+    use.u = TRUE,
+    type = "parametric",
+    seed = seed
+  )
+
+  boot_mat <- as.matrix(boot_contr$t) # B x K
+  stopifnot(ncol(boot_mat) == K)
+  B <- nrow(boot_mat)
+
+  # 3) Bootstrap SEs and percentile CIs
+  SE_boot <- apply(boot_mat, 2, sd, na.rm = TRUE)
+  ci <- apply(boot_mat, 2, quantile, probs = c(.025, .975), na.rm = TRUE)
+
+  # 4) Two-sided bootstrap p-values (+1 correction avoids exact zeros)
+  p_boot <- sapply(seq_len(K), function(j) {
+    dj <- boot_mat[, j]
+    lo <- sum(dj <= 0, na.rm = TRUE)
+    hi <- sum(dj >= 0, na.rm = TRUE)
+    2 * min((lo + 1) / (B + 1), (hi + 1) / (B + 1))
+  })
+
+  out <- tibble(
+    contrast = labs,
+    estimate = est,
+    SE_boot  = SE_boot,
+    CI_lower = ci[1, ],
+    CI_upper = ci[2, ],
+    p_boot   = p_boot
+  )
+
+  if (include_wald_se) {
+    out <- mutate(out, SE_wald = SE_wald, .after = estimate)
+  }
+
+  out
+}
+
+# Run it
+results <- bootstrap_emm_contrasts(model_linear, nsim = 5000, seed = 111)
+results
+
+### Checking RT effect
+
+ANCOVA_Drift <- aov(mean_RT_all ~ t_bin + condition + t_bin:condition + Error(Participant.ID), data = MasterDDM)
+
+summary(ANCOVA_Drift)
+
+####
+
+# Supplementary Figure 9C
+
+Supp.fig9C <- MasterDDM %>%
+  group_by(t_bin, condition) %>%
+  summarize(value = mean(Overall_acc_perc), SE = std.error(Overall_acc_perc)) %>%
+  ggplot(aes(condition, value, group = t_bin)) +
+  scale_color_brewer(palette = "Set2") +
+  geom_errorbar(aes(x = condition, ymin = value - SE, ymax = value + SE, color = t_bin), width = 0.25) +
+  geom_point(aes(color = t_bin, shape = t_bin), size = 2.4, alpha = 0.8) +
+  geom_line(aes(color = t_bin, linetype = t_bin), size = 1.4) +
+  geom_ribbon(aes(
+    ymin = value - SE,
+    ymax = value + SE, fill = t_bin
+  ), color = NA, alpha = 0.095, show.legend = FALSE) +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "bonferroni",
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 2),
+    margin_top = 0.05
+  ) +
+  scale_color_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1") +
+  labs(title = "") +
+  ylab("Posterior accuracy (%)\n") +
+  xlab("") +
+  theme_minimal() +
+  theme(legend.position = "None", axis.text = element_text(size = 14), axis.title = element_text(size = 16)) +
+  scale_shape_manual(values = c(19, 15))
+
+Supp.fig9C
+
+### Checking continuous t.a values relationship with observed performance.
+
+ANCOVA_Drift <- lmer(t.a ~ Overall_acc_perc * condition + (1 | Participant.ID), data = MasterDDM)
+
+summary(ANCOVA_Drift)
+
+standardize_parameters(ANCOVA_Drift)
+
+ANCOVA_Drift <- lmer(t.a ~ Overall_acc_perc * condition + Allocation + (1 | Participant.ID), data = MasterDDM)
+
+summary(ANCOVA_Drift)
+
+standardize_parameters(ANCOVA_Drift)
+``````

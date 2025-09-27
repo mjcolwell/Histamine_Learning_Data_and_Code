@@ -1,0 +1,37 @@
+Scenario - comlongpractice A
+Logfile written - 08/30/2023 13:10:15
+
+Subject	Trial	Event Type	Code	Time	TTime	Uncertainty	Duration	Uncertainty	ReqTime	ReqDur	Stim Type	Pair Index
+
+P038	1	Picture	recpres001	10083	0	1	32574	1	0	32500	other	0
+P038	1	Response	L	26355	16273	1
+P038	2	Picture	recpres002	47655	0	1	32574	1	0	32500	other	0
+P038	2	Response	A	54236	6581	1
+P038	3	Picture	recpres003	85227	0	1	32574	1	0	32500	other	0
+P038	3	Response	L	92416	7188	1
+P038	4	Picture	recpres004	122800	0	1	32574	1	0	32500	other	0
+P038	4	Response	A	134407	11607	1
+P038	5	Picture	recpres005	160372	0	1	32574	1	0	32500	other	0
+P038	5	Response	A	168537	8165	1
+P038	6	Picture	recpres006	197944	0	1	32574	1	0	32500	other	0
+P038	6	Response	L	204437	6493	1
+P038	7	Picture	recpres007	235517	0	1	32574	1	0	32500	other	0
+P038	7	Response	L	241527	6010	1
+P038	8	Picture	recpres008	273089	0	1	32574	1	0	32500	other	0
+P038	8	Response	L	278477	5388	1
+P038	9	Picture	recpres009	310661	0	1	32574	1	0	32500	other	0
+P038	9	Response	A	316756	6095	1
+P038	10	Picture	recpres010	348233	0	1	32574	1	0	32500	other	0
+P038	10	Response	A	357827	9594	1
+P038	11	Picture	recpres011	385806	0	1	32574	1	0	32500	other	0
+P038	11	Response	L	394887	9081	1
+P038	12	Picture	recpres012	423378	0	1	32574	1	0	32500	other	0
+P038	12	Response	A	433897	10519	1
+P038	13	Picture	recpres013	460950	0	1	32574	1	0	32500	other	0
+P038	13	Response	A	467097	6147	1
+P038	14	Picture	recpres014	498523	0	1	32574	1	0	32500	other	0
+P038	14	Response	L	505637	7115	1
+P038	15	Picture	recpres015	536095	0	1	32574	1	0	32500	other	0
+P038	15	Response	A	543017	6922	1
+P038	16	Picture	recpres016	573667	0	1	32574	1	0	32500	other	0
+P038	16	Response	L	580257	6589	1

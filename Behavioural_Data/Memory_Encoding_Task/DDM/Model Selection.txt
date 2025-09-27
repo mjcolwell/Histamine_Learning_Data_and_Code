@@ -1,0 +1,49 @@
+z + st + sv: 10290.982633034673
+z + st : 10290.357619507668 <-lowest so far
+z + sv: 10419.15495918694
+z + sz: 10420.163625737536
+z: 10418.876701382964
+st + sv only: 10332.926991043289
+sv only: 10457.316670486774 
+st only: 10333.432734884113
+simplest model: 10457.324873585407
+
+
+sz...
+
+(might need to do sz above too just to make it complete).
+
+Stimulus-based drift: 9131.986263264891
+Stimulus-based drift + st: 9127.337487081273 ….
+Stimulus-based drift + sv: 9091.087497537801
+Stimulus-based drift st + sv 9090.437531814167
+Stimulus-based drift z + st: 9012.560980941522
+Stimulus-based drift z + sv: 9092.007046106724
+Stimulus-based drift z + sv + st: 8958.557775806597 <-- looks best still
+Stimulus-based drift z + st + sz 9012.623166191224
+Stimulus-based drift z + sv + sz: 9098.890736489177
+Stimulus-based drift z + sv + st + sz: 	8960.492964174711
+
+(done -- do ppcheck and param recovery tomorrow).
+
+
+v + a  splitsee + z + st: 8907.591418461952
+
+
+all splitzee simple: 8721.083671975266
+
+all splitsee z + st :8632.294065294667
+
+all splitsee z + sz 8690.905754281921
+
+all splitzee z + sv: 8689.853148612247
+
+all splitsee except: trial variability (z + sv + st): 8633.827999524248
+
+all splits excep trial variability: (z + sv + st + sz) 8635.838382339867
+
+all splits excep trial variability (z + st + sz) 8631.220593286747 <--- winner so far
+
+all splits excep trial variability (z + sv + sz): 8691.038277724396
+
+all splits exc (z + st): 8636.27949668267

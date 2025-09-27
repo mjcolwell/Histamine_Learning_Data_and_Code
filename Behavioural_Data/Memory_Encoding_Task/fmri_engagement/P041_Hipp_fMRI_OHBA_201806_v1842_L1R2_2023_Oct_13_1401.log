@@ -1,0 +1,1411 @@
+1.0984 	WARNING 	We strongly recommend you activate the PTB sound engine in PsychoPy prefs as the preferred audio engine. Its timing is vastly superior. Your prefs are currently set to use ['sounddevice', 'PTB', 'pyo', 'pygame'] (in that order).
+2345.8515 	EXP 	Created window1 = Window(allowGUI=False, allowStencil=False, autoLog=True, backendConf=UNKNOWN, bitsMode=UNKNOWN, blendMode='avg', bpc=(8, 8, 8), color=array([0, 0, 0]), colorSpace='rgb', depthBits=8, fullscr=<method-wrapper '__getattribute__' of attributeSetter object at 0x0000000015B0F470>, gamma=None, gammaErrorPolicy='raise', lms=UNKNOWN, monitor=<psychopy.monitors.calibTools.Monitor object at 0x0000000015B64B00>, multiSample=False, name='window1', numSamples=2, pos=[0.0, 0.0], screen=0, size=array([1920, 1080]), stencilBits=0, stereo=False, units='norm', useFBO=True, useRetina=False, viewOri=0.0, viewPos=None, viewScale=None, waitBlanking=True, winType='pyglet')
+2345.8517 	EXP 	window1: mouseVisible = True
+2345.8517 	EXP 	window1: recordFrameIntervals = False
+2345.9346 	EXP 	window1: recordFrameIntervals = True
+2346.0263 	EXP 	window1: recordFrameIntervals = False
+2346.9199 	EXP 	Created txt_checkLeft = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoLog=True, bold=False, color=array([1, 1, 1]), colorSpace='rgb', contrast=1.0, depth=0.0, flipHoriz=False, flipVert=False, font='Courier New', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='txt_checkLeft', opacity=1, ori=0, pos=array([0., 0.]), rgb=UNKNOWN, text=str(...), units='norm', win=Window(...), wrapWidth=30)
+2346.9200 	EXP 	window1: mouseVisible = False
+2346.9286 	EXP 	Created txt_checkRight = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoLog=True, bold=False, color=array([1, 1, 1]), colorSpace='rgb', contrast=1.0, depth=0.0, flipHoriz=False, flipVert=False, font='Courier New', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='txt_checkRight', opacity=1, ori=0, pos=array([0., 0.]), rgb=UNKNOWN, text=str(...), units='norm', win=Window(...), wrapWidth=30)
+2346.9418 	EXP 	Created str_keyInst = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoLog=True, bold=False, color=array([1, 1, 1]), colorSpace='rgb', contrast=1.0, depth=0.0, flipHoriz=False, flipVert=False, font='Courier New', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='str_keyInst', opacity=1, ori=0, pos=array([0., 0.]), rgb=UNKNOWN, text=str(...), units='norm', win=Window(...), wrapWidth=30)
+2346.9472 	EXP 	Created str_waitScanner = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoLog=True, bold=False, color=array([1, 1, 1]), colorSpace='rgb', contrast=1.0, depth=-1.0, flipHoriz=False, flipVert=False, font='Courier New', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='str_waitScanner', opacity=1, ori=0, pos=array([0., 0.]), rgb=UNKNOWN, text='Waiting for scanner...', units='norm', win=Window(...), wrapWidth=1)
+2346.9514 	EXP 	Created str_fixRest = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoLog=True, bold=False, color=array([1, 1, 1]), colorSpace='rgb', contrast=1.0, depth=0.0, flipHoriz=False, flipVert=False, font='Courier New', fontFiles=[], height=0.225, italic=False, languageStyle='LTR', name='str_fixRest', opacity=1, ori=0, pos=array([0., 0.]), rgb=UNKNOWN, text='+', units='norm', win=Window(...), wrapWidth=1)
+2346.9536 	EXP 	Created str_bangRest = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoLog=True, bold=False, color=array([1, 1, 1]), colorSpace='rgb', contrast=1.0, depth=-1.0, flipHoriz=False, flipVert=False, font='Courier New', fontFiles=[], height=0.225, italic=False, languageStyle='LTR', name='str_bangRest', opacity=1, ori=0, pos=array([0., 0.]), rgb=UNKNOWN, text='!', units='norm', win=Window(...), wrapWidth=1)
+2346.9589 	EXP 	Created im_trialImage = ImageStim(__class__=<class 'psychopy.visual.image.ImageStim'>, autoLog=True, color=array([1, 1, 1]), colorSpace='rgb', contrast=1.0, depth=-1.0, flipHoriz=False, flipVert=False, image='sin', interpolate=True, mask=None, maskParams=None, name='im_trialImage', opacity=1, ori=0.0, pos=array([0., 0.]), size=array([0.5, 0.5]), texRes=128, units='norm', win=Window(...))
+2346.9605 	EXP 	Created str_fixITI = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoLog=True, bold=False, color=array([1, 1, 1]), colorSpace='rgb', contrast=1.0, depth=0.0, flipHoriz=False, flipVert=False, font='Courier New', fontFiles=[], height=0.225, italic=False, languageStyle='LTR', name='str_fixITI', opacity=1, ori=0, pos=array([0., 0.]), rgb=UNKNOWN, text='+', units='norm', win=Window(...), wrapWidth=1)
+2346.9620 	EXP 	Created str_fixRest = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoLog=True, bold=False, color=array([1, 1, 1]), colorSpace='rgb', contrast=1.0, depth=0.0, flipHoriz=False, flipVert=False, font='Courier New', fontFiles=[], height=0.225, italic=False, languageStyle='LTR', name='str_fixRest', opacity=1, ori=0, pos=array([0., 0.]), rgb=UNKNOWN, text='+', units='norm', win=Window(...), wrapWidth=1)
+2346.9635 	EXP 	Created str_bangRest = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoLog=True, bold=False, color=array([1, 1, 1]), colorSpace='rgb', contrast=1.0, depth=-1.0, flipHoriz=False, flipVert=False, font='Courier New', fontFiles=[], height=0.225, italic=False, languageStyle='LTR', name='str_bangRest', opacity=1, ori=0, pos=array([0., 0.]), rgb=UNKNOWN, text='!', units='norm', win=Window(...), wrapWidth=1)
+2346.9706 	EXP 	Created str_end = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoLog=True, bold=False, color=array([1, 1, 1]), colorSpace='rgb', contrast=1.0, depth=0.0, flipHoriz=False, flipVert=False, font='Courier New', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='str_end', opacity=1, ori=0, pos=array([0., 0.]), rgb=UNKNOWN, text=str(...), units='norm', win=Window(...), wrapWidth=30)
+2347.0016 	EXP 	txt_checkLeft: autoDraw = True
+2350.1228 	DATA 	Keypress: 1
+2350.1336 	EXP 	txt_checkLeft: autoDraw = False
+2350.1336 	EXP 	txt_checkRight: autoDraw = True
+2352.1128 	DATA 	Keypress: 2
+2352.1411 	EXP 	txt_checkRight: autoDraw = False
+2352.1411 	EXP 	str_keyInst: autoDraw = True
+2356.8092 	EXP 	Created sequence: sequential, trialTypes=1, nReps=5, seed=None
+2356.8094 	EXP 	New trial (rep=0, index=0): None
+2356.8110 	DATA 	Keypress: 2
+2356.8188 	EXP 	str_keyInst: autoDraw = False
+2356.8188 	EXP 	str_waitScanner: autoDraw = True
+2368.3756 	DATA 	Keypress: 5
+2368.3900 	EXP 	New trial (rep=1, index=0): None
+2368.3984 	EXP 	str_waitScanner: autoDraw = False
+2368.3984 	EXP 	str_waitScanner: autoDraw = True
+2369.1757 	DATA 	Keypress: 5
+2369.1889 	EXP 	New trial (rep=2, index=0): None
+2369.1972 	EXP 	str_waitScanner: autoDraw = False
+2369.1972 	EXP 	str_waitScanner: autoDraw = True
+2369.9809 	EXP 	New trial (rep=3, index=0): None
+2369.9827 	DATA 	Keypress: 5
+2369.9894 	EXP 	str_waitScanner: autoDraw = False
+2369.9894 	EXP 	str_waitScanner: autoDraw = True
+2370.7758 	DATA 	Keypress: 5
+2370.7889 	EXP 	New trial (rep=4, index=0): None
+2370.7973 	EXP 	str_waitScanner: autoDraw = False
+2370.7973 	EXP 	str_waitScanner: autoDraw = True
+2371.5909 	DATA 	Keypress: 5
+2371.6034 	EXP 	str_waitScanner: autoDraw = False
+2371.6034 	EXP 	str_fixRest: autoDraw = True
+2372.3807 	DATA 	Keypress: 5
+2373.1807 	DATA 	Keypress: 5
+2373.9795 	DATA 	Keypress: 5
+2374.7295 	DATA 	Keypress: 2
+2374.7805 	DATA 	Keypress: 5
+2375.5799 	DATA 	Keypress: 5
+2376.3810 	DATA 	Keypress: 5
+2376.9119 	DATA 	Keypress: 2
+2377.1800 	DATA 	Keypress: 5
+2377.9820 	DATA 	Keypress: 5
+2378.7811 	DATA 	Keypress: 5
+2379.5791 	DATA 	Keypress: 5
+2380.3792 	DATA 	Keypress: 5
+2381.1862 	DATA 	Keypress: 5
+2381.9782 	DATA 	Keypress: 5
+2382.7779 	DATA 	Keypress: 5
+2383.0954 	EXP 	str_bangRest: autoDraw = True
+2383.1091 	EXP 	str_fixRest: autoDraw = False
+2383.5803 	DATA 	Keypress: 5
+2383.5997 	EXP 	Imported chooseTrialOrderFile.xlsx as conditions, 12 conditions, 1 params
+2383.6000 	EXP 	Created sequence: sequential, trialTypes=12, nReps=1, seed=None
+2383.6002 	EXP 	New trial (rep=0, index=0): {'trialOrderFile': 'scan_order1.xlsx'}
+2383.6057 	EXP 	Imported scan_order1.xlsx as conditions, 8 conditions, 4 params
+2383.6059 	EXP 	Created sequence: sequential, trialTypes=8, nReps=1, seed=None
+2383.6061 	EXP 	New trial (rep=0, index=0): {'im_fName': 'cl001.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'familiar'}
+2383.6422 	EXP 	str_fixRest: autoDraw = False
+2383.6422 	EXP 	str_bangRest: autoDraw = False
+2383.6422 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2383.6422 	EXP 	im_trialImage: image = 'cl001.jpg'
+2383.6422 	EXP 	im_trialImage: autoDraw = True
+2384.3808 	DATA 	Keypress: 5
+2385.0958 	DATA 	Keypress: 2
+2385.1859 	DATA 	Keypress: 5
+2385.6013 	EXP 	im_trialImage: autoDraw = False
+2385.6013 	EXP 	str_fixITI: autoDraw = True
+2385.9854 	DATA 	Keypress: 5
+2386.0933 	EXP 	New trial (rep=0, index=1): {'im_fName': 'cl002.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'familiar'}
+2386.1171 	EXP 	str_fixITI: autoDraw = False
+2386.1171 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2386.1171 	EXP 	im_trialImage: image = 'cl002.jpg'
+2386.1171 	EXP 	im_trialImage: autoDraw = True
+2386.7789 	DATA 	Keypress: 5
+2387.0850 	DATA 	Keypress: 1
+2387.5790 	DATA 	Keypress: 5
+2388.1092 	EXP 	im_trialImage: autoDraw = False
+2388.1092 	EXP 	str_fixITI: autoDraw = True
+2388.3765 	DATA 	Keypress: 5
+2388.5942 	EXP 	New trial (rep=0, index=2): {'im_fName': 'cl003.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'familiar'}
+2388.6250 	EXP 	str_fixITI: autoDraw = False
+2388.6250 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2388.6250 	EXP 	im_trialImage: image = 'cl003.jpg'
+2388.6250 	EXP 	im_trialImage: autoDraw = True
+2389.1851 	DATA 	Keypress: 5
+2389.4181 	DATA 	Keypress: 2
+2389.9850 	DATA 	Keypress: 5
+2390.6002 	EXP 	im_trialImage: autoDraw = False
+2390.6002 	EXP 	str_fixITI: autoDraw = True
+2390.7836 	DATA 	Keypress: 5
+2391.0914 	EXP 	New trial (rep=0, index=3): {'im_fName': 'cl004.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'familiar'}
+2391.1241 	EXP 	str_fixITI: autoDraw = False
+2391.1241 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2391.1241 	EXP 	im_trialImage: image = 'cl004.jpg'
+2391.1241 	EXP 	im_trialImage: autoDraw = True
+2391.5762 	DATA 	Keypress: 5
+2392.3772 	DATA 	Keypress: 5
+2392.5213 	DATA 	Keypress: 1
+2393.1067 	EXP 	im_trialImage: autoDraw = False
+2393.1067 	EXP 	str_fixITI: autoDraw = True
+2393.1779 	DATA 	Keypress: 5
+2393.5937 	EXP 	New trial (rep=0, index=4): {'im_fName': 'cl005.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'familiar'}
+2393.6569 	EXP 	str_fixITI: autoDraw = False
+2393.6569 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2393.6569 	EXP 	im_trialImage: image = 'cl005.jpg'
+2393.6569 	EXP 	im_trialImage: autoDraw = True
+2393.9793 	DATA 	Keypress: 5
+2394.7854 	DATA 	Keypress: 5
+2395.5774 	DATA 	Keypress: 5
+2395.5985 	EXP 	im_trialImage: autoDraw = False
+2395.5985 	EXP 	str_fixITI: autoDraw = True
+2396.0918 	EXP 	New trial (rep=0, index=5): {'im_fName': 'cl006.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'familiar'}
+2396.1247 	EXP 	str_fixITI: autoDraw = False
+2396.1247 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2396.1247 	EXP 	im_trialImage: image = 'cl006.jpg'
+2396.1247 	EXP 	im_trialImage: autoDraw = True
+2396.3435 	DATA 	Keypress: 2
+2396.3765 	DATA 	Keypress: 5
+2397.1035 	DATA 	Keypress: 2
+2397.1785 	DATA 	Keypress: 5
+2397.9776 	DATA 	Keypress: 5
+2398.1067 	EXP 	im_trialImage: autoDraw = False
+2398.1067 	EXP 	str_fixITI: autoDraw = True
+2398.5919 	EXP 	New trial (rep=0, index=6): {'im_fName': 'cl007.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'familiar'}
+2398.6229 	EXP 	str_fixITI: autoDraw = False
+2398.6229 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2398.6229 	EXP 	im_trialImage: image = 'cl007.jpg'
+2398.6229 	EXP 	im_trialImage: autoDraw = True
+2398.7846 	DATA 	Keypress: 5
+2399.5858 	DATA 	Keypress: 5
+2400.3827 	DATA 	Keypress: 5
+2400.5857 	DATA 	Keypress: 1
+2400.6059 	EXP 	im_trialImage: autoDraw = False
+2400.6059 	EXP 	str_fixITI: autoDraw = True
+2401.0919 	EXP 	New trial (rep=0, index=7): {'im_fName': 'cl008.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'familiar'}
+2401.1133 	EXP 	str_fixITI: autoDraw = False
+2401.1133 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2401.1133 	EXP 	im_trialImage: image = 'cl008.jpg'
+2401.1133 	EXP 	im_trialImage: autoDraw = True
+2401.1866 	DATA 	Keypress: 5
+2401.9818 	DATA 	Keypress: 5
+2402.4338 	DATA 	Keypress: 1
+2402.7838 	DATA 	Keypress: 5
+2403.0981 	EXP 	im_trialImage: autoDraw = False
+2403.0981 	EXP 	str_fixITI: autoDraw = True
+2403.5824 	DATA 	Keypress: 5
+2403.5993 	EXP 	str_fixITI: autoDraw = False
+2403.5993 	EXP 	str_fixRest: autoDraw = True
+2404.3835 	DATA 	Keypress: 5
+2405.1894 	DATA 	Keypress: 5
+2405.9815 	DATA 	Keypress: 5
+2406.0997 	DATA 	Keypress: 2
+2406.7818 	DATA 	Keypress: 5
+2407.5806 	DATA 	Keypress: 5
+2408.3806 	DATA 	Keypress: 5
+2409.1886 	DATA 	Keypress: 5
+2409.9808 	DATA 	Keypress: 5
+2410.7818 	DATA 	Keypress: 5
+2411.5819 	DATA 	Keypress: 5
+2412.3809 	DATA 	Keypress: 5
+2413.1819 	DATA 	Keypress: 5
+2413.9800 	DATA 	Keypress: 5
+2414.7811 	DATA 	Keypress: 5
+2415.0934 	EXP 	str_bangRest: autoDraw = True
+2415.1020 	EXP 	str_fixRest: autoDraw = False
+2415.5790 	DATA 	Keypress: 5
+2415.5876 	EXP 	New trial (rep=0, index=1): {'trialOrderFile': 'scan_order2.xlsx'}
+2415.5942 	EXP 	Imported scan_order2.xlsx as conditions, 8 conditions, 4 params
+2415.5944 	EXP 	Created sequence: sequential, trialTypes=8, nReps=1, seed=None
+2415.5946 	EXP 	New trial (rep=0, index=0): {'im_fName': 'cl009.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'novel'}
+2415.6800 	EXP 	str_bangRest: autoDraw = False
+2415.6800 	EXP 	str_fixRest: autoDraw = False
+2415.6800 	EXP 	str_bangRest: autoDraw = False
+2415.6800 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2415.6800 	EXP 	im_trialImage: image = 'cl009.jpg'
+2415.6800 	EXP 	im_trialImage: autoDraw = True
+2416.3805 	DATA 	Keypress: 5
+2417.1866 	DATA 	Keypress: 5
+2417.6028 	EXP 	im_trialImage: autoDraw = False
+2417.6028 	EXP 	str_fixITI: autoDraw = True
+2417.9802 	DATA 	Keypress: 5
+2418.1016 	EXP 	New trial (rep=0, index=1): {'im_fName': 'cl010.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'novel'}
+2418.1348 	EXP 	str_fixITI: autoDraw = False
+2418.1348 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2418.1348 	EXP 	im_trialImage: image = 'cl010.jpg'
+2418.1348 	EXP 	im_trialImage: autoDraw = True
+2418.7817 	DATA 	Keypress: 5
+2419.5867 	DATA 	Keypress: 5
+2420.1008 	EXP 	im_trialImage: autoDraw = False
+2420.1008 	EXP 	str_fixITI: autoDraw = True
+2420.3783 	DATA 	Keypress: 5
+2420.5949 	EXP 	New trial (rep=0, index=2): {'im_fName': 'cl011.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'novel'}
+2420.6170 	EXP 	str_fixITI: autoDraw = False
+2420.6170 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2420.6170 	EXP 	im_trialImage: image = 'cl011.jpg'
+2420.6170 	EXP 	im_trialImage: autoDraw = True
+2420.9527 	DATA 	Keypress: 1
+2421.1858 	DATA 	Keypress: 5
+2421.4388 	DATA 	Keypress: 1
+2421.9777 	DATA 	Keypress: 5
+2422.6089 	EXP 	im_trialImage: autoDraw = False
+2422.6089 	EXP 	str_fixITI: autoDraw = True
+2422.7764 	DATA 	Keypress: 5
+2423.0950 	EXP 	New trial (rep=0, index=3): {'im_fName': 'cl012.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'novel'}
+2423.1165 	EXP 	str_fixITI: autoDraw = False
+2423.1165 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2423.1165 	EXP 	im_trialImage: image = 'cl012.jpg'
+2423.1165 	EXP 	im_trialImage: autoDraw = True
+2423.5809 	DATA 	Keypress: 5
+2423.7969 	DATA 	Keypress: 1
+2424.3799 	DATA 	Keypress: 5
+2425.1080 	EXP 	im_trialImage: autoDraw = False
+2425.1080 	EXP 	str_fixITI: autoDraw = True
+2425.1766 	DATA 	Keypress: 5
+2425.5998 	EXP 	New trial (rep=0, index=4): {'im_fName': 'cl013.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'novel'}
+2425.6580 	EXP 	str_fixITI: autoDraw = False
+2425.6580 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2425.6580 	EXP 	im_trialImage: image = 'cl013.jpg'
+2425.6580 	EXP 	im_trialImage: autoDraw = True
+2425.9850 	DATA 	Keypress: 5
+2426.7761 	DATA 	Keypress: 5
+2427.3781 	DATA 	Keypress: 2
+2427.5762 	DATA 	Keypress: 5
+2427.6071 	EXP 	im_trialImage: autoDraw = False
+2427.6071 	EXP 	str_fixITI: autoDraw = True
+2428.0934 	EXP 	New trial (rep=0, index=5): {'im_fName': 'cl014.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'novel'}
+2428.1161 	EXP 	str_fixITI: autoDraw = False
+2428.1161 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2428.1161 	EXP 	im_trialImage: image = 'cl014.jpg'
+2428.1161 	EXP 	im_trialImage: autoDraw = True
+2428.3792 	DATA 	Keypress: 5
+2429.1792 	DATA 	Keypress: 5
+2429.2122 	DATA 	Keypress: 1
+2429.9792 	DATA 	Keypress: 5
+2430.0995 	EXP 	im_trialImage: autoDraw = False
+2430.0995 	EXP 	str_fixITI: autoDraw = True
+2430.5989 	EXP 	New trial (rep=0, index=6): {'im_fName': 'cl015.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'novel'}
+2430.6569 	EXP 	str_fixITI: autoDraw = False
+2430.6569 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2430.6569 	EXP 	im_trialImage: image = 'cl015.jpg'
+2430.6569 	EXP 	im_trialImage: autoDraw = True
+2430.7853 	DATA 	Keypress: 5
+2431.4283 	DATA 	Keypress: 2
+2431.5853 	DATA 	Keypress: 5
+2432.3765 	DATA 	Keypress: 5
+2432.6007 	EXP 	im_trialImage: autoDraw = False
+2432.6007 	EXP 	str_fixITI: autoDraw = True
+2433.0906 	EXP 	New trial (rep=0, index=7): {'im_fName': 'cl016.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'novel'}
+2433.1090 	EXP 	str_fixITI: autoDraw = False
+2433.1090 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2433.1090 	EXP 	im_trialImage: image = 'cl016.jpg'
+2433.1090 	EXP 	im_trialImage: autoDraw = True
+2433.1834 	DATA 	Keypress: 5
+2433.9834 	DATA 	Keypress: 5
+2434.0695 	DATA 	Keypress: 2
+2434.7845 	DATA 	Keypress: 5
+2435.0989 	EXP 	im_trialImage: autoDraw = False
+2435.0989 	EXP 	str_fixITI: autoDraw = True
+2435.5817 	DATA 	Keypress: 5
+2435.5981 	EXP 	str_fixITI: autoDraw = False
+2435.5981 	EXP 	str_fixRest: autoDraw = True
+2436.3832 	DATA 	Keypress: 5
+2437.1842 	DATA 	Keypress: 5
+2437.9832 	DATA 	Keypress: 5
+2438.7823 	DATA 	Keypress: 5
+2439.2413 	DATA 	Keypress: 2
+2439.5764 	DATA 	Keypress: 5
+2440.3833 	DATA 	Keypress: 5
+2441.1834 	DATA 	Keypress: 5
+2441.9866 	DATA 	Keypress: 5
+2442.7801 	DATA 	Keypress: 5
+2443.5825 	DATA 	Keypress: 5
+2444.3806 	DATA 	Keypress: 5
+2445.1816 	DATA 	Keypress: 5
+2445.9827 	DATA 	Keypress: 5
+2446.7807 	DATA 	Keypress: 5
+2447.0876 	EXP 	str_bangRest: autoDraw = True
+2447.1051 	EXP 	str_fixRest: autoDraw = False
+2447.5812 	EXP 	New trial (rep=0, index=2): {'trialOrderFile': 'scan_order3.xlsx'}
+2447.5890 	EXP 	Imported scan_order3.xlsx as conditions, 8 conditions, 4 params
+2447.5892 	EXP 	Created sequence: sequential, trialTypes=8, nReps=1, seed=None
+2447.5895 	EXP 	New trial (rep=0, index=0): {'im_fName': 'cl017.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'familiar'}
+2447.6242 	DATA 	Keypress: 5
+2447.6360 	EXP 	str_bangRest: autoDraw = False
+2447.6360 	EXP 	str_fixRest: autoDraw = False
+2447.6360 	EXP 	str_bangRest: autoDraw = False
+2447.6360 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2447.6360 	EXP 	im_trialImage: image = 'cl017.jpg'
+2447.6360 	EXP 	im_trialImage: autoDraw = True
+2448.3882 	DATA 	Keypress: 5
+2448.7382 	DATA 	Keypress: 2
+2449.1793 	DATA 	Keypress: 5
+2449.6105 	EXP 	im_trialImage: autoDraw = False
+2449.6105 	EXP 	str_fixITI: autoDraw = True
+2449.9818 	DATA 	Keypress: 5
+2450.0946 	EXP 	New trial (rep=0, index=1): {'im_fName': 'cl018.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'familiar'}
+2450.1274 	EXP 	str_fixITI: autoDraw = False
+2450.1274 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2450.1274 	EXP 	im_trialImage: image = 'cl018.jpg'
+2450.1274 	EXP 	im_trialImage: autoDraw = True
+2450.7793 	DATA 	Keypress: 5
+2451.0703 	DATA 	Keypress: 1
+2451.5874 	DATA 	Keypress: 5
+2452.1036 	EXP 	im_trialImage: autoDraw = False
+2452.1036 	EXP 	str_fixITI: autoDraw = True
+2452.3800 	DATA 	Keypress: 5
+2452.5946 	EXP 	New trial (rep=0, index=2): {'im_fName': 'cl019.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'familiar'}
+2452.6122 	EXP 	str_fixITI: autoDraw = False
+2452.6122 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2452.6122 	EXP 	im_trialImage: image = 'cl019.jpg'
+2452.6122 	EXP 	im_trialImage: autoDraw = True
+2453.1785 	DATA 	Keypress: 5
+2453.4735 	DATA 	Keypress: 1
+2453.9815 	DATA 	Keypress: 5
+2454.6016 	EXP 	im_trialImage: autoDraw = False
+2454.6016 	EXP 	str_fixITI: autoDraw = True
+2454.7780 	DATA 	Keypress: 5
+2455.1013 	EXP 	New trial (rep=0, index=3): {'im_fName': 'cl020.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'familiar'}
+2455.1540 	EXP 	str_fixITI: autoDraw = False
+2455.1540 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2455.1540 	EXP 	im_trialImage: image = 'cl020.jpg'
+2455.1540 	EXP 	im_trialImage: autoDraw = True
+2455.5796 	DATA 	Keypress: 5
+2455.9726 	DATA 	Keypress: 2
+2456.3774 	DATA 	Keypress: 5
+2457.1087 	EXP 	im_trialImage: autoDraw = False
+2457.1087 	EXP 	str_fixITI: autoDraw = True
+2457.1789 	DATA 	Keypress: 5
+2457.5943 	EXP 	New trial (rep=0, index=4): {'im_fName': 'cl021.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'familiar'}
+2457.6169 	EXP 	str_fixITI: autoDraw = False
+2457.6169 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2457.6169 	EXP 	im_trialImage: image = 'cl021.jpg'
+2457.6169 	EXP 	im_trialImage: autoDraw = True
+2457.9857 	DATA 	Keypress: 5
+2458.5458 	DATA 	Keypress: 2
+2458.7788 	DATA 	Keypress: 5
+2459.5858 	DATA 	Keypress: 5
+2459.6023 	EXP 	im_trialImage: autoDraw = False
+2459.6023 	EXP 	str_fixITI: autoDraw = True
+2460.0946 	EXP 	New trial (rep=0, index=5): {'im_fName': 'cl022.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'familiar'}
+2460.1117 	EXP 	str_fixITI: autoDraw = False
+2460.1117 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2460.1117 	EXP 	im_trialImage: image = 'cl022.jpg'
+2460.1117 	EXP 	im_trialImage: autoDraw = True
+2460.3809 	DATA 	Keypress: 5
+2460.6969 	DATA 	Keypress: 2
+2461.1849 	DATA 	Keypress: 5
+2461.9799 	DATA 	Keypress: 5
+2462.1001 	EXP 	im_trialImage: autoDraw = False
+2462.1001 	EXP 	str_fixITI: autoDraw = True
+2462.5997 	EXP 	New trial (rep=0, index=6): {'im_fName': 'cl023.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'familiar'}
+2462.6335 	EXP 	str_fixITI: autoDraw = False
+2462.6335 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2462.6335 	EXP 	im_trialImage: image = 'cl023.jpg'
+2462.6335 	EXP 	im_trialImage: autoDraw = True
+2462.7800 	DATA 	Keypress: 5
+2463.5781 	DATA 	Keypress: 5
+2463.8861 	DATA 	Keypress: 1
+2464.3781 	DATA 	Keypress: 5
+2464.6070 	EXP 	im_trialImage: autoDraw = False
+2464.6070 	EXP 	str_fixITI: autoDraw = True
+2465.0924 	EXP 	New trial (rep=0, index=7): {'im_fName': 'cl024.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'familiar'}
+2465.1099 	EXP 	str_fixITI: autoDraw = False
+2465.1099 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2465.1099 	EXP 	im_trialImage: image = 'cl024.jpg'
+2465.1099 	EXP 	im_trialImage: autoDraw = True
+2465.1840 	DATA 	Keypress: 5
+2465.9791 	DATA 	Keypress: 5
+2466.7792 	DATA 	Keypress: 5
+2467.1005 	EXP 	im_trialImage: autoDraw = False
+2467.1005 	EXP 	str_fixITI: autoDraw = True
+2467.5848 	DATA 	Keypress: 5
+2467.6064 	EXP 	str_fixITI: autoDraw = False
+2467.6064 	EXP 	str_fixRest: autoDraw = True
+2468.3769 	DATA 	Keypress: 5
+2469.1849 	DATA 	Keypress: 5
+2469.9828 	DATA 	Keypress: 5
+2470.7830 	DATA 	Keypress: 5
+2471.5771 	DATA 	Keypress: 5
+2472.3761 	DATA 	Keypress: 2
+2472.3851 	DATA 	Keypress: 5
+2473.1821 	DATA 	Keypress: 5
+2473.9841 	DATA 	Keypress: 5
+2474.7831 	DATA 	Keypress: 5
+2475.5892 	DATA 	Keypress: 5
+2476.3843 	DATA 	Keypress: 5
+2477.1813 	DATA 	Keypress: 5
+2477.9894 	DATA 	Keypress: 5
+2478.7824 	DATA 	Keypress: 5
+2479.0882 	EXP 	str_bangRest: autoDraw = True
+2479.1120 	EXP 	str_fixRest: autoDraw = False
+2479.5818 	EXP 	New trial (rep=0, index=3): {'trialOrderFile': 'scan_order4.xlsx'}
+2479.5882 	EXP 	Imported scan_order4.xlsx as conditions, 8 conditions, 4 params
+2479.5884 	EXP 	Created sequence: sequential, trialTypes=8, nReps=1, seed=None
+2479.5886 	EXP 	New trial (rep=0, index=0): {'im_fName': 'cl025.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'novel'}
+2479.6120 	DATA 	Keypress: 5
+2479.6205 	EXP 	str_bangRest: autoDraw = False
+2479.6205 	EXP 	str_fixRest: autoDraw = False
+2479.6205 	EXP 	str_bangRest: autoDraw = False
+2479.6205 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2479.6205 	EXP 	im_trialImage: image = 'cl025.jpg'
+2479.6205 	EXP 	im_trialImage: autoDraw = True
+2480.3839 	DATA 	Keypress: 5
+2481.1840 	DATA 	Keypress: 5
+2481.6054 	EXP 	im_trialImage: autoDraw = False
+2481.6054 	EXP 	str_fixITI: autoDraw = True
+2481.7725 	DATA 	Keypress: 1
+2481.9816 	DATA 	Keypress: 5
+2482.0983 	EXP 	New trial (rep=0, index=1): {'im_fName': 'cl026.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'novel'}
+2482.1197 	EXP 	str_fixITI: autoDraw = False
+2482.1197 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2482.1197 	EXP 	im_trialImage: image = 'cl026.jpg'
+2482.1197 	EXP 	im_trialImage: autoDraw = True
+2482.7140 	DATA 	Keypress: 1
+2482.7800 	DATA 	Keypress: 5
+2483.5831 	DATA 	Keypress: 5
+2484.1032 	EXP 	im_trialImage: autoDraw = False
+2484.1032 	EXP 	str_fixITI: autoDraw = True
+2484.3817 	DATA 	Keypress: 5
+2484.5968 	EXP 	New trial (rep=0, index=2): {'im_fName': 'cl027.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'novel'}
+2484.6139 	EXP 	str_fixITI: autoDraw = False
+2484.6139 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2484.6139 	EXP 	im_trialImage: image = 'cl027.jpg'
+2484.6139 	EXP 	im_trialImage: autoDraw = True
+2485.1832 	DATA 	Keypress: 5
+2485.3732 	DATA 	Keypress: 2
+2485.9832 	DATA 	Keypress: 5
+2486.6044 	EXP 	im_trialImage: autoDraw = False
+2486.6044 	EXP 	str_fixITI: autoDraw = True
+2486.7808 	DATA 	Keypress: 5
+2487.0940 	EXP 	New trial (rep=0, index=3): {'im_fName': 'cl028.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'novel'}
+2487.1112 	EXP 	str_fixITI: autoDraw = False
+2487.1112 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2487.1112 	EXP 	im_trialImage: image = 'cl028.jpg'
+2487.1112 	EXP 	im_trialImage: autoDraw = True
+2487.5793 	DATA 	Keypress: 5
+2487.8623 	DATA 	Keypress: 2
+2488.3793 	DATA 	Keypress: 5
+2489.1036 	EXP 	im_trialImage: autoDraw = False
+2489.1036 	EXP 	str_fixITI: autoDraw = True
+2489.1800 	DATA 	Keypress: 5
+2489.5940 	EXP 	New trial (rep=0, index=4): {'im_fName': 'cl029.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'novel'}
+2489.6108 	EXP 	str_fixITI: autoDraw = False
+2489.6108 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2489.6108 	EXP 	im_trialImage: image = 'cl029.jpg'
+2489.6108 	EXP 	im_trialImage: autoDraw = True
+2489.9864 	DATA 	Keypress: 5
+2490.7815 	DATA 	Keypress: 5
+2491.1035 	DATA 	Keypress: 2
+2491.5815 	DATA 	Keypress: 5
+2491.6025 	EXP 	im_trialImage: autoDraw = False
+2491.6025 	EXP 	str_fixITI: autoDraw = True
+2492.0952 	EXP 	New trial (rep=0, index=5): {'im_fName': 'cl030.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'novel'}
+2492.1120 	EXP 	str_fixITI: autoDraw = False
+2492.1120 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2492.1120 	EXP 	im_trialImage: image = 'cl030.jpg'
+2492.1120 	EXP 	im_trialImage: autoDraw = True
+2492.3866 	DATA 	Keypress: 5
+2493.0776 	DATA 	Keypress: 1
+2493.1776 	DATA 	Keypress: 5
+2493.9797 	DATA 	Keypress: 5
+2494.1097 	EXP 	im_trialImage: autoDraw = False
+2494.1097 	EXP 	str_fixITI: autoDraw = True
+2494.5940 	EXP 	New trial (rep=0, index=6): {'im_fName': 'cl031.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'novel'}
+2494.6437 	EXP 	str_fixITI: autoDraw = False
+2494.6437 	EXP 	im_trialImage: size = array([0.79479167, 0.94814815])
+2494.6437 	EXP 	im_trialImage: image = 'cl031.jpg'
+2494.6437 	EXP 	im_trialImage: autoDraw = True
+2494.7806 	DATA 	Keypress: 5
+2495.5787 	DATA 	Keypress: 5
+2496.2188 	DATA 	Keypress: 2
+2496.3808 	DATA 	Keypress: 5
+2496.6088 	EXP 	im_trialImage: autoDraw = False
+2496.6088 	EXP 	str_fixITI: autoDraw = True
+2497.0940 	EXP 	New trial (rep=0, index=7): {'im_fName': 'cl032.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'novel'}
+2497.1178 	EXP 	str_fixITI: autoDraw = False
+2497.1178 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2497.1178 	EXP 	im_trialImage: image = 'cl032.jpg'
+2497.1178 	EXP 	im_trialImage: autoDraw = True
+2497.1797 	DATA 	Keypress: 5
+2497.9698 	DATA 	Keypress: 1
+2497.9799 	DATA 	Keypress: 5
+2498.7770 	DATA 	Keypress: 5
+2499.1012 	EXP 	im_trialImage: autoDraw = False
+2499.1012 	EXP 	str_fixITI: autoDraw = True
+2499.5785 	DATA 	Keypress: 5
+2499.6086 	EXP 	str_fixITI: autoDraw = False
+2499.6086 	EXP 	str_fixRest: autoDraw = True
+2500.3845 	DATA 	Keypress: 5
+2501.1774 	DATA 	Keypress: 5
+2501.8277 	DATA 	Keypress: 2
+2501.9786 	DATA 	Keypress: 5
+2502.7847 	DATA 	Keypress: 5
+2503.5768 	DATA 	Keypress: 5
+2504.3777 	DATA 	Keypress: 5
+2505.1778 	DATA 	Keypress: 5
+2505.9831 	DATA 	Keypress: 5
+2506.7825 	DATA 	Keypress: 5
+2507.5770 	DATA 	Keypress: 5
+2508.3840 	DATA 	Keypress: 5
+2509.1830 	DATA 	Keypress: 5
+2509.9821 	DATA 	Keypress: 5
+2510.7841 	DATA 	Keypress: 5
+2511.0979 	EXP 	str_bangRest: autoDraw = True
+2511.1214 	EXP 	str_fixRest: autoDraw = False
+2511.5901 	DATA 	Keypress: 5
+2511.5975 	EXP 	New trial (rep=0, index=4): {'trialOrderFile': 'scan_order5.xlsx'}
+2511.6039 	EXP 	Imported scan_order5.xlsx as conditions, 8 conditions, 4 params
+2511.6042 	EXP 	Created sequence: sequential, trialTypes=8, nReps=1, seed=None
+2511.6044 	EXP 	New trial (rep=0, index=0): {'im_fName': 'cl033.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'familiar'}
+2511.6343 	EXP 	str_fixRest: autoDraw = False
+2511.6343 	EXP 	str_bangRest: autoDraw = False
+2511.6343 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2511.6343 	EXP 	im_trialImage: image = 'cl033.jpg'
+2511.6343 	EXP 	im_trialImage: autoDraw = True
+2512.3836 	DATA 	Keypress: 5
+2513.1817 	DATA 	Keypress: 5
+2513.6051 	EXP 	im_trialImage: autoDraw = False
+2513.6051 	EXP 	str_fixITI: autoDraw = True
+2513.9832 	DATA 	Keypress: 5
+2514.0911 	EXP 	New trial (rep=0, index=1): {'im_fName': 'cl034.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'familiar'}
+2514.1124 	EXP 	str_fixITI: autoDraw = False
+2514.1124 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2514.1124 	EXP 	im_trialImage: image = 'cl034.jpg'
+2514.1124 	EXP 	im_trialImage: autoDraw = True
+2514.7807 	DATA 	Keypress: 5
+2515.5808 	DATA 	Keypress: 5
+2516.1039 	EXP 	im_trialImage: autoDraw = False
+2516.1039 	EXP 	str_fixITI: autoDraw = True
+2516.2313 	DATA 	Keypress: 1
+2516.3814 	DATA 	Keypress: 5
+2516.5981 	EXP 	New trial (rep=0, index=2): {'im_fName': 'cl035.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'familiar'}
+2516.6155 	EXP 	str_fixITI: autoDraw = False
+2516.6155 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2516.6155 	EXP 	im_trialImage: image = 'cl035.jpg'
+2516.6155 	EXP 	im_trialImage: autoDraw = True
+2517.1139 	DATA 	Keypress: 1
+2517.1889 	DATA 	Keypress: 5
+2517.9889 	DATA 	Keypress: 5
+2518.6029 	EXP 	im_trialImage: autoDraw = False
+2518.6029 	EXP 	str_fixITI: autoDraw = True
+2518.7816 	DATA 	Keypress: 5
+2519.0966 	EXP 	New trial (rep=0, index=3): {'im_fName': 'cl036.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'familiar'}
+2519.1367 	EXP 	str_fixITI: autoDraw = False
+2519.1367 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2519.1367 	EXP 	im_trialImage: image = 'cl036.jpg'
+2519.1367 	EXP 	im_trialImage: autoDraw = True
+2519.5800 	DATA 	Keypress: 5
+2519.7230 	DATA 	Keypress: 2
+2520.3801 	DATA 	Keypress: 5
+2521.1046 	EXP 	im_trialImage: autoDraw = False
+2521.1046 	EXP 	str_fixITI: autoDraw = True
+2521.1807 	DATA 	Keypress: 5
+2521.5975 	EXP 	New trial (rep=0, index=4): {'im_fName': 'cl037.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'familiar'}
+2521.6200 	EXP 	str_fixITI: autoDraw = False
+2521.6200 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2521.6200 	EXP 	im_trialImage: image = 'cl037.jpg'
+2521.6200 	EXP 	im_trialImage: autoDraw = True
+2521.9811 	DATA 	Keypress: 5
+2522.2481 	DATA 	Keypress: 1
+2522.7801 	DATA 	Keypress: 5
+2523.5821 	DATA 	Keypress: 5
+2523.6029 	EXP 	im_trialImage: autoDraw = False
+2523.6029 	EXP 	str_fixITI: autoDraw = True
+2524.0965 	EXP 	New trial (rep=0, index=5): {'im_fName': 'cl038.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'familiar'}
+2524.1191 	EXP 	str_fixITI: autoDraw = False
+2524.1191 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2524.1191 	EXP 	im_trialImage: image = 'cl038.jpg'
+2524.1191 	EXP 	im_trialImage: autoDraw = True
+2524.3802 	DATA 	Keypress: 5
+2524.9203 	DATA 	Keypress: 2
+2525.1873 	DATA 	Keypress: 5
+2525.9823 	DATA 	Keypress: 5
+2526.1014 	EXP 	im_trialImage: autoDraw = False
+2526.1014 	EXP 	str_fixITI: autoDraw = True
+2526.5951 	EXP 	New trial (rep=0, index=6): {'im_fName': 'cl039.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'familiar'}
+2526.6286 	EXP 	str_fixITI: autoDraw = False
+2526.6286 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2526.6286 	EXP 	im_trialImage: image = 'cl039.jpg'
+2526.6286 	EXP 	im_trialImage: autoDraw = True
+2526.7814 	DATA 	Keypress: 5
+2527.5864 	DATA 	Keypress: 5
+2527.7294 	DATA 	Keypress: 2
+2528.3795 	DATA 	Keypress: 5
+2528.6027 	EXP 	im_trialImage: autoDraw = False
+2528.6027 	EXP 	str_fixITI: autoDraw = True
+2529.0931 	EXP 	New trial (rep=0, index=7): {'im_fName': 'cl040.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'familiar'}
+2529.1105 	EXP 	str_fixITI: autoDraw = False
+2529.1105 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2529.1105 	EXP 	im_trialImage: image = 'cl040.jpg'
+2529.1105 	EXP 	im_trialImage: autoDraw = True
+2529.1786 	DATA 	Keypress: 5
+2529.7865 	DATA 	Keypress: 2
+2529.9854 	DATA 	Keypress: 5
+2530.7796 	DATA 	Keypress: 5
+2531.1084 	EXP 	im_trialImage: autoDraw = False
+2531.1084 	EXP 	str_fixITI: autoDraw = True
+2531.5802 	DATA 	Keypress: 5
+2531.6008 	EXP 	str_fixITI: autoDraw = False
+2531.6008 	EXP 	str_fixRest: autoDraw = True
+2532.3793 	DATA 	Keypress: 5
+2533.1853 	DATA 	Keypress: 5
+2533.9854 	DATA 	Keypress: 5
+2534.7855 	DATA 	Keypress: 5
+2535.5785 	DATA 	Keypress: 5
+2536.3865 	DATA 	Keypress: 5
+2537.1786 	DATA 	Keypress: 5
+2537.9855 	DATA 	Keypress: 5
+2538.7846 	DATA 	Keypress: 5
+2539.5836 	DATA 	Keypress: 5
+2540.3836 	DATA 	Keypress: 5
+2541.1778 	DATA 	Keypress: 5
+2541.9837 	DATA 	Keypress: 5
+2542.2418 	DATA 	Keypress: 2
+2542.7838 	DATA 	Keypress: 5
+2543.0907 	EXP 	str_bangRest: autoDraw = True
+2543.1139 	EXP 	str_fixRest: autoDraw = False
+2543.5829 	DATA 	Keypress: 5
+2543.5908 	EXP 	New trial (rep=0, index=5): {'trialOrderFile': 'scan_order6.xlsx'}
+2543.5977 	EXP 	Imported scan_order6.xlsx as conditions, 8 conditions, 4 params
+2543.5979 	EXP 	Created sequence: sequential, trialTypes=8, nReps=1, seed=None
+2543.5982 	EXP 	New trial (rep=0, index=0): {'im_fName': 'cl041.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'novel'}
+2543.6230 	EXP 	str_fixRest: autoDraw = False
+2543.6230 	EXP 	str_bangRest: autoDraw = False
+2543.6230 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2543.6230 	EXP 	im_trialImage: image = 'cl041.jpg'
+2543.6230 	EXP 	im_trialImage: autoDraw = True
+2544.3913 	DATA 	Keypress: 5
+2545.1864 	DATA 	Keypress: 5
+2545.5988 	EXP 	im_trialImage: autoDraw = False
+2545.5988 	EXP 	str_fixITI: autoDraw = True
+2545.7829 	DATA 	Keypress: 2
+2545.9830 	DATA 	Keypress: 5
+2546.0897 	EXP 	New trial (rep=0, index=1): {'im_fName': 'cl042.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'novel'}
+2546.1230 	EXP 	str_fixITI: autoDraw = False
+2546.1230 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2546.1230 	EXP 	im_trialImage: image = 'cl042.jpg'
+2546.1230 	EXP 	im_trialImage: autoDraw = True
+2546.6774 	DATA 	Keypress: 2
+2546.7902 	DATA 	Keypress: 5
+2547.5825 	DATA 	Keypress: 5
+2548.1057 	EXP 	im_trialImage: autoDraw = False
+2548.1057 	EXP 	str_fixITI: autoDraw = True
+2548.3900 	DATA 	Keypress: 5
+2548.5917 	EXP 	New trial (rep=0, index=2): {'im_fName': 'cl043.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'novel'}
+2548.6236 	EXP 	str_fixITI: autoDraw = False
+2548.6236 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2548.6236 	EXP 	im_trialImage: image = 'cl043.jpg'
+2548.6236 	EXP 	im_trialImage: autoDraw = True
+2549.1856 	DATA 	Keypress: 5
+2549.3496 	DATA 	Keypress: 1
+2549.9816 	DATA 	Keypress: 5
+2550.6040 	EXP 	im_trialImage: autoDraw = False
+2550.6040 	EXP 	str_fixITI: autoDraw = True
+2550.7813 	DATA 	Keypress: 5
+2551.0893 	EXP 	New trial (rep=0, index=3): {'im_fName': 'cl044.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'novel'}
+2551.1127 	EXP 	str_fixITI: autoDraw = False
+2551.1127 	EXP 	im_trialImage: size = array([0.79375  , 0.9462963])
+2551.1127 	EXP 	im_trialImage: image = 'cl044.jpg'
+2551.1127 	EXP 	im_trialImage: autoDraw = True
+2551.5847 	DATA 	Keypress: 5
+2552.3807 	DATA 	Keypress: 5
+2552.7157 	DATA 	Keypress: 1
+2553.1052 	EXP 	im_trialImage: autoDraw = False
+2553.1052 	EXP 	str_fixITI: autoDraw = True
+2553.1824 	DATA 	Keypress: 5
+2553.5971 	EXP 	New trial (rep=0, index=4): {'im_fName': 'cl045.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'novel'}
+2553.6477 	EXP 	str_fixITI: autoDraw = False
+2553.6477 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2553.6477 	EXP 	im_trialImage: image = 'cl045.jpg'
+2553.6477 	EXP 	im_trialImage: autoDraw = True
+2553.9888 	DATA 	Keypress: 5
+2554.5418 	DATA 	Keypress: 1
+2554.7819 	DATA 	Keypress: 5
+2555.5839 	DATA 	Keypress: 5
+2555.6044 	EXP 	im_trialImage: autoDraw = False
+2555.6044 	EXP 	str_fixITI: autoDraw = True
+2556.0969 	EXP 	New trial (rep=0, index=5): {'im_fName': 'cl046.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'novel'}
+2556.1359 	EXP 	str_fixITI: autoDraw = False
+2556.1359 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2556.1359 	EXP 	im_trialImage: image = 'cl046.jpg'
+2556.1359 	EXP 	im_trialImage: autoDraw = True
+2556.3800 	DATA 	Keypress: 5
+2557.1800 	DATA 	Keypress: 5
+2557.9800 	DATA 	Keypress: 5
+2558.1105 	EXP 	im_trialImage: autoDraw = False
+2558.1105 	EXP 	str_fixITI: autoDraw = True
+2558.5946 	EXP 	New trial (rep=0, index=6): {'im_fName': 'cl047.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'novel'}
+2558.6115 	EXP 	str_fixITI: autoDraw = False
+2558.6115 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2558.6115 	EXP 	im_trialImage: image = 'cl047.jpg'
+2558.6115 	EXP 	im_trialImage: autoDraw = True
+2558.7811 	DATA 	Keypress: 5
+2559.5791 	DATA 	Keypress: 5
+2560.3822 	DATA 	Keypress: 5
+2560.6100 	EXP 	im_trialImage: autoDraw = False
+2560.6100 	EXP 	str_fixITI: autoDraw = True
+2561.1021 	EXP 	New trial (rep=0, index=7): {'im_fName': 'cl048.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'novel'}
+2561.1351 	EXP 	str_fixITI: autoDraw = False
+2561.1351 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2561.1351 	EXP 	im_trialImage: image = 'cl048.jpg'
+2561.1351 	EXP 	im_trialImage: autoDraw = True
+2561.1812 	DATA 	Keypress: 5
+2561.9803 	DATA 	Keypress: 5
+2562.7783 	DATA 	Keypress: 5
+2563.1013 	EXP 	im_trialImage: autoDraw = False
+2563.1013 	EXP 	str_fixITI: autoDraw = True
+2563.5789 	DATA 	Keypress: 5
+2563.6040 	EXP 	str_fixITI: autoDraw = False
+2563.6040 	EXP 	str_fixRest: autoDraw = True
+2563.8029 	DATA 	Keypress: 2
+2564.3781 	DATA 	Keypress: 5
+2565.1800 	DATA 	Keypress: 5
+2565.9791 	DATA 	Keypress: 5
+2566.7781 	DATA 	Keypress: 5
+2567.5791 	DATA 	Keypress: 5
+2568.3783 	DATA 	Keypress: 5
+2569.1783 	DATA 	Keypress: 5
+2569.9842 	DATA 	Keypress: 5
+2570.7863 	DATA 	Keypress: 5
+2571.5863 	DATA 	Keypress: 5
+2572.3844 	DATA 	Keypress: 5
+2572.4934 	DATA 	Keypress: 2
+2573.1843 	DATA 	Keypress: 5
+2573.9785 	DATA 	Keypress: 5
+2574.7832 	DATA 	Keypress: 5
+2575.0984 	EXP 	str_bangRest: autoDraw = True
+2575.1070 	EXP 	str_fixRest: autoDraw = False
+2575.5776 	DATA 	Keypress: 5
+2575.5989 	EXP 	New trial (rep=0, index=6): {'trialOrderFile': 'scan_order7.xlsx'}
+2575.6052 	EXP 	Imported scan_order7.xlsx as conditions, 8 conditions, 4 params
+2575.6054 	EXP 	Created sequence: sequential, trialTypes=8, nReps=1, seed=None
+2575.6056 	EXP 	New trial (rep=0, index=0): {'im_fName': 'cl049.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'familiar'}
+2575.6238 	EXP 	str_fixRest: autoDraw = False
+2575.6238 	EXP 	str_bangRest: autoDraw = False
+2575.6238 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2575.6238 	EXP 	im_trialImage: image = 'cl049.jpg'
+2575.6238 	EXP 	im_trialImage: autoDraw = True
+2576.3790 	DATA 	Keypress: 5
+2577.1831 	DATA 	Keypress: 5
+2577.3501 	DATA 	Keypress: 1
+2577.6073 	EXP 	im_trialImage: autoDraw = False
+2577.6073 	EXP 	str_fixITI: autoDraw = True
+2577.9846 	DATA 	Keypress: 5
+2578.0916 	EXP 	New trial (rep=0, index=1): {'im_fName': 'cl050.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'familiar'}
+2578.1088 	EXP 	str_fixITI: autoDraw = False
+2578.1088 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2578.1088 	EXP 	im_trialImage: image = 'cl050.jpg'
+2578.1088 	EXP 	im_trialImage: autoDraw = True
+2578.7861 	DATA 	Keypress: 5
+2578.7863 	DATA 	Keypress: 1
+2579.5842 	DATA 	Keypress: 5
+2580.1056 	EXP 	im_trialImage: autoDraw = False
+2580.1056 	EXP 	str_fixITI: autoDraw = True
+2580.3858 	DATA 	Keypress: 5
+2580.5895 	EXP 	New trial (rep=0, index=2): {'im_fName': 'cl051.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'familiar'}
+2580.6070 	EXP 	str_fixITI: autoDraw = False
+2580.6070 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2580.6070 	EXP 	im_trialImage: image = 'cl051.jpg'
+2580.6070 	EXP 	im_trialImage: autoDraw = True
+2581.1763 	DATA 	Keypress: 1
+2581.1863 	DATA 	Keypress: 5
+2581.9853 	DATA 	Keypress: 5
+2582.6067 	EXP 	im_trialImage: autoDraw = False
+2582.6067 	EXP 	str_fixITI: autoDraw = True
+2582.7829 	DATA 	Keypress: 5
+2583.0969 	EXP 	New trial (rep=0, index=3): {'im_fName': 'cl052.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'familiar'}
+2583.1470 	EXP 	str_fixITI: autoDraw = False
+2583.1470 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2583.1470 	EXP 	im_trialImage: image = 'cl052.jpg'
+2583.1470 	EXP 	im_trialImage: autoDraw = True
+2583.5854 	DATA 	Keypress: 5
+2583.8934 	DATA 	Keypress: 2
+2584.3824 	DATA 	Keypress: 5
+2585.1056 	EXP 	im_trialImage: autoDraw = False
+2585.1056 	EXP 	str_fixITI: autoDraw = True
+2585.1821 	DATA 	Keypress: 5
+2585.5904 	EXP 	New trial (rep=0, index=4): {'im_fName': 'cl053.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'familiar'}
+2585.6081 	EXP 	str_fixITI: autoDraw = False
+2585.6081 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2585.6081 	EXP 	im_trialImage: image = 'cl053.jpg'
+2585.6081 	EXP 	im_trialImage: autoDraw = True
+2585.9835 	DATA 	Keypress: 5
+2586.7896 	DATA 	Keypress: 5
+2587.5836 	DATA 	Keypress: 5
+2587.6048 	EXP 	im_trialImage: autoDraw = False
+2587.6048 	EXP 	str_fixITI: autoDraw = True
+2588.0962 	EXP 	New trial (rep=0, index=5): {'im_fName': 'cl054.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'familiar'}
+2588.1237 	EXP 	str_fixITI: autoDraw = False
+2588.1237 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2588.1237 	EXP 	im_trialImage: image = 'cl054.jpg'
+2588.1237 	EXP 	im_trialImage: autoDraw = True
+2588.3826 	DATA 	Keypress: 5
+2589.1887 	DATA 	Keypress: 5
+2589.9807 	DATA 	Keypress: 5
+2590.1032 	EXP 	im_trialImage: autoDraw = False
+2590.1032 	EXP 	str_fixITI: autoDraw = True
+2590.5952 	EXP 	New trial (rep=0, index=6): {'im_fName': 'cl055.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'familiar'}
+2590.6284 	EXP 	str_fixITI: autoDraw = False
+2590.6284 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2590.6284 	EXP 	im_trialImage: image = 'cl055.jpg'
+2590.6284 	EXP 	im_trialImage: autoDraw = True
+2590.7837 	DATA 	Keypress: 5
+2591.5818 	DATA 	Keypress: 5
+2592.3879 	DATA 	Keypress: 5
+2592.6030 	EXP 	im_trialImage: autoDraw = False
+2592.6030 	EXP 	str_fixITI: autoDraw = True
+2593.0971 	EXP 	New trial (rep=0, index=7): {'im_fName': 'cl056.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'familiar'}
+2593.1198 	EXP 	str_fixITI: autoDraw = False
+2593.1198 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2593.1198 	EXP 	im_trialImage: image = 'cl056.jpg'
+2593.1198 	EXP 	im_trialImage: autoDraw = True
+2593.1799 	DATA 	Keypress: 5
+2593.9829 	DATA 	Keypress: 5
+2594.7830 	DATA 	Keypress: 5
+2595.1111 	EXP 	im_trialImage: autoDraw = False
+2595.1111 	EXP 	str_fixITI: autoDraw = True
+2595.5865 	DATA 	Keypress: 5
+2595.6037 	EXP 	str_fixITI: autoDraw = False
+2595.6037 	EXP 	str_fixRest: autoDraw = True
+2596.3787 	DATA 	Keypress: 5
+2597.1807 	DATA 	Keypress: 5
+2597.9808 	DATA 	Keypress: 5
+2598.7868 	DATA 	Keypress: 5
+2599.5808 	DATA 	Keypress: 5
+2600.3869 	DATA 	Keypress: 5
+2601.1870 	DATA 	Keypress: 5
+2601.9219 	DATA 	Keypress: 2
+2601.9859 	DATA 	Keypress: 5
+2602.7870 	DATA 	Keypress: 5
+2603.5791 	DATA 	Keypress: 5
+2604.3871 	DATA 	Keypress: 5
+2605.1851 	DATA 	Keypress: 5
+2605.9793 	DATA 	Keypress: 5
+2606.7862 	DATA 	Keypress: 5
+2607.0940 	EXP 	str_bangRest: autoDraw = True
+2607.1162 	EXP 	str_fixRest: autoDraw = False
+2607.5793 	DATA 	Keypress: 5
+2607.5915 	EXP 	New trial (rep=0, index=7): {'trialOrderFile': 'scan_order8.xlsx'}
+2607.5980 	EXP 	Imported scan_order8.xlsx as conditions, 8 conditions, 4 params
+2607.5984 	EXP 	Created sequence: sequential, trialTypes=8, nReps=1, seed=None
+2607.5986 	EXP 	New trial (rep=0, index=0): {'im_fName': 'cl057.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'novel'}
+2607.6333 	EXP 	str_fixRest: autoDraw = False
+2607.6333 	EXP 	str_bangRest: autoDraw = False
+2607.6333 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2607.6333 	EXP 	im_trialImage: image = 'cl057.jpg'
+2607.6333 	EXP 	im_trialImage: autoDraw = True
+2608.3847 	DATA 	Keypress: 5
+2608.4048 	DATA 	Keypress: 2
+2609.1878 	DATA 	Keypress: 5
+2609.6070 	EXP 	im_trialImage: autoDraw = False
+2609.6070 	EXP 	str_fixITI: autoDraw = True
+2609.9843 	DATA 	Keypress: 5
+2610.0938 	EXP 	New trial (rep=0, index=1): {'im_fName': 'cl058.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'novel'}
+2610.1406 	EXP 	str_fixITI: autoDraw = False
+2610.1406 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2610.1406 	EXP 	im_trialImage: image = 'cl058.jpg'
+2610.1406 	EXP 	im_trialImage: autoDraw = True
+2610.7839 	DATA 	Keypress: 2
+2610.7840 	DATA 	Keypress: 5
+2611.5879 	DATA 	Keypress: 5
+2612.1003 	EXP 	im_trialImage: autoDraw = False
+2612.1003 	EXP 	str_fixITI: autoDraw = True
+2612.3855 	DATA 	Keypress: 5
+2612.5931 	EXP 	New trial (rep=0, index=2): {'im_fName': 'cl059.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'novel'}
+2612.6148 	EXP 	str_fixITI: autoDraw = False
+2612.6148 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2612.6148 	EXP 	im_trialImage: image = 'cl059.jpg'
+2612.6148 	EXP 	im_trialImage: autoDraw = True
+2613.1790 	DATA 	Keypress: 5
+2613.4250 	DATA 	Keypress: 1
+2613.9920 	DATA 	Keypress: 5
+2614.5994 	EXP 	im_trialImage: autoDraw = False
+2614.5994 	EXP 	str_fixITI: autoDraw = True
+2614.7905 	DATA 	Keypress: 5
+2615.0913 	EXP 	New trial (rep=0, index=3): {'im_fName': 'cl060.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'novel'}
+2615.1228 	EXP 	str_fixITI: autoDraw = False
+2615.1228 	EXP 	im_trialImage: size = array([0.79375   , 0.93888889])
+2615.1228 	EXP 	im_trialImage: image = 'cl060.jpg'
+2615.1228 	EXP 	im_trialImage: autoDraw = True
+2615.5911 	DATA 	Keypress: 5
+2616.0331 	DATA 	Keypress: 2
+2616.3841 	DATA 	Keypress: 5
+2617.1076 	EXP 	im_trialImage: autoDraw = False
+2617.1076 	EXP 	str_fixITI: autoDraw = True
+2617.1838 	DATA 	Keypress: 5
+2617.5914 	EXP 	New trial (rep=0, index=4): {'im_fName': 'cl061.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'novel'}
+2617.6142 	EXP 	str_fixITI: autoDraw = False
+2617.6142 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2617.6142 	EXP 	im_trialImage: image = 'cl061.jpg'
+2617.6142 	EXP 	im_trialImage: autoDraw = True
+2617.9862 	DATA 	Keypress: 5
+2618.5843 	DATA 	Keypress: 2
+2618.7903 	DATA 	Keypress: 5
+2619.5823 	DATA 	Keypress: 5
+2619.6048 	EXP 	im_trialImage: autoDraw = False
+2619.6048 	EXP 	str_fixITI: autoDraw = True
+2620.0980 	EXP 	New trial (rep=0, index=5): {'im_fName': 'cl062.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'novel'}
+2620.1160 	EXP 	str_fixITI: autoDraw = False
+2620.1160 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2620.1160 	EXP 	im_trialImage: image = 'cl062.jpg'
+2620.1160 	EXP 	im_trialImage: autoDraw = True
+2620.3854 	DATA 	Keypress: 5
+2621.1824 	DATA 	Keypress: 5
+2621.9894 	DATA 	Keypress: 5
+2622.1056 	EXP 	im_trialImage: autoDraw = False
+2622.1056 	EXP 	str_fixITI: autoDraw = True
+2622.5963 	EXP 	New trial (rep=0, index=6): {'im_fName': 'cl063.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'novel'}
+2622.6294 	EXP 	str_fixITI: autoDraw = False
+2622.6294 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2622.6294 	EXP 	im_trialImage: image = 'cl063.jpg'
+2622.6294 	EXP 	im_trialImage: autoDraw = True
+2622.7895 	DATA 	Keypress: 5
+2622.8565 	DATA 	Keypress: 1
+2623.5815 	DATA 	Keypress: 5
+2623.7015 	DATA 	Keypress: 1
+2624.3826 	DATA 	Keypress: 5
+2624.6118 	EXP 	im_trialImage: autoDraw = False
+2624.6118 	EXP 	str_fixITI: autoDraw = True
+2625.0898 	EXP 	New trial (rep=0, index=7): {'im_fName': 'cl064.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'novel'}
+2625.1118 	EXP 	str_fixITI: autoDraw = False
+2625.1118 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2625.1118 	EXP 	im_trialImage: image = 'cl064.jpg'
+2625.1118 	EXP 	im_trialImage: autoDraw = True
+2625.1816 	DATA 	Keypress: 5
+2625.9837 	DATA 	Keypress: 5
+2626.2577 	DATA 	Keypress: 1
+2626.7807 	DATA 	Keypress: 5
+2627.1030 	EXP 	im_trialImage: autoDraw = False
+2627.1030 	EXP 	str_fixITI: autoDraw = True
+2627.5813 	DATA 	Keypress: 5
+2627.6112 	EXP 	str_fixITI: autoDraw = False
+2627.6112 	EXP 	str_fixRest: autoDraw = True
+2628.3814 	DATA 	Keypress: 5
+2629.1791 	DATA 	Keypress: 5
+2629.9824 	DATA 	Keypress: 5
+2630.7805 	DATA 	Keypress: 5
+2631.5805 	DATA 	Keypress: 5
+2632.3865 	DATA 	Keypress: 5
+2633.1786 	DATA 	Keypress: 5
+2633.9817 	DATA 	Keypress: 5
+2634.7787 	DATA 	Keypress: 5
+2635.5808 	DATA 	Keypress: 5
+2636.3857 	DATA 	Keypress: 5
+2637.1868 	DATA 	Keypress: 5
+2637.9799 	DATA 	Keypress: 5
+2638.7790 	DATA 	Keypress: 5
+2639.0937 	EXP 	str_bangRest: autoDraw = True
+2639.1170 	EXP 	str_fixRest: autoDraw = False
+2639.5863 	EXP 	New trial (rep=0, index=8): {'trialOrderFile': 'scan_order9.xlsx'}
+2639.5928 	EXP 	Imported scan_order9.xlsx as conditions, 8 conditions, 4 params
+2639.5930 	EXP 	Created sequence: sequential, trialTypes=8, nReps=1, seed=None
+2639.5932 	EXP 	New trial (rep=0, index=0): {'im_fName': 'cl065.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'familiar'}
+2639.6084 	DATA 	Keypress: 5
+2639.6172 	EXP 	str_bangRest: autoDraw = False
+2639.6172 	EXP 	str_fixRest: autoDraw = False
+2639.6172 	EXP 	str_bangRest: autoDraw = False
+2639.6172 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2639.6172 	EXP 	im_trialImage: image = 'cl065.jpg'
+2639.6172 	EXP 	im_trialImage: autoDraw = True
+2640.3224 	DATA 	Keypress: 2
+2640.3874 	DATA 	Keypress: 5
+2641.1874 	DATA 	Keypress: 5
+2641.6020 	EXP 	im_trialImage: autoDraw = False
+2641.6020 	EXP 	str_fixITI: autoDraw = True
+2641.9850 	DATA 	Keypress: 5
+2642.0932 	EXP 	New trial (rep=0, index=1): {'im_fName': 'cl066.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'familiar'}
+2642.1174 	EXP 	str_fixITI: autoDraw = False
+2642.1174 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2642.1174 	EXP 	im_trialImage: image = 'cl066.jpg'
+2642.1174 	EXP 	im_trialImage: autoDraw = True
+2642.7296 	DATA 	Keypress: 1
+2642.7865 	DATA 	Keypress: 5
+2643.5866 	DATA 	Keypress: 5
+2644.1075 	EXP 	im_trialImage: autoDraw = False
+2644.1075 	EXP 	str_fixITI: autoDraw = True
+2644.3839 	DATA 	Keypress: 5
+2644.5996 	EXP 	New trial (rep=0, index=2): {'im_fName': 'cl067.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'familiar'}
+2644.6244 	EXP 	str_fixITI: autoDraw = False
+2644.6244 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2644.6244 	EXP 	im_trialImage: image = 'cl067.jpg'
+2644.6244 	EXP 	im_trialImage: autoDraw = True
+2645.1877 	DATA 	Keypress: 5
+2645.3017 	DATA 	Keypress: 2
+2645.9857 	DATA 	Keypress: 5
+2646.6002 	EXP 	im_trialImage: autoDraw = False
+2646.6002 	EXP 	str_fixITI: autoDraw = True
+2646.7833 	DATA 	Keypress: 5
+2647.0922 	EXP 	New trial (rep=0, index=3): {'im_fName': 'cl068.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'familiar'}
+2647.1155 	EXP 	str_fixITI: autoDraw = False
+2647.1155 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2647.1155 	EXP 	im_trialImage: image = 'cl068.jpg'
+2647.1155 	EXP 	im_trialImage: autoDraw = True
+2647.5838 	DATA 	Keypress: 5
+2647.9108 	DATA 	Keypress: 1
+2648.3839 	DATA 	Keypress: 5
+2649.1001 	EXP 	im_trialImage: autoDraw = False
+2649.1001 	EXP 	str_fixITI: autoDraw = True
+2649.1845 	DATA 	Keypress: 5
+2649.5932 	EXP 	New trial (rep=0, index=4): {'im_fName': 'cl069.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'familiar'}
+2649.6145 	EXP 	str_fixITI: autoDraw = False
+2649.6145 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2649.6145 	EXP 	im_trialImage: image = 'cl069.jpg'
+2649.6145 	EXP 	im_trialImage: autoDraw = True
+2649.9798 	DATA 	Keypress: 5
+2650.3769 	DATA 	Keypress: 1
+2650.7830 	DATA 	Keypress: 5
+2651.5830 	DATA 	Keypress: 5
+2651.6003 	EXP 	im_trialImage: autoDraw = False
+2651.6003 	EXP 	str_fixITI: autoDraw = True
+2652.0913 	EXP 	New trial (rep=0, index=5): {'im_fName': 'cl070.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'familiar'}
+2652.1501 	EXP 	str_fixITI: autoDraw = False
+2652.1501 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2652.1501 	EXP 	im_trialImage: image = 'cl070.jpg'
+2652.1501 	EXP 	im_trialImage: autoDraw = True
+2652.3861 	DATA 	Keypress: 5
+2653.1831 	DATA 	Keypress: 5
+2653.5991 	DATA 	Keypress: 2
+2653.9841 	DATA 	Keypress: 5
+2654.1051 	EXP 	im_trialImage: autoDraw = False
+2654.1051 	EXP 	str_fixITI: autoDraw = True
+2654.5976 	EXP 	New trial (rep=0, index=6): {'im_fName': 'cl071.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'familiar'}
+2654.6385 	EXP 	str_fixITI: autoDraw = False
+2654.6385 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2654.6385 	EXP 	im_trialImage: image = 'cl071.jpg'
+2654.6385 	EXP 	im_trialImage: autoDraw = True
+2654.7842 	DATA 	Keypress: 5
+2655.5852 	DATA 	Keypress: 5
+2656.3903 	DATA 	Keypress: 5
+2656.6054 	EXP 	im_trialImage: autoDraw = False
+2656.6054 	EXP 	str_fixITI: autoDraw = True
+2657.0907 	EXP 	New trial (rep=0, index=7): {'im_fName': 'cl072.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'familiar'}
+2657.1220 	EXP 	str_fixITI: autoDraw = False
+2657.1220 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2657.1220 	EXP 	im_trialImage: image = 'cl072.jpg'
+2657.1220 	EXP 	im_trialImage: autoDraw = True
+2657.1822 	DATA 	Keypress: 5
+2657.9854 	DATA 	Keypress: 5
+2658.7814 	DATA 	Keypress: 5
+2659.1046 	EXP 	im_trialImage: autoDraw = False
+2659.1046 	EXP 	str_fixITI: autoDraw = True
+2659.5890 	DATA 	Keypress: 5
+2659.6052 	EXP 	str_fixITI: autoDraw = False
+2659.6052 	EXP 	str_fixRest: autoDraw = True
+2660.3831 	DATA 	Keypress: 5
+2661.1811 	DATA 	Keypress: 5
+2661.9831 	DATA 	Keypress: 5
+2662.7822 	DATA 	Keypress: 5
+2663.5802 	DATA 	Keypress: 5
+2664.3813 	DATA 	Keypress: 5
+2665.1882 	DATA 	Keypress: 5
+2665.9824 	DATA 	Keypress: 5
+2666.7795 	DATA 	Keypress: 5
+2667.5804 	DATA 	Keypress: 5
+2668.3795 	DATA 	Keypress: 5
+2669.1815 	DATA 	Keypress: 5
+2669.9806 	DATA 	Keypress: 5
+2670.7876 	DATA 	Keypress: 5
+2671.1012 	EXP 	str_bangRest: autoDraw = True
+2671.1106 	EXP 	str_fixRest: autoDraw = False
+2671.5797 	DATA 	Keypress: 5
+2671.5964 	EXP 	New trial (rep=0, index=9): {'trialOrderFile': 'scan_order10.xlsx'}
+2671.6037 	EXP 	Imported scan_order10.xlsx as conditions, 8 conditions, 4 params
+2671.6039 	EXP 	Created sequence: sequential, trialTypes=8, nReps=1, seed=None
+2671.6041 	EXP 	New trial (rep=0, index=0): {'im_fName': 'cl073.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'novel'}
+2671.6515 	EXP 	str_fixRest: autoDraw = False
+2671.6515 	EXP 	str_bangRest: autoDraw = False
+2671.6515 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2671.6515 	EXP 	im_trialImage: image = 'cl073.jpg'
+2671.6515 	EXP 	im_trialImage: autoDraw = True
+2672.3881 	DATA 	Keypress: 5
+2673.1862 	DATA 	Keypress: 5
+2673.6013 	EXP 	im_trialImage: autoDraw = False
+2673.6013 	EXP 	str_fixITI: autoDraw = True
+2673.9798 	DATA 	Keypress: 5
+2674.0938 	EXP 	New trial (rep=0, index=1): {'im_fName': 'cl074.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'novel'}
+2674.1176 	EXP 	str_fixITI: autoDraw = False
+2674.1176 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2674.1176 	EXP 	im_trialImage: image = 'cl074.jpg'
+2674.1176 	EXP 	im_trialImage: autoDraw = True
+2674.7794 	DATA 	Keypress: 5
+2675.5863 	DATA 	Keypress: 5
+2676.1005 	EXP 	im_trialImage: autoDraw = False
+2676.1005 	EXP 	str_fixITI: autoDraw = True
+2676.3869 	DATA 	Keypress: 5
+2676.5945 	EXP 	New trial (rep=0, index=2): {'im_fName': 'cl075.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'novel'}
+2676.6166 	EXP 	str_fixITI: autoDraw = False
+2676.6166 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2676.6166 	EXP 	im_trialImage: image = 'cl075.jpg'
+2676.6166 	EXP 	im_trialImage: autoDraw = True
+2677.1795 	DATA 	Keypress: 5
+2677.9874 	DATA 	Keypress: 5
+2678.6006 	EXP 	im_trialImage: autoDraw = False
+2678.6006 	EXP 	str_fixITI: autoDraw = True
+2678.7850 	DATA 	Keypress: 5
+2679.0925 	EXP 	New trial (rep=0, index=3): {'im_fName': 'cl076.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'novel'}
+2679.1102 	EXP 	str_fixITI: autoDraw = False
+2679.1102 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2679.1102 	EXP 	im_trialImage: image = 'cl076.jpg'
+2679.1102 	EXP 	im_trialImage: autoDraw = True
+2679.5865 	DATA 	Keypress: 5
+2680.3845 	DATA 	Keypress: 5
+2681.1008 	EXP 	im_trialImage: autoDraw = False
+2681.1008 	EXP 	str_fixITI: autoDraw = True
+2681.1841 	DATA 	Keypress: 5
+2681.5994 	EXP 	New trial (rep=0, index=4): {'im_fName': 'cl077.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'novel'}
+2681.6330 	EXP 	str_fixITI: autoDraw = False
+2681.6330 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2681.6330 	EXP 	im_trialImage: image = 'cl077.jpg'
+2681.6330 	EXP 	im_trialImage: autoDraw = True
+2681.8617 	DATA 	Keypress: 2
+2681.9866 	DATA 	Keypress: 5
+2682.3876 	DATA 	Keypress: 2
+2682.7857 	DATA 	Keypress: 5
+2683.5877 	DATA 	Keypress: 5
+2683.6081 	EXP 	im_trialImage: autoDraw = False
+2683.6081 	EXP 	str_fixITI: autoDraw = True
+2684.0930 	EXP 	New trial (rep=0, index=5): {'im_fName': 'cl078.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'novel'}
+2684.1156 	EXP 	str_fixITI: autoDraw = False
+2684.1156 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2684.1156 	EXP 	im_trialImage: image = 'cl078.jpg'
+2684.1156 	EXP 	im_trialImage: autoDraw = True
+2684.3838 	DATA 	Keypress: 5
+2684.9168 	DATA 	Keypress: 1
+2685.1868 	DATA 	Keypress: 5
+2685.9918 	DATA 	Keypress: 5
+2686.0995 	EXP 	im_trialImage: autoDraw = False
+2686.0995 	EXP 	str_fixITI: autoDraw = True
+2686.5922 	EXP 	New trial (rep=0, index=6): {'im_fName': 'cl079.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'novel'}
+2686.6144 	EXP 	str_fixITI: autoDraw = False
+2686.6144 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2686.6144 	EXP 	im_trialImage: image = 'cl079.jpg'
+2686.6144 	EXP 	im_trialImage: autoDraw = True
+2686.7859 	DATA 	Keypress: 5
+2687.2870 	DATA 	Keypress: 1
+2687.5849 	DATA 	Keypress: 5
+2688.3860 	DATA 	Keypress: 5
+2688.6002 	EXP 	im_trialImage: autoDraw = False
+2688.6002 	EXP 	str_fixITI: autoDraw = True
+2689.0904 	EXP 	New trial (rep=0, index=7): {'im_fName': 'cl080.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'novel'}
+2689.1089 	EXP 	str_fixITI: autoDraw = False
+2689.1089 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2689.1089 	EXP 	im_trialImage: image = 'cl080.jpg'
+2689.1089 	EXP 	im_trialImage: autoDraw = True
+2689.1910 	DATA 	Keypress: 5
+2689.9841 	DATA 	Keypress: 5
+2690.2411 	DATA 	Keypress: 2
+2690.7821 	DATA 	Keypress: 5
+2691.0983 	EXP 	im_trialImage: autoDraw = False
+2691.0983 	EXP 	str_fixITI: autoDraw = True
+2691.5847 	DATA 	Keypress: 5
+2691.6053 	EXP 	str_fixITI: autoDraw = False
+2691.6053 	EXP 	str_fixRest: autoDraw = True
+2692.3848 	DATA 	Keypress: 5
+2693.1838 	DATA 	Keypress: 5
+2693.9829 	DATA 	Keypress: 5
+2694.7819 	DATA 	Keypress: 5
+2695.5819 	DATA 	Keypress: 5
+2696.3808 	DATA 	Keypress: 5
+2697.1800 	DATA 	Keypress: 5
+2697.9821 	DATA 	Keypress: 5
+2698.7831 	DATA 	Keypress: 5
+2699.5821 	DATA 	Keypress: 5
+2700.3802 	DATA 	Keypress: 5
+2701.1812 	DATA 	Keypress: 5
+2701.9823 	DATA 	Keypress: 5
+2702.7803 	DATA 	Keypress: 5
+2703.0955 	EXP 	str_bangRest: autoDraw = True
+2703.1130 	EXP 	str_fixRest: autoDraw = False
+2703.5814 	DATA 	Keypress: 5
+2703.5898 	EXP 	New trial (rep=0, index=10): {'trialOrderFile': 'scan_order11.xlsx'}
+2703.5963 	EXP 	Imported scan_order11.xlsx as conditions, 8 conditions, 4 params
+2703.5965 	EXP 	Created sequence: sequential, trialTypes=8, nReps=1, seed=None
+2703.5968 	EXP 	New trial (rep=0, index=0): {'im_fName': 'cl081.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'familiar'}
+2703.6188 	EXP 	str_bangRest: autoDraw = False
+2703.6188 	EXP 	str_fixRest: autoDraw = False
+2703.6188 	EXP 	str_bangRest: autoDraw = False
+2703.6188 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2703.6188 	EXP 	im_trialImage: image = 'cl081.jpg'
+2703.6188 	EXP 	im_trialImage: autoDraw = True
+2704.3878 	DATA 	Keypress: 5
+2705.1829 	DATA 	Keypress: 5
+2705.6110 	EXP 	im_trialImage: autoDraw = False
+2705.6110 	EXP 	str_fixITI: autoDraw = True
+2705.9805 	DATA 	Keypress: 5
+2706.0962 	EXP 	New trial (rep=0, index=1): {'im_fName': 'cl082.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'familiar'}
+2706.1137 	EXP 	str_fixITI: autoDraw = False
+2706.1137 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2706.1137 	EXP 	im_trialImage: image = 'cl082.jpg'
+2706.1137 	EXP 	im_trialImage: autoDraw = True
+2706.7792 	DATA 	Keypress: 5
+2707.5870 	DATA 	Keypress: 5
+2708.1044 	EXP 	im_trialImage: autoDraw = False
+2708.1044 	EXP 	str_fixITI: autoDraw = True
+2708.3797 	DATA 	Keypress: 5
+2708.5962 	EXP 	New trial (rep=0, index=2): {'im_fName': 'cl083.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'familiar'}
+2708.6349 	EXP 	str_fixITI: autoDraw = False
+2708.6349 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2708.6349 	EXP 	im_trialImage: image = 'cl083.jpg'
+2708.6349 	EXP 	im_trialImage: autoDraw = True
+2709.1801 	DATA 	Keypress: 5
+2709.9880 	DATA 	Keypress: 5
+2710.6025 	EXP 	im_trialImage: autoDraw = False
+2710.6025 	EXP 	str_fixITI: autoDraw = True
+2710.7878 	DATA 	Keypress: 5
+2711.0944 	EXP 	New trial (rep=0, index=3): {'im_fName': 'cl084.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'familiar'}
+2711.1181 	EXP 	str_fixITI: autoDraw = False
+2711.1181 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2711.1181 	EXP 	im_trialImage: image = 'cl084.jpg'
+2711.1181 	EXP 	im_trialImage: autoDraw = True
+2711.5812 	DATA 	Keypress: 5
+2712.3812 	DATA 	Keypress: 5
+2713.1094 	EXP 	im_trialImage: autoDraw = False
+2713.1094 	EXP 	str_fixITI: autoDraw = True
+2713.1879 	DATA 	Keypress: 5
+2713.5920 	EXP 	New trial (rep=0, index=4): {'im_fName': 'cl085.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'familiar'}
+2713.6101 	EXP 	str_fixITI: autoDraw = False
+2713.6101 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2713.6101 	EXP 	im_trialImage: image = 'cl085.jpg'
+2713.6101 	EXP 	im_trialImage: autoDraw = True
+2713.9804 	DATA 	Keypress: 5
+2714.7854 	DATA 	Keypress: 5
+2715.5804 	DATA 	Keypress: 5
+2715.6007 	EXP 	im_trialImage: autoDraw = False
+2715.6007 	EXP 	str_fixITI: autoDraw = True
+2716.0933 	EXP 	New trial (rep=0, index=5): {'im_fName': 'cl086.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'familiar'}
+2716.1247 	EXP 	str_fixITI: autoDraw = False
+2716.1247 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2716.1247 	EXP 	im_trialImage: image = 'cl086.jpg'
+2716.1247 	EXP 	im_trialImage: autoDraw = True
+2716.3795 	DATA 	Keypress: 5
+2717.1845 	DATA 	Keypress: 5
+2717.9846 	DATA 	Keypress: 5
+2718.1072 	EXP 	im_trialImage: autoDraw = False
+2718.1072 	EXP 	str_fixITI: autoDraw = True
+2718.5919 	EXP 	New trial (rep=0, index=6): {'im_fName': 'cl087.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'familiar'}
+2718.6093 	EXP 	str_fixITI: autoDraw = False
+2718.6093 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2718.6093 	EXP 	im_trialImage: image = 'cl087.jpg'
+2718.6093 	EXP 	im_trialImage: autoDraw = True
+2718.7926 	DATA 	Keypress: 5
+2719.5846 	DATA 	Keypress: 5
+2720.3927 	DATA 	Keypress: 5
+2720.6068 	EXP 	im_trialImage: autoDraw = False
+2720.6068 	EXP 	str_fixITI: autoDraw = True
+2721.0923 	EXP 	New trial (rep=0, index=7): {'im_fName': 'cl088.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'familiar'}
+2721.1564 	EXP 	str_fixITI: autoDraw = False
+2721.1564 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2721.1564 	EXP 	im_trialImage: image = 'cl088.jpg'
+2721.1564 	EXP 	im_trialImage: autoDraw = True
+2721.1837 	DATA 	Keypress: 5
+2721.9838 	DATA 	Keypress: 5
+2722.7918 	DATA 	Keypress: 5
+2723.1069 	EXP 	im_trialImage: autoDraw = False
+2723.1069 	EXP 	str_fixITI: autoDraw = True
+2723.5913 	DATA 	Keypress: 5
+2723.5986 	EXP 	str_fixITI: autoDraw = False
+2723.5986 	EXP 	str_fixRest: autoDraw = True
+2724.3841 	DATA 	Keypress: 5
+2725.1835 	DATA 	Keypress: 5
+2725.9825 	DATA 	Keypress: 5
+2726.7906 	DATA 	Keypress: 5
+2727.5826 	DATA 	Keypress: 5
+2728.3827 	DATA 	Keypress: 5
+2729.1837 	DATA 	Keypress: 5
+2729.9817 	DATA 	Keypress: 5
+2730.7828 	DATA 	Keypress: 5
+2731.5818 	DATA 	Keypress: 5
+2732.3828 	DATA 	Keypress: 5
+2733.1806 	DATA 	Keypress: 5
+2733.9820 	DATA 	Keypress: 5
+2734.7820 	DATA 	Keypress: 5
+2735.0949 	EXP 	str_bangRest: autoDraw = True
+2735.1042 	EXP 	str_fixRest: autoDraw = False
+2735.5831 	DATA 	Keypress: 5
+2735.5954 	EXP 	New trial (rep=0, index=11): {'trialOrderFile': 'scan_order12.xlsx'}
+2735.6021 	EXP 	Imported scan_order12.xlsx as conditions, 8 conditions, 4 params
+2735.6023 	EXP 	Created sequence: sequential, trialTypes=8, nReps=1, seed=None
+2735.6026 	EXP 	New trial (rep=0, index=0): {'im_fName': 'cl089.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'novel'}
+2735.6371 	EXP 	str_fixRest: autoDraw = False
+2735.6371 	EXP 	str_bangRest: autoDraw = False
+2735.6371 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2735.6371 	EXP 	im_trialImage: image = 'cl089.jpg'
+2735.6371 	EXP 	im_trialImage: autoDraw = True
+2736.2405 	DATA 	Keypress: 2
+2736.3815 	DATA 	Keypress: 5
+2737.1886 	DATA 	Keypress: 5
+2737.6049 	EXP 	im_trialImage: autoDraw = False
+2737.6049 	EXP 	str_fixITI: autoDraw = True
+2737.9881 	DATA 	Keypress: 5
+2738.0962 	EXP 	New trial (rep=0, index=1): {'im_fName': 'cl090.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'novel'}
+2738.1143 	EXP 	str_fixITI: autoDraw = False
+2738.1143 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2738.1143 	EXP 	im_trialImage: image = 'cl090.jpg'
+2738.1143 	EXP 	im_trialImage: autoDraw = True
+2738.7826 	DATA 	Keypress: 5
+2738.8067 	DATA 	Keypress: 1
+2739.5897 	DATA 	Keypress: 5
+2740.1040 	EXP 	im_trialImage: autoDraw = False
+2740.1040 	EXP 	str_fixITI: autoDraw = True
+2740.3883 	DATA 	Keypress: 5
+2740.5949 	EXP 	New trial (rep=0, index=2): {'im_fName': 'cl091.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'novel'}
+2740.6126 	EXP 	str_fixITI: autoDraw = False
+2740.6126 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2740.6126 	EXP 	im_trialImage: image = 'cl091.jpg'
+2740.6126 	EXP 	im_trialImage: autoDraw = True
+2741.1828 	DATA 	Keypress: 5
+2741.4658 	DATA 	Keypress: 1
+2741.9888 	DATA 	Keypress: 5
+2742.6021 	EXP 	im_trialImage: autoDraw = False
+2742.6021 	EXP 	str_fixITI: autoDraw = True
+2742.7864 	DATA 	Keypress: 5
+2743.0954 	EXP 	New trial (rep=0, index=3): {'im_fName': 'cl092.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'novel'}
+2743.1126 	EXP 	str_fixITI: autoDraw = False
+2743.1126 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2743.1126 	EXP 	im_trialImage: image = 'cl092.jpg'
+2743.1126 	EXP 	im_trialImage: autoDraw = True
+2743.5799 	DATA 	Keypress: 5
+2743.9450 	DATA 	Keypress: 1
+2744.3870 	DATA 	Keypress: 5
+2745.1022 	EXP 	im_trialImage: autoDraw = False
+2745.1022 	EXP 	str_fixITI: autoDraw = True
+2745.1866 	DATA 	Keypress: 5
+2745.5931 	EXP 	New trial (rep=0, index=4): {'im_fName': 'cl093.jpg', 'key_correct': 1, 'im_type': 'animal', 'im_familiarity': 'novel'}
+2745.6098 	EXP 	str_fixITI: autoDraw = False
+2745.6098 	EXP 	im_trialImage: size = array([0.79583333, 0.94259259])
+2745.6098 	EXP 	im_trialImage: image = 'cl093.jpg'
+2745.6098 	EXP 	im_trialImage: autoDraw = True
+2745.9810 	DATA 	Keypress: 5
+2746.4881 	DATA 	Keypress: 1
+2746.7881 	DATA 	Keypress: 5
+2747.5861 	DATA 	Keypress: 5
+2747.6026 	EXP 	im_trialImage: autoDraw = False
+2747.6026 	EXP 	str_fixITI: autoDraw = True
+2748.0953 	EXP 	New trial (rep=0, index=5): {'im_fName': 'cl094.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'novel'}
+2748.1263 	EXP 	str_fixITI: autoDraw = False
+2748.1263 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2748.1263 	EXP 	im_trialImage: image = 'cl094.jpg'
+2748.1263 	EXP 	im_trialImage: autoDraw = True
+2748.3812 	DATA 	Keypress: 5
+2748.9692 	DATA 	Keypress: 2
+2749.1872 	DATA 	Keypress: 5
+2749.9882 	DATA 	Keypress: 5
+2750.1093 	EXP 	im_trialImage: autoDraw = False
+2750.1093 	EXP 	str_fixITI: autoDraw = True
+2750.5935 	EXP 	New trial (rep=0, index=6): {'im_fName': 'cl095.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'novel'}
+2750.6109 	EXP 	str_fixITI: autoDraw = False
+2750.6109 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2750.6109 	EXP 	im_trialImage: image = 'cl095.jpg'
+2750.6109 	EXP 	im_trialImage: autoDraw = True
+2750.7804 	DATA 	Keypress: 5
+2751.3133 	DATA 	Keypress: 2
+2751.5873 	DATA 	Keypress: 5
+2752.3884 	DATA 	Keypress: 5
+2752.6085 	EXP 	im_trialImage: autoDraw = False
+2752.6085 	EXP 	str_fixITI: autoDraw = True
+2753.0937 	EXP 	New trial (rep=0, index=7): {'im_fName': 'cl096.jpg', 'key_correct': 2, 'im_type': 'scene', 'im_familiarity': 'novel'}
+2753.1112 	EXP 	str_fixITI: autoDraw = False
+2753.1112 	EXP 	im_trialImage: size = array([0.8       , 0.94814815])
+2753.1112 	EXP 	im_trialImage: image = 'cl096.jpg'
+2753.1112 	EXP 	im_trialImage: autoDraw = True
+2753.1874 	DATA 	Keypress: 5
+2753.9855 	DATA 	Keypress: 5
+2754.7845 	DATA 	Keypress: 5
+2755.0995 	EXP 	im_trialImage: autoDraw = False
+2755.0995 	EXP 	str_fixITI: autoDraw = True
+2755.1611 	DATA 	Keypress: 2
+2755.5840 	DATA 	Keypress: 5
+2755.6014 	EXP 	str_fixITI: autoDraw = False
+2755.6014 	EXP 	str_fixRest: autoDraw = True
+2756.3852 	DATA 	Keypress: 5
+2757.1852 	DATA 	Keypress: 5
+2757.9843 	DATA 	Keypress: 5
+2758.7832 	DATA 	Keypress: 5
+2759.5863 	DATA 	Keypress: 5
+2760.3834 	DATA 	Keypress: 5
+2761.1903 	DATA 	Keypress: 5
+2761.9835 	DATA 	Keypress: 5
+2762.7845 	DATA 	Keypress: 5
+2763.5845 	DATA 	Keypress: 5
+2764.3815 	DATA 	Keypress: 5
+2765.1826 	DATA 	Keypress: 5
+2765.9837 	DATA 	Keypress: 5
+2766.7807 	DATA 	Keypress: 5
+2767.0894 	EXP 	str_bangRest: autoDraw = True
+2767.1127 	EXP 	str_fixRest: autoDraw = False
+2767.5839 	DATA 	Keypress: 5
+2767.5957 	EXP 	str_bangRest: autoDraw = False
+2767.5957 	EXP 	str_fixRest: autoDraw = False
+2767.5957 	EXP 	str_bangRest: autoDraw = False
+2767.5957 	EXP 	str_end: autoDraw = True
+2771.4223 	DATA 	Keypress: space
+2771.4290 	EXP 	str_end: autoDraw = False
+2771.5512 	EXP 	window1: mouseVisible = True

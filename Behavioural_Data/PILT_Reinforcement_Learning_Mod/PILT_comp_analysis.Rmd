@@ -1,0 +1,445 @@
+---
+title: "PILT_Comp_Analysis_FENCOG"
+author: "Michael Colwell"
+date: '2023-04-09'
+output: html_document
+---
+
+##PILT pre-processing script
+
+This is the computational modelling analysis for the Probabilistic Instrumental Learning Task (PILT), modified for the PEACE study by Michael Colwell (michael.colwell@psych.ox.ac.uk).
+
+Computational models were generated via scripts contained in the './Behavioural_Data/PILT_fitting_scripts/' folder. For the behavioural data analysis, please see './PILT_nonmodel/PILT_data preprocessing_and_analysis.Rmd'.
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Quality check and analysis scripts for OMT data in FENCOG project.
+
+```{r libraries, echo=FALSE, include=FALSE}
+library(dplyr)
+library(tidyverse)
+library(gtools)
+library(knitr)
+library(data.table)
+library(ggplot2)
+library(car)
+library(ggbeeswarm)
+library(ggrepel)
+library(readxl)
+library(data.table)
+library(openxlsx)
+library(ggpubr)
+library(rstatix)
+library("ez")
+library(ggsignif)
+library(RColorBrewer)
+library(emmeans)
+library(plotrix)
+library(sdamr)
+library(cowplot)
+library(lme4)
+library(stringr)
+library(cowplot)
+library(lme4)
+library(effectsize)
+library(lmerTest)
+library(ggdist)
+library(ggExtra)
+```
+
+## Set Dir and load in file
+
+```{r b0, echo=FALSE, include=TRUE}
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/PILT_Reinforcement_Learning_Mod")
+
+MasterPILTc <- read.csv("Reinforcement_Learning_PILT_full.csv", header = TRUE, stringsAsFactors = FALSE)
+
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/Allocation_and_Demographics")
+
+Allocation_and_Demographics <- read.csv("Allocation_And_Demo.csv")
+
+Allocation_and_Demographics$Participant.ID <- as.factor(Allocation_and_Demographics$Participant.ID)
+
+Merged_MemROI <- merge(MasterPILTc, Allocation_and_Demographics, by = "Participant.ID")
+
+# Log transform LR -- you don't need to log transform beta, the fitting script is already doing this.
+
+Merged_MemROI$LR_recipmodel <- log(Merged_MemROI$LR_recipmodel)
+Merged_MemROI$Excl10_LR <- log(Merged_MemROI$Excl10_LR)
+
+## P012 was identified pre-identified as having issues related to task performance (i.e., was aware of exact probabilities and task structure)
+
+removal_df <- subset(Merged_MemROI, Participant.ID != "P012")
+
+Merged_MemROI <- droplevels(removal_df)
+```
+
+##Graphs for publication
+
+```{r Chunk 7 - Generation of figures for report, echo=FALSE}
+# MasterPILTc_CPostLoss <- MasterPILTc_CPost %>% filter(!str_deteParticipant.ID# MasterPILTc_CPostLoss <- MasterPILTc_CPost %>% filter(!str_detect(Trial_type, "Reward"))
+
+Merged_MemROI <- Merged_MemROI %>%
+  mutate(Trial_type = factor(Trial_type, levels = c("Win", "Loss")))
+
+### Outcome sensitivity across trial types at follow-up - Supplementary Fig. 14B
+
+# EEM removed to reflect lack of ANOVA difference.
+
+SuppFig14B <- Merged_MemROI %>% ggplot(aes(x = Allocation, y = inv_recipmodel, fill = Allocation)) +
+  facet_wrap(~Trial_type) +
+  stat_slab(
+    side = "right", scale = 0.5, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "bonferroni",
+    map_signif_level = c("*" = 0.001, "*" = 0.01, "*" = 0.05, " " = 2),
+    margin_top = 0.05, textsize = 12
+  ) +
+  labs(title = " ") +
+  ylab("Log outcome sensitivity (ρ)\n") +
+  xlab(" ") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+# Figure 5E
+
+# Plot to demonstrate LR interaction effect
+Fig5E <- ggplot(Merged_MemROI, aes(x = Trial_type, y = inv_recipmodel, color = Allocation, group = Allocation)) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  # Left side (for 'Loss')
+  stat_slab(
+    data = subset(Merged_MemROI, Trial_type == "Loss"), # Only data where Trial_type is 'Loss'
+    side = "left", scale = 0.5, show.legend = F, alpha = 0.5,
+    aes(fill = Allocation), # Color the slabs based on 'Allocation'
+    .width = c(.50, .95, 1), linetype = "blank", position = position_nudge(x = -0.15)
+  ) +
+
+  # Right side (for 'Win')
+  stat_slab(
+    data = subset(Merged_MemROI, Trial_type == "Win"), # Only data where Trial_type is 'Win'
+    side = "right", scale = 0.5, show.legend = F, alpha = 0.5,
+    aes(fill = Allocation), # Color the slabs based on 'Allocation'
+    .width = c(.50, .95, 1), linetype = "blank", position = position_nudge(x = 0.15)
+  ) +
+  geom_line(aes(group = Participant.ID), linetype = "dashed", size = 0.175, alpha = 0.50) +
+
+  # Points and lines (jittered and connected by Participant.ID)
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.2, jitter.height = -0.3, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.15, alpha = 0.55) +
+
+  # Lines connecting points for each Participant.ID (grouping)
+
+  # Labels and title
+  labs(
+    title = "",
+    x = "",
+    y = "\nLog learning rate (α)\n"
+  ) +
+  theme_minimal()
+````
+  
+
+```{r b0, echo=FALSE, include=TRUE}
+# ANCOVA model setup and analysis
+
+## Learning rate
+
+# . As α and β covary within fitted models, inferential models included the reciprocal parameter as a random effect. See Supplementary Methods for further details.
+
+model_check <- lmer(LR_recipmodel ~ Allocation * Trial_type + (1 + inv_recipmodel || Participant.ID), data = Merged_MemROI)
+
+aov_mod <- anova(model_check)
+
+aov_mod
+
+eta_squared(test, ci = 0.95, alternative = "two.sided")
+
+EMM_2 <- emmeans(model_check, ~ Allocation | Trial_type)
+
+pairs(EMM_2, adjust = "holm")
+
+## Inverse decision temperature
+
+model_check <- lmer(inv_recipmodel ~ Allocation * Trial_type + (1 + LR_recipmodel || Participant.ID), data = Merged_MemROI)
+
+aov_mod <- anova(model_check)
+
+aov_mod
+
+eta_squared(test, ci = 0.95, alternative = "two.sided")
+
+EMM_2 <- emmeans(model_check, ~ Allocation | Trial_type)
+
+pairs(EMM_2, adjust = "holm")
+
+# get posterior draws of marginal means
+emm <- emmeans(m_lr, ~ Allocation | Trial_type)
+
+# summary with credible intervals
+summary(emm, infer = c(TRUE, TRUE), level = 0.95, type = "response")
+
+# pairwise contrasts if needed
+pairs(emm, adjust = "holm")
+
+## Checking relationship between RL params and behavioural performance
+
+d <- lmer(Optimal.choice.perc ~ LR_recipmodel * Trial_type + (1 | Participant.ID), data = Merged_MemROI)
+
+eta_squared(d, ci = 0.95, alternative = "two.sided")
+
+# Fit regression within each sample
+regression_results <- Merged_MemROI %>%
+  group_by(Allocation) %>%
+  group_map(~ tidy(lm(Optimal.choice.perc ~ LR_recipmodel, data = .x)))
+
+# Combine into one data frame
+regression_df <- bind_rows(regression_results, .id = "Participant.ID")
+
+# Summarize posterior over betas
+beta_summary <- regression_df %>%
+  group_by(term) %>%
+  summarise(
+    mean = mean(estimate),
+    lower = quantile(estimate, 0.025),
+    upper = quantile(estimate, 0.975)
+  )
+
+# Figure 5F
+
+# Compute correlation coefficient and p-value
+cor_result <- cor.test(Merged_MemROI$Optimal.choice.perc, Merged_MemROI$LR_recipmodel)
+
+# Create the scatterplot
+Scatterplot_check2 <- ggplot(data = Merged_MemROI, aes(x = Optimal.choice.perc, y = LR_recipmodel)) +
+  geom_smooth(method = "lm", se = TRUE, color = "black", fill = "lightgray", alpha = 0.3) + # Enable CI shading
+  labs(
+    x = "\nOptimal Choices (%) - Observed\n",
+    y = "\nLog learning rate\n"
+  ) +
+  annotate("text",
+    x = Inf, y = -Inf, hjust = 1, vjust = -0.5, size = 5,
+    label = paste(
+      "r =", round(cor_result$estimate, 3),
+      "\np =", ifelse(cor_result$p.value < 0.001, 0.001, format(cor_result$p.value, scientific = FALSE, digits = 3))
+    )
+  ) +
+  geom_point(size = 3.25, color = "#2E5984", alpha = 0.55) +
+  theme_minimal() +
+  theme(
+    axis.title.y = element_text(size = 16),
+    axis.title.x = element_text(size = 16),
+    axis.text.y = element_text(size = 15),
+    axis.text.x = element_text(size = 15)
+  )
+
+Fig5F <- ggMarginal(Scatterplot_check2, type = "density", linetype = "blank", fill = "lightblue", color = "black", alpha = 0.8)
+```
+
+```{r b0, echo=FALSE, include=TRUE}
+# Posterior check
+
+# Remove P012 to keep consistency with the observed data analysis.
+
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/PILT_Reinforcement_Learning_Mod/")
+
+Posterior_Summaries <- read.csv("Posteriors.csv", header = TRUE, stringsAsFactors = FALSE)
+
+removal_df <- subset(Posterior_Summaries, Participant.ID != "P012")
+
+Posterior_Summaries <- droplevels(removal_df)
+
+Posterior_Summaries <- Posterior_Summaries %>% filter(Trial_No > 19)
+
+Posterior_Summaries_Avg <- Posterior_Summaries %>%
+  group_by(Participant.ID, Trial_type) %>%
+  summarise(Choice.prob_post = mean(Choice.prob, na.rm = TRUE))
+
+Posterior_Summaries_Avg_Merged <- merge(
+  Posterior_Summaries_Avg,
+  Merged_MemROI,
+  by = c("Participant.ID", "Trial_type")
+)
+
+Posterior_Summaries_Avg_Merged$Choice.prob_post <- Posterior_Summaries_Avg_Merged$Choice.prob_post * 100
+
+d <- lmer(Choice.prob_post ~ LR_recipmodel * Trial_type + (1 | Participant.ID), data = Posterior_Summaries_Avg_Merged)
+
+# Fit regression within each sample
+regression_results <- Posterior_Summaries_Avg_Merged %>%
+  group_by(Allocation) %>%
+  group_map(~ tidy(lm(Choice.prob_post ~ LR_recipmodel, data = .x)))
+
+# Combine into one data frame
+regression_df <- bind_rows(regression_results, .id = "Participant.ID")
+
+# Summarize posterior over betas
+beta_summary <- regression_df %>%
+  group_by(term) %>%
+  summarise(
+    mean = mean(estimate),
+    lower = quantile(estimate, 0.025),
+    upper = quantile(estimate, 0.975)
+  )
+
+# Supplementary Fig 14C
+
+# Compute correlation coefficient and p-value
+cor_result <- cor.test(Posterior_Summaries_Avg_Merged$Choice.prob_post, Posterior_Summaries_Avg_Merged$LR_recipmodel)
+
+# Create the scatterplot
+Scatterplot_check2 <- ggplot(data = Posterior_Summaries_Avg_Merged, aes(x = Choice.prob_post, y = LR_recipmodel)) +
+  geom_smooth(method = "lm", se = TRUE, color = "black", fill = "lightgray", alpha = 0.3) + # Enable CI shading
+  labs(
+    x = "\nOptimal Choices (%) - Posterior\n",
+    y = "\nLog learning rate\n"
+  ) +
+  annotate("text",
+    x = Inf, y = -Inf, hjust = 1, vjust = -0.5, size = 5,
+    label = paste(
+      "r =", round(cor_result$estimate, 3),
+      "\np =", ifelse(cor_result$p.value < 0.001, 0.001, format(cor_result$p.value, scientific = FALSE, digits = 3))
+    )
+  ) +
+  geom_point(size = 3.25, color = "#2E5984", alpha = 0.75) +
+  theme_minimal() +
+  theme(
+    axis.title.y = element_text(size = 16),
+    axis.title.x = element_text(size = 16),
+    axis.text.y = element_text(size = 15),
+    axis.text.x = element_text(size = 15)
+  )
+
+SuppFig14C <- ggMarginal(Scatterplot_check2, type = "density", linetype = "blank", fill = "lightblue", color = "black", alpha = 0.8)
+```
+
+```{r b0, echo=FALSE, include=TRUE}
+# Check inferential model with first 10 trials (per trial type) excluded in fitting script
+
+model_check <- lmer(Excl10_LR ~ Allocation * Trial_type + (1 + Excl10_Inv || Participant.ID), data = Merged_MemROI)
+
+aov_mod <- anova(model_check)
+
+aov_mod
+
+EMM_2 <- emmeans(model_check, ~ Allocation | Trial_type)
+
+pairs(EMM_2, adjust = "holm")
+
+effect_size <- eff_size(EMM_2, sigma = sigma(model_check), edf = df.residual(model_check))
+
+summary(effect_size)
+
+model_check <- lmer(Excl10_Inv ~ Allocation * Trial_type + (1 + Excl10_LR || Participant.ID), data = Merged_MemROI)
+
+aov_mod <- anova(model_check)
+
+aov_mod
+```
+
+```{r b0, echo=FALSE, include=TRUE}
+## Generate posterior learning curve
+
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/PILT_Reinforcement_Learning_Mod")
+
+PosteriorLearning <- read.csv("Posteriors.csv", header = TRUE, stringsAsFactors = FALSE)
+
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/Allocation_and_Demographics")
+
+Allocation_and_Demographics <- read.csv("Allocation_And_Demo.csv")
+
+Allocation_and_Demographics$Participant.ID <- as.factor(Allocation_and_Demographics$Participant.ID)
+
+PosteriorLearning_M <- merge(PosteriorLearning, Allocation_and_Demographics, by = "Participant.ID")
+
+# Log transform LR -- you don't need to log transform beta, the fitting script is already doing this.
+
+## P012 was identified pre-identified as having issues related to task performance (i.e., was aware of exact probabilities and task structure)
+
+removal_df <- subset(PosteriorLearning_M, Participant.ID != "P012")
+
+PosteriorLearning_M <- droplevels(removal_df)
+
+## Simulate choices via Bernoulli trial sampling
+
+set.seed(123) # optional for reproducibility
+
+PosteriorLearning_M <- PosteriorLearning_M %>%
+  ungroup() %>%
+  mutate(
+    p_one = if_else(Trial_type == "Loss", 1 - Choice.prob, Choice.prob),
+    SimChoice = rbinom(n(), size = 1, prob = p_one)
+  ) %>%
+  select(-p_one)
+
+# Summary at group level
+
+PosteriorLearning_M_R <- PosteriorLearning_M %>%
+  group_by(Allocation, Trial_type, Trial_No) %>%
+  summarise(Optimal.choice = mean(SimChoice, na.rm = TRUE) * 100, SE = sd(SimChoice, na.rm = TRUE) / sqrt(n()) * 100)
+
+# Generate curve
+
+CurveUnified <- ggplot(
+  PosteriorLearning_M_R,
+  aes(
+    x = Trial_No, y = Optimal.choice,
+    group = interaction(Trial_type, Allocation),
+    colour = Allocation, linetype = Allocation
+  )
+) +
+  geom_segment(aes(x = 10, xend = 30, y = 50, yend = 50),
+    linetype = "dotted", color = "azure3"
+  ) +
+  geom_vline(xintercept = 10, linetype = "dotted", color = "azure3") +
+  geom_ribbon(
+    aes(
+      ymin = Optimal.choice - SE,
+      ymax = Optimal.choice + SE,
+      fill = Allocation
+    ),
+    color = NA, alpha = 0.11, show.legend = FALSE
+  ) +
+  geom_line(linewidth = 0.7) +
+  geom_point(aes(shape = Allocation), size = 2.75, alpha = 0.77) +
+  theme_minimal() +
+  scale_shape_manual(values = c(19, 15)) +
+  scale_color_brewer(palette = "Set2") +
+  scale_fill_brewer(palette = "Set2") +
+  ylab("High probability stimulus selected (%)\n") +
+  xlab("Trial number\n") +
+  annotate("text", x = 15, y = 70, label = "\nWin trials", size = 3.5, color = "#333333") +
+  annotate("text", x = 15, y = 16, label = "\nLoss trials", size = 3.5, color = "#333333") +
+  theme(
+    text = element_text(size = 12),
+    plot.margin = unit(c(0, 0, 0, 0), "cm"),
+    axis.title = element_text(size = 12),
+    legend.text = element_text(size = 10),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 10.5),
+    legend.position = c(0.875, 0.59),
+    legend.title = element_blank()
+  )
+````

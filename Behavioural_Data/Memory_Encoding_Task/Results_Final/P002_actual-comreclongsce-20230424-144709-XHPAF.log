@@ -1,0 +1,173 @@
+Scenario - comrecognition long version
+Logfile written - 04/24/2023 14:54:16
+
+Subject	Trial	Event Type	Code	Time	TTime	Uncertainty	Duration	Uncertainty	ReqTime	ReqDur	Stim Type	Pair Index
+
+P002_actual	1	Picture	rec001	10166	0	1	40163	1	0	40000	other	0
+P002_actual	1	Response	A	24846	14680	1
+P002_actual	2	Picture	rec002	60329	0	1	40163	1	0	40000	other	0
+P002_actual	2	Response	A	82036	21707	1
+P002_actual	3	Picture	rec003	110491	0	1	40163	1	0	40000	other	0
+P002_actual	3	Response	L	123066	12575	1
+P002_actual	4	Picture	rec004	160654	0	1	40163	1	0	40000	other	0
+P002_actual	4	Response	A	167745	7091	1
+P002_actual	5	Picture	rec005	210816	0	1	40163	1	0	40000	other	0
+P002_actual	5	Response	L	224645	13829	1
+P002_actual	6	Picture	rec006	260978	0	1	40163	1	0	40000	other	0
+P002_actual	6	Response	A	267607	6629	1
+P002_actual	7	Picture	rec007	311141	0	1	40163	1	0	40000	other	0
+P002_actual	7	Response	L	324776	13635	1
+P002_actual	8	Picture	rec008	361303	0	1	40163	1	0	40000	other	0
+P002_actual	8	Response	L	374097	12794	1
+P002_actual	9	Picture	rec009	411466	0	1	40163	1	0	40000	other	0
+P002_actual	9	Response	L	417547	6081	1
+P002_actual	10	Picture	rec010	461628	0	1	40163	1	0	40000	other	0
+P002_actual	10	Response	A	466705	5077	1
+P002_actual	11	Picture	rec011	511791	0	1	40163	1	0	40000	other	0
+P002_actual	11	Response	L	522336	10546	1
+P002_actual	12	Picture	rec012	561953	0	1	40163	1	0	40000	other	0
+P002_actual	12	Response	L	573926	11974	1
+P002_actual	13	Picture	rec013	612115	0	1	40163	1	0	40000	other	0
+P002_actual	13	Response	A	620896	8780	1
+P002_actual	14	Picture	rec014	662278	0	1	40163	1	0	40000	other	0
+P002_actual	14	Response	L	669315	7038	1
+P002_actual	15	Picture	rec015	712440	0	1	40163	1	0	40000	other	0
+P002_actual	15	Response	L	724227	11787	1
+P002_actual	16	Picture	rec016	762603	0	1	40163	1	0	40000	other	0
+P002_actual	16	Response	A	769775	7173	1
+P002_actual	17	Picture	rec017	812765	0	1	40163	1	0	40000	other	0
+P002_actual	17	Response	A	817706	4941	1
+P002_actual	18	Picture	rec018	862927	0	1	40163	1	0	40000	other	0
+P002_actual	18	Response	A	876076	13148	1
+P002_actual	19	Picture	rec019	913090	0	1	40163	1	0	40000	other	0
+P002_actual	19	Response	A	918997	5907	1
+P002_actual	20	Picture	rec020	963252	0	1	40163	1	0	40000	other	0
+P002_actual	20	Response	A	968527	5274	1
+P002_actual	21	Picture	rec021	1013415	0	1	40163	1	0	40000	other	0
+P002_actual	21	Response	L	1019156	5741	1
+P002_actual	21	Response	A	1024886	11471	1
+P002_actual	22	Picture	rec022	1063577	0	1	40163	1	0	40000	other	0
+P002_actual	22	Response	A	1070917	7340	1
+P002_actual	23	Picture	rec023	1113740	0	1	40163	1	0	40000	other	0
+P002_actual	23	Response	L	1122827	9088	1
+P002_actual	24	Picture	rec024	1163902	0	1	40163	1	0	40000	other	0
+P002_actual	24	Response	L	1179016	15114	1
+P002_actual	25	Picture	rec025	1214064	0	1	40163	1	0	40000	other	0
+P002_actual	25	Response	A	1227048	12984	1
+P002_actual	26	Picture	rec026	1264227	0	1	40163	1	0	40000	other	0
+P002_actual	26	Response	L	1283696	19470	1
+P002_actual	27	Picture	rec027	1314389	0	1	40163	1	0	40000	other	0
+P002_actual	27	Response	L	1331947	17558	1
+P002_actual	28	Picture	rec028	1364552	0	1	40163	1	0	40000	other	0
+P002_actual	28	Response	L	1380576	16025	1
+P002_actual	29	Picture	rec029	1414714	0	1	40163	1	0	40000	other	0
+P002_actual	29	Response	A	1420626	5912	1
+P002_actual	30	Picture	rec030	1464877	0	1	40163	1	0	40000	other	0
+P002_actual	30	Response	A	1473707	8831	1
+P002_actual	31	Picture	rec031	1515039	0	1	40163	1	0	40000	other	0
+P002_actual	31	Response	A	1520537	5498	1
+P002_actual	32	Picture	rec032	1565201	0	1	40163	1	0	40000	other	0
+P002_actual	32	Response	A	1574907	9705	1
+P002_actual	33	Picture	rec033	1615364	0	1	40163	1	0	40000	other	0
+P002_actual	33	Response	A	1624627	9263	1
+P002_actual	34	Picture	rec034	1665526	0	1	40163	1	0	40000	other	0
+P002_actual	34	Response	A	1672448	6922	1
+P002_actual	35	Picture	rec035	1715689	0	1	40163	1	0	40000	other	0
+P002_actual	35	Response	A	1730508	14819	1
+P002_actual	36	Picture	rec036	1765851	0	1	40163	1	0	40000	other	0
+P002_actual	36	Response	A	1770667	4816	1
+P002_actual	37	Picture	rec037	1816014	0	1	40163	1	0	40000	other	0
+P002_actual	37	Response	L	1825807	9793	1
+P002_actual	38	Picture	rec038	1866176	0	1	40163	1	0	40000	other	0
+P002_actual	38	Response	A	1875809	9633	1
+P002_actual	39	Picture	rec039	1916338	0	1	40163	1	0	40000	other	0
+P002_actual	39	Response	A	1922438	6099	1
+P002_actual	40	Picture	rec040	1966501	0	1	40163	1	0	40000	other	0
+P002_actual	40	Response	L	1978037	11537	1
+P002_actual	41	Picture	rec041	2016663	0	1	40163	1	0	40000	other	0
+P002_actual	41	Response	A	2023437	6774	1
+P002_actual	42	Picture	rec042	2066826	0	1	40163	1	0	40000	other	0
+P002_actual	42	Response	A	2078158	11332	1
+P002_actual	43	Picture	rec043	2116988	0	1	40163	1	0	40000	other	0
+P002_actual	43	Response	L	2124568	7579	1
+P002_actual	44	Picture	rec044	2167151	0	1	40163	1	0	40000	other	0
+P002_actual	44	Response	A	2175749	8599	1
+P002_actual	45	Picture	rec045	2217313	0	1	40163	1	0	40000	other	0
+P002_actual	45	Response	A	2234869	17556	1
+P002_actual	46	Picture	rec046	2267475	0	1	40163	1	0	40000	other	0
+P002_actual	46	Response	A	2273079	5604	1
+P002_actual	47	Picture	rec047	2317638	0	1	40163	1	0	40000	other	0
+P002_actual	47	Response	A	2326359	8721	1
+P002_actual	48	Picture	rec048	2367800	0	1	40163	1	0	40000	other	0
+P002_actual	48	Response	A	2372979	5179	1
+P002_actual	49	Picture	rec049	2417963	0	1	40163	1	0	40000	other	0
+P002_actual	49	Response	A	2423530	5567	1
+P002_actual	50	Picture	rec050	2468125	0	1	40163	1	0	40000	other	0
+P002_actual	50	Response	L	2474488	6363	1
+P002_actual	50	Response	A	2477408	9283	1
+P002_actual	51	Picture	rec052	2518288	0	1	40163	1	0	40000	other	0
+P002_actual	51	Response	L	2526740	8452	1
+P002_actual	52	Picture	rec053	2568450	0	1	40163	1	0	40000	other	0
+P002_actual	52	Response	L	2577080	8630	1
+P002_actual	53	Picture	rec054	2618612	0	1	40163	1	0	40000	other	0
+P002_actual	53	Response	L	2629749	11137	1
+P002_actual	54	Picture	rec055	2668775	0	1	40163	1	0	40000	other	0
+P002_actual	54	Response	L	2684570	15795	1
+P002_actual	55	Picture	rec057	2718937	0	1	40163	1	0	40000	other	0
+P002_actual	55	Response	A	2727009	8072	1
+P002_actual	56	Picture	rec058	2769100	0	1	40163	1	0	40000	other	0
+P002_actual	56	Response	A	2774359	5260	1
+P002_actual	57	Picture	rec059	2819262	0	1	40163	1	0	40000	other	0
+P002_actual	57	Response	L	2827623	8361	1
+P002_actual	58	Picture	rec060	2869425	0	1	40163	1	0	40000	other	0
+P002_actual	58	Response	L	2880548	11124	1
+P002_actual	59	Picture	rec061	2919587	0	1	40163	1	0	40000	other	0
+P002_actual	59	Response	A	2927939	8352	1
+P002_actual	60	Picture	rec062	2969749	0	1	40163	1	0	40000	other	0
+P002_actual	60	Response	A	2974848	5099	1
+P002_actual	61	Picture	rec063	3019912	0	1	40163	1	0	40000	other	0
+P002_actual	61	Response	L	3030130	10218	1
+P002_actual	62	Picture	rec064	3070074	0	1	40163	1	0	40000	other	0
+P002_actual	62	Response	L	3080929	10854	1
+P002_actual	63	Picture	rec065	3120237	0	1	40163	1	0	40000	other	0
+P002_actual	63	Response	L	3128980	8743	1
+P002_actual	64	Picture	rec066	3170399	0	1	40163	1	0	40000	other	0
+P002_actual	64	Response	A	3179111	8712	1
+P002_actual	65	Picture	rec068	3220561	0	1	40163	1	0	40000	other	0
+P002_actual	65	Response	A	3227269	6708	1
+P002_actual	66	Picture	rec069	3270724	0	1	40163	1	0	40000	other	0
+P002_actual	66	Response	A	3281749	11025	1
+P002_actual	67	Picture	rec070	3320886	0	1	40163	1	0	40000	other	0
+P002_actual	67	Response	A	3331670	10784	1
+P002_actual	68	Picture	rec073	3371049	0	1	40157	7	0	40000	other	0
+P002_actual	68	Response	L	3380889	9840	1
+P002_actual	69	Picture	rec074	3421211	0	1	40163	1	0	40000	other	0
+P002_actual	69	Response	A	3426909	5698	1
+P002_actual	70	Picture	rec075	3471374	0	1	40163	1	0	40000	other	0
+P002_actual	70	Response	A	3482579	11206	1
+P002_actual	71	Picture	rec076	3521536	0	1	40163	1	0	40000	other	0
+P002_actual	71	Response	L	3538320	16784	1
+P002_actual	72	Picture	rec077	3571698	0	1	40163	1	0	40000	other	0
+P002_actual	72	Response	L	3584350	12652	1
+P002_actual	73	Picture	rec078	3621861	0	1	40163	1	0	40000	other	0
+P002_actual	73	Response	A	3629630	7769	1
+P002_actual	74	Picture	rec079	3672023	0	1	40163	1	0	40000	other	0
+P002_actual	74	Response	L	3681140	9117	1
+P002_actual	75	Picture	rec081	3722186	0	1	40163	1	0	40000	other	0
+P002_actual	75	Response	L	3731170	8984	1
+P002_actual	76	Picture	rec082	3772348	0	1	40163	1	0	40000	other	0
+P002_actual	76	Response	A	3782620	10272	1
+P002_actual	77	Picture	rec083	3822511	0	1	40163	1	0	40000	other	0
+P002_actual	77	Response	A	3843410	20900	1
+P002_actual	78	Picture	rec085	3872673	0	1	40163	1	0	40000	other	0
+P002_actual	78	Response	L	3880229	7556	1
+P002_actual	79	Picture	rec086	3922835	0	1	40163	1	0	40000	other	0
+P002_actual	79	Response	L	3931829	8994	1
+P002_actual	80	Picture	rec087	3972998	0	1	40163	1	0	40000	other	0
+P002_actual	80	Response	L	3982220	9222	1
+P002_actual	81	Picture	rec088	4023160	0	1	40163	1	0	40000	other	0
+P002_actual	81	Response	L	4031240	8080	1
+P002_actual	82	Picture	rec090	4073323	0	1	40163	1	0	40000	other	0
+P002_actual	82	Response	L	4081950	8627	1
+P002_actual	83	Picture	rec091	4123485	0	1	40163	1	0	40000	other	0
+P002_actual	83	Response	L	4132550	9065	1

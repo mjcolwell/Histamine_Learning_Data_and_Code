@@ -1,0 +1,125 @@
+---
+title: "Global_CSF_Analysis"
+output: html_document
+date: "2025-03-20"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown for global CSF (white and grey matter) analysis for PEACE study (Colwell et al., N.D.).
+
+```{r cars}
+library(dplyr)
+library(tidyverse)
+library(gtools)
+library(knitr)
+library(data.table)
+library(ggplot2)
+library(car)
+library(ggbeeswarm)
+library(ggrepel)
+library(readxl)
+library(data.table)
+library(openxlsx)
+library(ggpubr)
+library(sdamr)
+library(rstatix)
+library("ez")
+library(ggsignif)
+library(RColorBrewer)
+library(emmeans)
+library(plotrix)
+library(sdamr)
+library(cowplot)
+library(psycho)
+library(ggridges)
+library(viridis)
+library(ggstance)
+library(ggdist)
+library(gghalves)
+library(ggpp)
+library(effectsize)
+library(lme4)
+library(lmerTest)
+library(brms)
+library(BayesFactor)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+
+setwd("C://Users/micha/Desktop/PEACE_Data_and_Code/ROI_Data/")
+
+CSF_df <- read.csv("Global_CSF_Data.csv")
+
+removal_df <- subset(CSF_df, Participant.ID != "P025" & Participant.ID != "P35" & Participant.ID != "P041" & Participant.ID != "P051" & Participant.ID != "P054" & Participant.ID != "P059")
+
+#P025, P035, P041, P051, P054, & P059 were excluded from the primary analysis due to issues around acquisition quality issues (n=4; e.g. sleeping during scan; P025, P041, P051, P054), data missingness (n=1; time-out during scanning session; P035), or global neuroimaging data exclusion (n=1; P059).
+
+#Results remain non-significant with these participants included in the analyses. 
+
+CSF_df <- droplevels(removal_df)
+
+CSF_model_gm <- t.test(global_gm  ~ Allocation, data = CSF_df)
+
+summary(CSF_model_gm)
+
+CSF_model_wm <- aov(global_wm  ~ Allocation, data = CSF_df)
+
+summary(CSF_model_wm)
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r pressure, echo=FALSE}
+
+#Supplementary Fig 16B
+
+CSF_df_long <- CSF_df %>%
+  pivot_longer(cols = starts_with("global_"), 
+               names_to = "csf_type", 
+               names_prefix = "csf_", 
+               values_to = "value")
+
+
+SuppFig16B <- CSF_df_long %>% ggplot(aes(x = Allocation, y = value, fill = Allocation)) +
+  facet_wrap(~csf_type) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "holm",
+    map_signif_level = c("*" = 0.001, "**" = 0.01, "*" = 0.05, " " = 0.20, " " = 2),
+    margin_top = 0.05, textsize = 12
+  ) +
+  labs(title = " ") +
+  ylab("Global CSF (mL/100mg/min)\n") +
+  xlab("") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+```
+
+

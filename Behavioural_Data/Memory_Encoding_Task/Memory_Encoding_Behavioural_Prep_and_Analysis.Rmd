@@ -1,0 +1,2403 @@
+---
+title: "Memory_Encoding_Analysis"
+author: "Michael Colwell"
+date: "2024-04-05"
+output: html_document
+---
+#Memory encoding task (or 'Hippocampal task') behavioural and neuroimaging data preprocessing analysis scripts for the PEACE Study ('Pitolisant Effects on Affect and Cognition Exploratory Study') (NCT05849675). 
+
+This script includes: 
+
+- Preprocessing of raw behavioural files from the pre-scanner, in-scanner and post-scanner (recognition) tasks
+- Main behavioural analysis 
+- DDM analysis
+- DDM parameter recovery
+- DDM posterior predictive checks
+- Signal persistence/encoding activity ~ connectivity analysis 
+- Signal persistence ~ DDM parameters analysis
+- Signal persistence ~ encoding activity lateralisation analysis
+- RL parameters ~ DDM parameters analysis
+
+#Rmarkdown script by Michael Colwell (michael.colwell@psych.ox.ac.uk).
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Library chunk
+
+```{r cars}
+library(dplyr)
+library(tidyverse)
+library(gtools)
+library(knitr)
+library(data.table)
+library(ggplot2)
+library(car)
+library(ggbeeswarm)
+library(ggrepel)
+library(readxl)
+library(data.table)
+library(openxlsx)
+library(ggpubr)
+library(sdamr)
+library(rstatix)
+library("ez")
+library(ggsignif)
+library(RColorBrewer)
+library(emmeans)
+library(plotrix)
+library(sdamr)
+library(cowplot)
+library(psycho)
+library(ggridges)
+library(viridis)
+library(ggstance)
+library(ggdist)
+library(gghalves)
+library(ggpp)
+library(effectsize)
+library(lme4)
+library(lmerTest)
+library(brms)
+library(BayesFactor)
+library("ggExtra")
+library(purrr)
+library(broom)
+library(moments)
+library(gtools)
+library(stringr)
+library(ggExtra)
+```
+
+## Initial Preprocessing (Initial test & Final Test)
+
+```{r pressure, echo=FALSE}
+## Set directory; Create list of relevant files; Merge files
+
+# Set working directory
+
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/Memory_Encoding_Task/Results_Final")
+
+# Create an empty data frame to store the combined data
+combined_df <- data.frame()
+
+# Get a list of all .dat files in the directory
+dat_files <- list.files(pattern = glob2rx("*com*.log"))
+
+# Loop through each .dat file
+for (file in dat_files) {
+  # Read the file using readLines()
+  lines <- readLines(file)
+
+  # Remove the first three lines
+  lines <- lines[-(1:5)]
+
+  # Extract the file name
+  file_name <- sub("\\.log$", "", file)
+
+  # Check if the file name contains P001, P002, etc.
+  if (grepl("[Pp]\\d{3}", file_name)) {
+    # Check if there are lines remaining
+    if (length(lines) > 0) {
+      # Replace blank spaces with NA in each line
+      lines <- lapply(lines, function(line) {
+        words <- strsplit(line, "\\s+")[[1]]
+        words[words == ""] <- NA
+        return(words)
+      })
+
+      # Find the maximum number of elements in a line
+      max_elements <- max(sapply(lines, length))
+
+      # Create a matrix to store the data
+      data_matrix <- matrix(nrow = length(lines), ncol = max_elements)
+
+      # Fill the matrix with the data from the lines
+      for (i in seq_along(lines)) {
+        row <- lines[[i]]
+        data_matrix[i, 1:length(row)] <- row
+      }
+
+      # Convert the matrix to a data frame
+      df <- as.data.frame(data_matrix, stringsAsFactors = FALSE) # Ensure strings are treated as characters
+
+      # Add a column with the file name to the data frame
+      df <- cbind(FileName = file_name, df)
+
+      # Bind the data to the combined data frame
+      combined_df <- bind_rows(combined_df, df)
+    }
+  }
+}
+
+# Assign column names
+col_names <- c("FileName", "Participant.ID", "Trial", "Event_Type", "Code_Raw", "Time", "TTime", "Uncertainty", "ResponseT", "Uncertainty_2", "ReqTime", "ReqDur", "Stim_Type", "Pair_Index") # Add your column names here
+
+colnames(combined_df) <- col_names
+
+# Prune 'Participant.ID' column to first few letters
+combined_df$Participant.ID <- str_sub(combined_df$Participant.ID, 1, 4)
+
+# Convert 'Participant.ID' column to uppercase
+combined_df$Participant.ID <- toupper(combined_df$Participant.ID)
+
+# Remove the "FileName" column
+combined_df <- combined_df[, !names(combined_df) %in% "FileName"]
+
+combined_df <- combined_df %>%
+  filter(Event_Type == "Response")
+
+combined_df$Code <- ifelse(grepl("A", combined_df$Code_Raw), 1,
+  ifelse(grepl("L", combined_df$Code_Raw), 2, NA)
+)
+
+# Remove the "Code_Raw" column
+combined_df <- combined_df[, !names(combined_df) %in% "Code_Raw"]
+
+# Only take the first instance of a button press (Presentation records all inputs) - you may want to change this
+combined_df <- combined_df %>%
+  distinct(Participant.ID, Trial, .keep_all = TRUE)
+
+# score each trial
+combined_df <- combined_df %>%
+  mutate(Correct = case_when(
+    Trial == "1" & Code == "1" ~ "1",
+    Trial == "2" & Code == "1" ~ "1",
+    Trial == "3" & Code == "2" ~ "1",
+    Trial == "4" & Code == "1" ~ "1",
+    Trial == "5" & Code == "1" ~ "1",
+    Trial == "6" & Code == "1" ~ "1",
+    Trial == "7" & Code == "1" ~ "1",
+    Trial == "8" & Code == "1" ~ "1",
+    Trial == "9" & Code == "2" ~ "1",
+    Trial == "10" & Code == "1" ~ "1",
+    Trial == "11" & Code == "2" ~ "1",
+    Trial == "12" & Code == "2" ~ "1",
+    Trial == "13" & Code == "1" ~ "1",
+    Trial == "14" & Code == "1" ~ "1",
+    Trial == "15" & Code == "2" ~ "1",
+    Trial == "16" & Code == "1" ~ "1",
+    Trial == "17" & Code == "1" ~ "1",
+    Trial == "18" & Code == "1" ~ "1",
+    Trial == "19" & Code == "1" ~ "1",
+    Trial == "20" & Code == "1" ~ "1",
+    Trial == "21" & Code == "1" ~ "1",
+    Trial == "22" & Code == "1" ~ "1",
+    Trial == "23" & Code == "2" ~ "1",
+    Trial == "24" & Code == "1" ~ "1",
+    Trial == "25" & Code == "2" ~ "1",
+    Trial == "26" & Code == "1" ~ "1",
+    Trial == "27" & Code == "2" ~ "1",
+    Trial == "28" & Code == "2" ~ "1",
+    Trial == "29" & Code == "1" ~ "1",
+    Trial == "30" & Code == "2" ~ "1",
+    Trial == "31" & Code == "1" ~ "1",
+    Trial == "32" & Code == "1" ~ "1",
+    Trial == "33" & Code == "1" ~ "1",
+    Trial == "34" & Code == "1" ~ "1",
+    Trial == "35" & Code == "1" ~ "1",
+    Trial == "36" & Code == "1" ~ "1",
+    Trial == "37" & Code == "2" ~ "1",
+    Trial == "38" & Code == "1" ~ "1",
+    Trial == "39" & Code == "2" ~ "1",
+    Trial == "40" & Code == "2" ~ "1",
+    Trial == "41" & Code == "2" ~ "1",
+    Trial == "42" & Code == "1" ~ "1",
+    Trial == "43" & Code == "1" ~ "1",
+    Trial == "44" & Code == "1" ~ "1",
+    Trial == "45" & Code == "2" ~ "1",
+    Trial == "46" & Code == "1" ~ "1",
+    Trial == "47" & Code == "1" ~ "1",
+    Trial == "48" & Code == "1" ~ "1",
+    Trial == "49" & Code == "1" ~ "1",
+    Trial == "50" & Code == "1" ~ "1",
+    Trial == "51" & Code == "2" ~ "1",
+    Trial == "52" & Code == "1" ~ "1",
+    Trial == "53" & Code == "1" ~ "1",
+    Trial == "54" & Code == "1" ~ "1",
+    Trial == "55" & Code == "1" ~ "1",
+    Trial == "56" & Code == "1" ~ "1",
+    Trial == "57" & Code == "1" ~ "1",
+    Trial == "58" & Code == "2" ~ "1",
+    Trial == "59" & Code == "1" ~ "1",
+    Trial == "60" & Code == "1" ~ "1",
+    Trial == "61" & Code == "2" ~ "1",
+    Trial == "62" & Code == "1" ~ "1",
+    Trial == "63" & Code == "2" ~ "1",
+    Trial == "64" & Code == "1" ~ "1",
+    Trial == "65" & Code == "1" ~ "1",
+    Trial == "66" & Code == "2" ~ "1",
+    Trial == "67" & Code == "1" ~ "1",
+    Trial == "68" & Code == "1" ~ "1",
+    Trial == "69" & Code == "2" ~ "1",
+    Trial == "70" & Code == "1" ~ "1",
+    Trial == "71" & Code == "1" ~ "1",
+    Trial == "72" & Code == "1" ~ "1",
+    Trial == "73" & Code == "1" ~ "1",
+    Trial == "74" & Code == "2" ~ "1",
+    Trial == "75" & Code == "2" ~ "1",
+    Trial == "76" & Code == "1" ~ "1",
+    Trial == "77" & Code == "1" ~ "1",
+    Trial == "78" & Code == "1" ~ "1",
+    Trial == "79" & Code == "1" ~ "1",
+    Trial == "80" & Code == "2" ~ "1",
+    Trial == "81" & Code == "2" ~ "1",
+    Trial == "82" & Code == "1" ~ "1",
+    Trial == "83" & Code == "1" ~ "1",
+    TRUE ~ "0"
+  ))
+
+# Images #68 and #48 were corrected in this version of the script, which were previously labelled as distraction stimuli in error.
+
+# Creating a column to sort images into novel (seen in scanner), familiar (seen earlier in day and during scan), and distractors (seen only during final test [not encoded])
+
+combined_df <- combined_df %>%
+  mutate(Trial_Type = case_when(
+    Code == "2" ~ "Distractor",
+    Trial == "10" & Code == "1" ~ "Familiar",
+    Trial == "29" & Code == "1" ~ "Familiar",
+    Trial == "36" & Code == "1" ~ "Familiar",
+    Trial == "48" & Code == "1" ~ "Familiar",
+    Trial == "50" & Code == "1" ~ "Familiar",
+    Trial == "68" & Code == "1" ~ "Familiar",
+    Trial == "78" & Code == "1" ~ "Familiar",
+    Trial == "82" & Code == "1" ~ "Familiar",
+    TRUE ~ "Novel"
+  ))
+
+# Presentation records in tenths of milliseconds -- divide this value by 10 to get standard milliseconds
+
+combined_df$TTime <- as.numeric(combined_df$TTime)
+combined_df$Response.time <- combined_df$TTime / 10
+
+# Convert Correctness to numeric
+combined_df$Correct <- as.numeric(combined_df$Correct)
+
+# Remove extraneous columns
+Cleaned_Memory_Task <- subset(combined_df, select = -c(TTime, Event_Type, Uncertainty, ResponseT, ReqTime, ReqDur, Stim_Type, Pair_Index, Uncertainty_2))
+
+Cleaned_Memory_Task$Code <- recode_factor(Cleaned_Memory_Task$Code, "2" = "Unseen", "1" = "Seen")
+
+# Convert RT for correct responses only
+
+Cleaned_Memory_Task <- Cleaned_Memory_Task %>%
+  transform(RT_Corr = ifelse(Correct == 1, Response.time, NA))
+
+
+Cleaned_Memory_Task <- Cleaned_Memory_Task %>%
+  mutate(Hits = case_when(
+    Correct == "1" & Trial_Type == "Novel" ~ "1",
+    Correct == "1" & Trial_Type == "Familiar" ~ "1",
+    Correct == "0" & Trial_Type == "Novel" ~ "0",
+    Correct == "0" & Trial_Type == "Familiar" ~ "0",
+    TRUE ~ NA
+  ))
+
+Cleaned_Memory_Task <- Cleaned_Memory_Task %>%
+  mutate(Misses = case_when(
+    Correct == "0" & Trial_Type == "Novel" ~ "1",
+    Correct == "0" & Trial_Type == "Familiar" ~ "1",
+    Correct == "1" & Trial_Type == "Novel" ~ "0",
+    Correct == "1" & Trial_Type == "Familiar" ~ "0",
+    TRUE ~ NA
+  ))
+
+Cleaned_Memory_Task <- Cleaned_Memory_Task %>%
+  mutate(FAs = case_when(
+    Correct == "1" & Trial_Type == "Distractor" ~ "0",
+    Correct == "0" & Trial_Type == "Distractor" ~ "1",
+    TRUE ~ NA
+  ))
+
+Cleaned_Memory_Task <- Cleaned_Memory_Task %>%
+  mutate(CRs = case_when(
+    Correct == "0" & Trial_Type == "Distractor" ~ "0",
+    Correct == "1" & Trial_Type == "Distractor" ~ "1",
+    TRUE ~ NA
+  ))
+```
+```{r pressure, echo=FALSE}
+# DDM Preprocessing Block (Optional)
+
+Cleaned_Memory_Task$rt <- Cleaned_Memory_Task$Response.time * 0.001
+
+DDM <- Cleaned_Memory_Task
+
+DDM <- Cleaned_Memory_Task
+
+DDM <- DDM %>%
+  mutate(stim = case_when(
+    Code == "Seen" ~ "1",
+    Code == "Unseen" ~ "0",
+    TRUE ~ NA
+  ))
+
+DDM$correct <- DDM$Correct
+
+DDM$subj_idx <- DDM$Participant.ID
+
+DDM <- DDM %>%
+  mutate(response = case_when(
+    Correct == "1" & stim == "1" ~ "1",
+    Correct == "0" & stim == "1" ~ "0",
+    Correct == "1" & stim == "0" ~ "0",
+    Correct == "0" & stim == "0" ~ "1",
+    TRUE ~ NA
+  ))
+
+DDM <- DDM %>% select(rt, response, subj_idx, correct, stim)
+
+write.csv(DDM, "C:/Users/micha/Desktop/Memory_Task_DDM.csv", row.names = TRUE)
+```
+
+
+
+
+
+
+```{r pressure, echo=FALSE}
+# Create summary file
+
+Cleaned_Memory_Task <- Cleaned_Memory_Task %>%
+  mutate(
+    Hits = as.numeric(Hits),
+    FAs = as.numeric(FAs),
+    Misses = as.numeric(Misses),
+    CRs = as.numeric(CRs),
+    Correct = as.numeric(Correct),
+    RT_Corr = as.numeric(RT_Corr),
+    Response.time = as.numeric(Response.time)
+  )
+
+M_Encoding_Summary <- Cleaned_Memory_Task %>%
+  group_by(Participant.ID, Trial_Type, Code) %>%
+  summarize(
+    Accuracy = sum(Correct, na.rm = TRUE),
+    mean_RT_all = mean(Response.time, na.rm = TRUE),
+    mean_RT_corr = mean(RT_Corr, na.rm = TRUE),
+    Hits = sum(Hits, na.rm = TRUE),
+    FAs = sum(FAs, na.rm = TRUE),
+    Misses = sum(Misses, na.rm = TRUE),
+    CRs = sum(CRs, na.rm = TRUE)
+  )
+
+M_Encoding_Not <- Cleaned_Memory_Task %>%
+  group_by(Participant.ID, ) %>%
+  summarize(
+    Accuracy = sum(Correct, na.rm = TRUE),
+    mean_RT_all = mean(Response.time, na.rm = TRUE),
+    mean_RT_corr = mean(RT_Corr, na.rm = TRUE),
+    Hits = sum(Hits, na.rm = TRUE),
+    FAs = sum(FAs, na.rm = TRUE),
+    Misses = sum(Misses, na.rm = TRUE),
+    CRs = sum(CRs, na.rm = TRUE)
+  )
+
+# Convert Accuracy to Accuracy %
+
+# 25 Distractors, #58 Previously Encoded, 8 of which before the scanner.
+
+M_Encoding_Summary$Accuracy_Perc <- ifelse(M_Encoding_Summary$Trial_Type == "Novel",
+  M_Encoding_Summary$Accuracy / 50 * 100,
+  ifelse(M_Encoding_Summary$Trial_Type == "Familiar",
+    M_Encoding_Summary$Accuracy / 8 * 100,
+    ifelse(M_Encoding_Summary$Trial_Type == "Distractor",
+      M_Encoding_Summary$Accuracy / 25 * 100,
+      NA
+    )
+  )
+)
+```
+
+```{r pressure, echo=FALSE}
+# Quality checks
+
+# Function to detect outliers
+is_outlier <- function(x) {
+  return(x < quantile(x, 0.25) - 3.0 * IQR(x) | x > quantile(x, 0.75) + 3.0 * IQR(x))
+}
+
+Accuracy_Plot <- ggplot(M_Encoding_Summary, aes(x = as.factor(Trial_Type), y = Accuracy_Perc)) +
+  geom_boxplot(outlier.shape = NA) + # Hide outlier points in boxplot
+  geom_point(data = M_Encoding_Summary[is_outlier(M_Encoding_Summary$Accuracy_Perc), ], aes(color = Participant.ID)) +
+  geom_text_repel(data = M_Encoding_Summary[is_outlier(M_Encoding_Summary$Accuracy_Perc), ], aes(label = Participant.ID), color = "black", size = 3) + # Label outliers
+  labs(
+    title = "",
+    y = "\nRecall Accuracy (%)\n",
+    x = "\nTrial Type\n"
+  ) +
+  theme_minimal() +
+  theme(text = element_text(size = 16))
+
+RT_Plot <- ggplot(M_Encoding_Summary, aes(x = as.factor(Trial_Type), y = mean_RT_corr)) +
+  geom_boxplot(outlier.shape = NA) + # Hide outlier points in boxplot
+  geom_point(data = M_Encoding_Summary[is_outlier(M_Encoding_Summary$mean_RT), ], aes(color = Participant.ID)) +
+  geom_text_repel(data = M_Encoding_Summary[is_outlier(M_Encoding_Summary$mean_RT), ], aes(label = Participant.ID), color = "black", size = 3) + # Label outliers
+  labs(
+    title = "",
+    y = "\nResponse Time (ms)\n",
+    x = "\nTrial Type\n"
+  ) +
+  theme_minimal() +
+  theme(text = element_text(size = 16))
+```
+
+```{r pressure, echo=FALSE}
+# Merging/Splitting files further; combining allocation information
+
+ROI_Values <- read.xlsx("C:/Users/micha/Desktop/PEACE_Data_and_Code/ROI_Data/Hip_encoding_sig_clusters_PE.xlsx")
+
+Mem_filtered <- M_Encoding_Summary[grepl("Novel", M_Encoding_Summary$Trial_Type), ]
+
+Mem_filtered_2 <- M_Encoding_Summary[grepl("Familiar", M_Encoding_Summary$Trial_Type), ]
+
+Merged_MemROI <- merge(Mem_filtered, ROI_Values, by = "Participant.ID")
+Merged_MemROI_2 <- merge(Mem_filtered_2, ROI_Values, by = "Participant.ID")
+
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/Allocation_and_Demographics")
+
+Allocation_and_Demographics <- read.csv("Allocation_And_Demo.csv")
+
+Allocation_and_Demographics$Participant.ID <- as.factor(Allocation_and_Demographics$Participant.ID)
+
+Merged_MemROI <- merge(Merged_MemROI, Allocation_and_Demographics, by = "Participant.ID")
+````
+
+
+
+```{r pressure, echo=FALSE}
+# Relationship between ROI values and task performance.
+
+# Full_Model_All_PEs
+
+# Create the scatterplot
+
+## PE Boxplots
+
+##
+
+Bil_Hip_Fig <- Merged_MemROI %>% ggplot(aes(x = Allocation, y = Bil_Hipp, fill = Allocation)) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  labs(title = " ") +
+  ylab("Cluster Mask β\n") +
+  xlab("\nBilateral Hippocampus\n") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+Basal_forebrain_fig <- Merged_MemROI %>% ggplot(aes(x = Allocation, y = Basal_forebrain, fill = Allocation)) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  labs(title = " ") +
+  ylab("Cluster Mask β\n") +
+  xlab("\nBasal Forebrain\n") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title.y = element_blank(), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+Bil_PRC_fig <- Merged_MemROI %>% ggplot(aes(x = Allocation, y = Perirhinal, fill = Allocation)) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  labs(title = " ") +
+  ylab("Cluster Mask β\n") +
+  xlab("\nBilateral PRC\n") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title.y = element_blank(), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+Bil_ETH_fig <- Merged_MemROI %>% ggplot(aes(x = Allocation, y = Entorhinal, fill = Allocation)) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  labs(title = " ") +
+  ylab("Cluster Mask β\n") +
+  xlab("\nBilateral ETC\n") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title.y = element_blank(), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+
+CombinedPlots <- plot_grid(Bil_Hip_Fig, Basal_forebrain_fig, Bil_PRC_fig, Bil_ETH_fig, align = "h", ncol = 4, labels = c(""))
+```
+
+
+
+```{r pressure, echo=FALSE}
+# Resting state edge strength analysis
+
+# Data merging/clean-up
+
+Edge_MamZ_Hipp <- read.csv("C:/Users/micha/Desktop/PEACE_Data_and_Code/ROI_Data/edge_strengths_Node1_Node2.csv")
+
+# Need to add in Participant.ID column to .csv - NTS.
+
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/Allocation_and_Demographics")
+
+Allocation_and_Demographics <- read.csv("Allocation_And_Demo.csv")
+
+EdgeS_in <- merge(Edge_MamZ_Hipp, Allocation_and_Demographics, by = "Participant.ID")
+
+EdgeS_R <- merge(EdgeS_in, Merged_MemROI_2, by = "Participant.ID")
+
+
+##########################
+
+# Association between H3R weighted values for edge strengths (resting state) + Hippocampal encoding activity (novel > familiar, significant group cluster)
+
+LM_1 <- lm(Edge.Strengths ~ H3R_Hipp, data = EdgeS_R)
+
+summary(LM_1)
+
+eta_squared(LM_1, ci = 0.95, alternative = "two.sided")
+
+cor.test(EdgeS_R$Edge.Strengths, EdgeS_R$H3R_Hipp)
+
+# Fit regression within each sample
+regression_results <- EdgeS_R %>%
+  group_by(Allocation) %>%
+  group_map(~ tidy(lm(Edge.Strengths ~ H3R_Hipp, data = .x)))
+
+# Combine into one data frame
+regression_df <- bind_rows(regression_results, .id = "Participant.ID")
+
+# Summarize posterior over betas
+beta_summary <- regression_df %>%
+  group_by(term) %>%
+  summarise(
+    mean = mean(estimate),
+    lower = quantile(estimate, 0.025),
+    upper = quantile(estimate, 0.975)
+  )
+
+##########################
+
+# Association between unweighted values for edge strengths (resting state) + Hippocampal encoding activity (novel > familiar, significant group cluster)
+
+LM_2 <- lm(Non.Weight ~ Bil_Hipp, data = EdgeS_R)
+
+summary(LM_2)
+
+eta_squared(LM_2, ci = 0.95, alternative = "two.sided")
+
+cor.test(EdgeS_R$Non.Weight, EdgeS_R$Bil_Hipp)
+
+# Fit regression within each sample
+regression_results <- EdgeS_R %>%
+  group_by(Allocation) %>%
+  group_map(~ tidy(lm(Non.Weight ~ Bil_Hipp, data = .x)))
+
+# Combine into one data frame
+regression_df <- bind_rows(regression_results, .id = "Participant.ID")
+
+# Summarize posterior over betas
+beta_summary <- regression_df %>%
+  group_by(term) %>%
+  summarise(
+    mean = mean(estimate),
+    lower = quantile(estimate, 0.025),
+    upper = quantile(estimate, 0.975)
+  )
+
+##########################
+
+# Figures for publication
+
+# Compute correlation coefficient and p-value
+cor_result <- cor.test(EdgeS_R$Edge.Strengths, EdgeS_R$H3R_Hipp)
+
+# Create the scatterplot
+Edge_Encoding_Figure <- ggplot(data = EdgeS_R, aes(x = Edge.Strengths, y = H3R_Hipp)) +
+  geom_smooth(method = "lm", se = TRUE, color = "black", fill = "lightgray", alpha = 0.3) + # Enable CI shading
+  labs(
+    x = "\nMammillary Zone ↔ Hippocampus Connectivity\n",
+    y = "\nBilateral Hippocampus Activity (Novel > Familiar)\n"
+  ) +
+  annotate("text",
+    x = Inf, y = -Inf, hjust = 1, vjust = -0.5, size = 5,
+    label = paste(
+      "r =", round(cor_result$estimate, 3),
+      "\np =", ifelse(cor_result$p.value < 0.001, 0.001, format(cor_result$p.value, scientific = FALSE, digits = 3))
+    )
+  ) +
+  geom_point(size = 3.25, color = "#2E5984", alpha = 0.75) +
+  theme_minimal() +
+  theme(
+    axis.title.y = element_text(size = 16),
+    axis.title.x = element_text(size = 16),
+    axis.text.y = element_text(size = 15),
+    axis.text.x = element_text(size = 15)
+  )
+
+Edge_Encoding_Figure_Final <- ggMarginal(Edge_Encoding_Figure, type = "density", linetype = "blank", fill = "lightblue", color = "black", alpha = 0.8)
+```
+
+```{r pressure, echo=FALSE}
+# Edge Strengths Figure
+
+# Manually edited it to one * instead of two ** as this is this reflects the TFCE-corrected p-value:
+
+# Node 0 - 1: t = 2.91533; p = 0.9734
+
+Edge_Strengths <- EdgeS_in %>% ggplot(aes(x = Allocation, y = Edge.Strengths, fill = Allocation)) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "holm",
+    map_signif_level = c("***" = 0.001, "*" = 0.01, "*" = 0.05, " " = 0.20, " " = 2),
+    margin_top = 0.05, textsize = 12
+  ) +
+  labs(title = " ") +
+  ylab("Mammillary Zone ↔ Hippocampus Connectivity\n") +
+  xlab("") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+# Descriptive statistics
+
+EdgeS_in %>%
+  group_by(Allocation) %>%
+  get_summary_stats(Edge.Strengths, type = "mean_sd")
+
+EdgeS_in %>%
+  group_by(Allocation) %>%
+  get_summary_stats(Non.Weight, type = "mean_sd")
+```
+
+
+
+
+```{r pressure, echo=FALSE}
+# Removing excluded data & merging demographics file
+
+# P003, P011, P023, P034, P045, P051, & P059 were excluded from neuroimaging analysis due to technical and adherence issues identified in pre-unblinding data quality checks. The results remain significant with their inclusion.
+
+# During the memory recognition task, the task finished early for P044 due to glitch. For completeness, their data was included and analysed based on percentage correct, however, the findings remain significant with their data excluded from the analysis.
+
+removal_df <- subset(M_Encoding_Summary, Participant.ID != "P003" & Participant.ID != "P007" & Participant.ID != "P011" & Participant.ID != "P034" & Participant.ID != "P045" & Participant.ID != "P059")
+
+M_Encoding_Summary <- droplevels(removal_df)
+
+# Adding demographics file
+
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/Allocation_and_Demographics/")
+
+Allocation_and_Demographics <- read.csv("Allocation_And_Demo.csv")
+
+Allocation_and_Demographics$Participant.ID <- as.factor(Allocation_and_Demographics$Participant.ID)
+
+M_Encoding_Full <- merge(M_Encoding_Summary, Allocation_and_Demographics, by = "Participant.ID")
+
+M_Encoding_Full
+```
+
+```{r pressure, echo=FALSE}
+# Plots
+M_Encoding_Full$Trial_Type <- as.factor(M_Encoding_Full$Trial_Type)
+
+M_Encoding_Full$Trial_Type <- relevel(M_Encoding_Full$Trial_Type, ref = "Novel")
+
+M_Encoding_Seen <- M_Encoding_Full[M_Encoding_Full$Code == "Seen", ]
+M_Encoding_Unseen <- M_Encoding_Full[M_Encoding_Full$Code == "Unseen", ]
+
+M_Encoding_Full$Code <- factor(M_Encoding_Full$Code, levels = c("Seen", "Unseen"))
+
+# Overall DF
+
+# In the main paper, significance asterisks were altered to reflect EMM values.
+
+M_Encoding_Full <- M_Encoding_Full %>%
+  mutate(Trial_Type = factor(Trial_Type, levels = c("Familiar", "Novel", "Distractor")))
+
+All_acc_Plot <- M_Encoding_Full %>% ggplot(aes(x = Allocation, y = Accuracy_Perc, fill = Allocation)) +
+  facet_wrap(~Code) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "holm",
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 0.20, " " = 2),
+    margin_top = 0.05, textsize = 12
+  ) +
+  labs(title = " ") +
+  ylab("Recognition accuracy (%)\n") +
+  xlab("") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+# Overall RT
+
+All_RT_Plot <- M_Encoding_Full %>% ggplot(aes(x = Allocation, y = mean_RT_corr, fill = Allocation)) +
+  facet_wrap(~Code) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "holm",
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 0.20, " " = 2),
+    margin_top = 0.05, textsize = 12
+  ) +
+  labs(title = " ") +
+  ylab("Time to choice (ms)\n") +
+  xlab("") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+Combined_plot <- plot_grid(All_acc_Plot, All_RT_Plot, ncol = 1)
+```
+
+
+```{r pressure, echo=FALSE}
+# Checking kurtosis values
+
+x <- M_Encoding_Full$Accuracy_Perc
+
+# skewness
+skew_val <- skewness(x, na.rm = TRUE)
+
+kurt_val <- kurtosis(x, na.rm = TRUE) # excess kurtosis by default
+
+c(skew_val = skew_val, kurt_val = kurt_val)
+
+# numeric vector (your variable of interest)
+y <- M_Encoding_Full$mean_RT_all
+
+# skewness
+skew_val <- skewness(y, na.rm = TRUE)
+
+kurt_val <- kurtosis(y, na.rm = TRUE) # excess kurtosis by default
+
+c(skew_val = skew_val, kurt_val = kurt_val)
+
+# Inferential analyses
+
+# Accuracy analysis
+
+Accuracy_Model <- aov(Accuracy_Perc ~ Allocation + Code + Allocation:Code + Error(Participant.ID), data = M_Encoding_Full)
+
+summary(Accuracy_Model)
+
+###
+
+# Calculate estimated marginal means (EMMs) for Allocation*Condition interaction
+model_linear <- lmer(Accuracy_Perc ~ Allocation + Code + Allocation:Code + (1 | Participant.ID), data = M_Encoding_Full)
+
+eta_squared(model_linear, ci = 0.95, alternative = "two.sided")
+
+EMM_2 <- emmeans(model_linear, ~ Allocation | Code)
+
+# Calculate pairwise comparisons for the specified contrasts
+pairwise_comparisons <- pairs(EMM_2, adjust = "holm")
+
+summary(pairwise_comparisons)
+
+effect_size <- eff_size(EMM_2, sigma = sigma(model_linear), edf = df.residual(model_linear))
+
+summary(effect_size)
+
+M_Encoding_Full %>%
+  group_by(Trial_Type, Allocation) %>%
+  get_summary_stats(Accuracy_Perc, type = "mean_sd")
+
+# Response time analysis
+
+###
+
+RT_Model <- aov(mean_RT_all ~ Allocation + Code + Allocation:Code + Error(Participant.ID), data = M_Encoding_Full)
+
+summary(RT_Model)
+
+###
+
+RT_Model <- aov(mean_RT_corr ~ Allocation + Code + Allocation:Code + Gender + Digit.Span.Aggregate + Error(Participant.ID), data = M_Encoding_Full)
+
+summary(RT_Model)
+
+# Calculate estimated marginal means (EMMs) for Allocation*Condition interaction
+model_linear <- lmer(mean_RT_corr ~ Allocation + Code + Allocation:Code + (1 | Participant.ID), data = M_Encoding_Full)
+
+eta_squared(model_linear, ci = 0.95, alternative = "two.sided")
+
+EMM_2 <- emmeans(model_linear, ~ Allocation | Code)
+
+# Calculate pairwise comparisons for the specified contrasts
+pairwise_comparisons <- pairs(EMM_2, adjust = "holm")
+
+summary(pairwise_comparisons)
+
+effect_size <- eff_size(EMM_2, sigma = sigma(model_linear), edf = df.residual(model_linear))
+
+summary(effect_size)
+
+M_Encoding_Full %>%
+  group_by(Trial_Type, Allocation) %>%
+  get_summary_stats(Accuracy_Perc, type = "mean_sd")
+```
+
+```{r pressure, echo=FALSE}
+# Checking in-scanner engagement
+
+require("knitr")
+knitr::opts_knit$set(root.dir = "C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/Memory_Encoding_Task/fmri_engagement/")
+
+##### Set dir first!#########
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/Memory_Encoding_Task/fmri_engagement/")
+#############################
+
+# Create file list
+Hipp_Scan_Files <- list.files(pattern = glob2rx("*Hipp*.csv"))
+
+# Attach and detach plyr to avoid library conflicts
+library(plyr)
+
+# Merge files based on file list
+Hipp_Scan <- do.call(rbind.fill, lapply(Hipp_Scan_Files, function(x) read.csv(x, stringsAsFactors = FALSE)))
+
+detach("package:plyr", unload = TRUE)
+
+# Remove object to save space
+rm(Hipp_Scan_Files)
+
+Hipp_Scan_Clean <- Hipp_Scan %>% select(participant, im_type, im_familiarity, trialOrderFile, key_resp2.corr, key_resp2.rt)
+
+Hipp_Scan_Clean <- Hipp_Scan_Clean %>% rename(Participant.ID = participant)
+
+Hipp_Scan_Clean <- Hipp_Scan_Clean %>% drop_na(key_resp2.corr)
+
+library(stringr)
+
+Hipp_Scan_Clean <- Hipp_Scan_Clean %>%
+  mutate(Participant.ID = str_replace_all(Participant.ID, "^p", "P") %>% # Convert lowercase 'p' to 'P' at the start
+    str_replace("_real", "")) # Remove "_real"
+
+Hipp_Scan_Clean <- Hipp_Scan_Clean %>%
+  mutate(trialOrderFile = str_replace_all(trialOrderFile, "scan_order|\\.xlsx", "")) %>%
+  rename(Block = trialOrderFile)
+
+Hipp_Scan_Clean <- Hipp_Scan_Clean %>%
+  rename(Trial_type = im_familiarity)
+
+Hipp_Scan_Clean <- Hipp_Scan_Clean %>%
+  group_by(Participant.ID) %>% # Group by Participant.ID
+  mutate(Trial_number = row_number()) %>% # Create sequential trial numbers within each group
+  ungroup() # Remove grouping for further operations
+
+Hipp_Scan_Clean <- Hipp_Scan_Clean %>%
+  rename(Accuracy = key_resp2.corr)
+
+Hipp_Scan_Summary <- Hipp_Scan_Clean %>%
+  group_by(Participant.ID) %>%
+  summarise(GoRTmean = mean(key_resp2.rt, na.rm = TRUE), GoRTsd = sd(key_resp2.rt, na.rm = TRUE), AccuratePress_Perc = sum(Accuracy) / 96 * 100, Accuracy_Full = sum(Accuracy))
+
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/Allocation_and_Demographics")
+
+Allocation_and_Demographics <- read.csv("Allocation_And_Demo.csv")
+
+Hipp_Scan_Summary_Full <- merge(Hipp_Scan_Summary, Allocation_and_Demographics, by = "Participant.ID")
+
+Hipp_Scan_Clean_Full <- merge(Hipp_Scan_Clean, Allocation_and_Demographics, by = "Participant.ID")
+```
+
+
+```{r pressure, echo=FALSE}
+# Analysis of engagement data
+
+Hipp_Scan_Summary_Full$Accuracylog <- log(Hipp_Scan_Summary_Full$Accuracy_Full)
+
+Hipp_Scan_Summary_Full$Participant.ID <- as.factor(Hipp_Scan_Summary_Full$Participant.ID)
+
+# Removal of excluded participants (see note above.)
+
+removal_df <- subset(Hipp_Scan_Summary_Full, Participant.ID != "P003" & Participant.ID != "P007" & Participant.ID != "P011" & Participant.ID != "P034" & Participant.ID != "P045" & Participant.ID != "P059")
+
+Hipp_Scan_Summary_Full <- droplevels(removal_df)
+
+Acc_Plot <- Hipp_Scan_Summary_Full %>% ggplot(aes(x = Allocation, y = AccuratePress_Perc, fill = Allocation)) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  labs(title = " ") +
+  ylab("Discrimination Accuracy (%)") +
+  xlab("") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+Hipp_Scan_Summary_Full$GoRTmean <- (Hipp_Scan_Summary_Full$GoRTmean) * 1000
+
+RT_Plot <- Hipp_Scan_Summary_Full %>% ggplot(aes(x = Allocation, y = GoRTmean, fill = Allocation)) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  labs(title = " ") +
+  ylab("Time to Response (ms)") +
+  xlab("") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+Combined_Plot <- plot_grid(Acc_Plot, RT_Plot)
+
+# numeric vector (your variable of interest)
+x <- Hipp_Scan_Summary_Full$AccuratePress_Perc
+
+# skewness
+skew_val <- skewness(x, na.rm = TRUE)
+
+kurt_val <- kurtosis(x, na.rm = TRUE) # excess kurtosis by default
+
+c(skew_val = skew_val, kurt_val = kurt_val)
+
+# Above skewness/Kurtosis threshold, so log transforming. Retaining the non-log transformed version for visual demonstration (see Methods).
+
+Hipp_Scan_Summary_Full$AccuratePress_Perc_log <- log(Hipp_Scan_Summary_Full$AccuratePress_Perc)
+
+Accuracy_Model <- aov(AccuratePress_Perc_log ~ Allocation + Error(Participant.ID), data = Hipp_Scan_Summary_Full)
+
+summary(Accuracy_Model)
+
+RT_Model <- aov(GoRTmean ~ Allocation + Error(Participant.ID), data = Hipp_Scan_Summary_Full)
+
+summary(RT_Model)
+````
+
+
+```{r pressure, echo=FALSE}
+# Checking pre-scanner engagement
+
+## Set directory; Create list of relevant files; Merge files
+
+# Set working directory
+
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/Memory_Encoding_Task/Results_InitialTest")
+
+# Create an empty data frame to store the combined data
+combined_df <- data.frame()
+
+# Get a list of all .dat files in the directory
+dat_files <- list.files(pattern = glob2rx("*recpressce*.log"))
+
+# Loop through each .dat file
+for (file in dat_files) {
+  # Read the file using readLines()
+  lines <- readLines(file)
+
+  # Remove the first three lines
+  lines <- lines[-(1:5)]
+
+  # Extract the file name
+  file_name <- sub("\\.log$", "", file)
+
+  # Check if the file name contains P001, P002, etc.
+  if (grepl("[Pp]\\d{3}", file_name)) {
+    # Check if there are lines remaining
+    if (length(lines) > 0) {
+      # Replace blank spaces with NA in each line
+      lines <- lapply(lines, function(line) {
+        words <- strsplit(line, "\\s+")[[1]]
+        words[words == ""] <- NA
+        return(words)
+      })
+
+      # Find the maximum number of elements in a line
+      max_elements <- max(sapply(lines, length))
+
+      # Create a matrix to store the data
+      data_matrix <- matrix(nrow = length(lines), ncol = max_elements)
+
+      # Fill the matrix with the data from the lines
+      for (i in seq_along(lines)) {
+        row <- lines[[i]]
+        data_matrix[i, 1:length(row)] <- row
+      }
+
+      # Convert the matrix to a data frame
+      df <- as.data.frame(data_matrix, stringsAsFactors = FALSE) # Ensure strings are treated as characters
+
+      # Add a column with the file name to the data frame
+      df <- cbind(FileName = file_name, df)
+
+      # Bind the data to the combined data frame
+      combined_df <- bind_rows(combined_df, df)
+    }
+  }
+}
+
+# Assign column names
+col_names <- c("FileName", "Participant.ID", "Trial", "Event_Type", "Code_Raw", "Time", "TTime", "Uncertainty", "ResponseT", "Uncertainty_2", "ReqTime", "ReqDur", "Stim_Type", "Pair_Index") # Add your column names here
+
+colnames(combined_df) <- col_names
+
+# Prune 'Participant.ID' column to first few letters
+combined_df$Participant.ID <- str_sub(combined_df$Participant.ID, 1, 4)
+
+# Convert 'Participant.ID' column to uppercase
+combined_df$Participant.ID <- toupper(combined_df$Participant.ID)
+
+# Remove the "FileName" column
+combined_df <- combined_df[, !names(combined_df) %in% "FileName"]
+
+combined_df <- combined_df %>%
+  filter(Event_Type == "Response")
+
+combined_df$Code <- ifelse(grepl("A", combined_df$Code_Raw), 1,
+  ifelse(grepl("L", combined_df$Code_Raw), 2, NA)
+)
+
+# Remove the "Code_Raw" column
+combined_df <- combined_df[, !names(combined_df) %in% "Code_Raw"]
+
+# Only take the first instance of a button press (Presentation records all inputs) - you may want to change this
+combined_df <- combined_df %>%
+  distinct(Participant.ID, Trial, .keep_all = TRUE)
+
+combined_df <- combined_df %>%
+  mutate(Correct = case_when(
+    Trial == "1" & Code == "2" ~ "1",
+    Trial == "2" & Code == "1" ~ "1",
+    Trial == "3" & Code == "2" ~ "1",
+    Trial == "4" & Code == "1" ~ "1",
+    Trial == "5" & Code == "1" ~ "1",
+    Trial == "6" & Code == "2" ~ "1",
+    Trial == "7" & Code == "2" ~ "1",
+    Trial == "8" & Code == "2" ~ "1",
+    Trial == "9" & Code == "1" ~ "1",
+    Trial == "10" & Code == "1" ~ "1",
+    Trial == "11" & Code == "2" ~ "1",
+    Trial == "12" & Code == "1" ~ "1",
+    Trial == "13" & Code == "1" ~ "1",
+    Trial == "14" & Code == "2" ~ "1",
+    Trial == "15" & Code == "1" ~ "1",
+    Trial == "16" & Code == "2" ~ "1",
+    TRUE ~ "0"
+  ))
+
+combined_df$Correct <- as.numeric(combined_df$Correct)
+
+Hipp_PreScan_Summary <- combined_df %>%
+  group_by(Participant.ID) %>%
+  summarise(AccuratePress_Perc = sum(Correct) / 16 * 100)
+
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/Allocation_and_Demographics")
+
+Allocation_and_Demographics <- read.csv("Allocation_And_Demo.csv")
+
+Hipp_PreScan_Summary_Full <- merge(Hipp_PreScan_Summary, Allocation_and_Demographics, by = "Participant.ID")
+````
+
+```{r pressure, echo=FALSE}
+# Analysis of engagement data
+
+Hipp_PreScan_Summary_Full$Participant.ID <- as.factor(Hipp_PreScan_Summary_Full$Participant.ID)
+
+removal_df <- subset(Hipp_PreScan_Summary_Full, Participant.ID != "P003" & Participant.ID != "P007" & Participant.ID != "P011" & Participant.ID != "P034" & Participant.ID != "P045" & Participant.ID != "P059" & Participant.ID != "P021" & Participant.ID != "P022")
+
+Hipp_PreScan_Summary_Full <- droplevels(removal_df)
+
+# Participants who were excluded from the fMRI analysis were excluded from this analysis. P021 and P022 self-reported misunderstanding initial task engagement tasks; their data was not included at this stage. Results remain non-significant with or without their inclusion.
+
+Hipp_PreScan_Summary_Full <- droplevels(removal_df)
+
+Accuracy_Model <- aov(AccuratePress_Perc ~ Allocation + Error(Participant.ID), data = Hipp_PreScan_Summary_Full)
+
+summary(Accuracy_Model)
+
+Hipp_PreScan_Summary_Full %>%
+  get_summary_stats(AccuratePress_Perc, type = "mean_sd")
+````
+
+
+```{r pressure, echo=FALSE}
+# Signal persistence / FIR analysis
+
+# Importing FIR parameter estimate values and cleaning data
+
+Decay_df <- read.xlsx("C:/Users/micha/Desktop/PEACE_Data_and_Code/ROI_Data/Decay_PEs.xlsx")
+
+Decay_df_long_novel <- Decay_df %>%
+  pivot_longer(
+    cols = starts_with("Novel_"),
+    names_to = "Time",
+    values_to = "PEs"
+  )
+
+Decay_df_long_novel <- Decay_df_long_novel %>%
+  mutate(Time = sub("Novel_B_T", "", Time))
+
+Decay_df_long_novel <- Decay_df_long_novel %>%
+  mutate(Time = dplyr::recode(as.character(Time),
+    "Novel_R_T1" = "26",
+    "Novel_R_T2" = "27",
+    "Novel_R_T3" = "28",
+    "Novel_R_T4" = "29",
+    "Novel_R_T5" = "30",
+    "Novel_R_T6" = "31",
+    "Novel_R_T7" = "32",
+    "Novel_R_T8" = "33",
+    "Novel_R_T9" = "34",
+    "Novel_R_T10" = "35",
+    "Novel_R_T11" = "36",
+    "Novel_R_T12" = "37",
+    "Novel_R_T13" = "38",
+    "Novel_R_T14" = "39",
+    "Novel_R_T15" = "40"
+  ))
+
+Decay_df_long_familiar <- Decay_df %>%
+  pivot_longer(
+    cols = starts_with("Fam"),
+    names_to = "Time",
+    values_to = "PEs"
+  )
+
+Decay_df_long_familiar <- Decay_df_long_familiar %>%
+  mutate(Time = sub("Familiar_B_T", "", Time))
+
+Decay_df_long_familiar <- Decay_df_long_familiar %>%
+  mutate(Time = dplyr::recode(as.character(Time),
+    "Familar_R_T1" = "26",
+    "Familar_R_T2" = "27",
+    "Familar_R_T3" = "28",
+    "Familar_R_T4" = "29",
+    "Familar_R_T5" = "30",
+    "Familar_R_T6" = "31",
+    "Familar_R_T7" = "32",
+    "Familar_R_T8" = "33",
+    "Familar_R_T9" = "34",
+    "Familar_R_T10" = "35",
+    "Familar_R_T11" = "36",
+    "Familar_R_T12" = "37",
+    "Familar_R_T13" = "38",
+    "Familar_R_T14" = "39",
+    "Familar_R_T15" = "40"
+  ))
+
+Decay_df_long_novel$Trial_Type <- "Novel"
+
+Decay_df_long_familiar$Trial_Type <- "Familiar"
+
+Decay_df_long_novel_sim <- Decay_df_long_novel %>%
+  select(Participant.ID, Time, Trial_Type, PEs)
+
+Decay_df_long_familiar_sim <- Decay_df_long_familiar %>%
+  select(Participant.ID, Time, Trial_Type, PEs)
+
+# Rename PEs columns before cbind
+Decay_df_long_novel_sim <- Decay_df_long_novel_sim %>% rename(PEs_novel = PEs)
+Decay_df_long_familiar_sim <- Decay_df_long_familiar_sim %>% rename(PEs_familiar = PEs)
+
+# Now bind them side-by-side
+merged_df <- cbind(Decay_df_long_novel_sim, PEs_familiar = Decay_df_long_familiar_sim$PEs_familiar)
+
+# Subtract safely
+merged_df$PE_diff <- merged_df$PEs_novel - merged_df$PEs_familiar
+
+combined_decay_df <- bind_rows(Decay_df_long_novel_sim, Decay_df_long_familiar_sim)
+
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/Allocation_and_Demographics")
+
+Allocation_and_Demographics <- read.csv("Allocation_And_Demo.csv")
+
+combined_decay_df <- merge(combined_decay_df, Allocation_and_Demographics, by = "Participant.ID")
+
+merged_df <- merge(merged_df, Allocation_and_Demographics, by = "Participant.ID")
+````
+
+```{r pressure, echo=FALSE}
+# FIR Analysis Figure (Main manuscript, Fig 2F-I)
+
+merged_df <- merged_df %>%
+  filter(as.numeric(Time) >= 26)
+
+merged_df <- merged_df %>%
+  mutate(Time = dplyr::recode(as.character(Time),
+    "26" = "1",
+    "27" = "2",
+    "28" = "3",
+    "29" = "4",
+    "30" = "5",
+    "31" = "6",
+    "32" = "7",
+    "33" = "8",
+    "34" = "9",
+    "35" = "10",
+    "36" = "11",
+    "37" = "12",
+    "38" = "13",
+    "39" = "14",
+    "40" = "15"
+  ))
+avg_df <- merged_df %>%
+  group_by(Time, Allocation) %>%
+  summarise(PEs_novel = mean(PEs_novel, na.rm = TRUE), PEs_familiar = mean(PEs_familiar, na.rm = TRUE), .groups = "drop")
+
+
+merged_df$Time <- factor(merged_df$Time, levels = mixedsort(unique(merged_df$Time)))
+
+####
+
+###
+
+Decay_Beta_Df <- Decay_df %>%
+  select(Participant.ID, Decay.Beta, H3R.Decay)
+
+Decay_Full_Df <- merge(Merged_MemROI, Decay_Beta_Df, by = "Participant.ID")
+
+Decay_Full_Df_2 <- merge(Edge_MamZ_Hipp, Decay_Full_Df, by = "Participant.ID")
+
+Decay_Full_Df_3 <- merge(M_Encoding_Not, Decay_Full_Df, by = "Participant.ID")
+
+Decay_Full_Df_4 <- merge(Edge_MamZ_Hipp, Decay_Full_Df_3, by = "Participant.ID")
+
+cor_result <- cor.test(Decay_Full_Df_2$Edge.Strengths, Decay_Full_Df_2$H3R.Decay)
+
+cor_result <- cor.test(Decay_Full_Df_3$H3R.Decay, Decay_Full_Df_3$mean_RT_corr.x)
+
+mean_se <- function(x) {
+  m <- mean(x)
+  se <- sd(x) / sqrt(length(x))
+  return(c(y = m, ymin = m - se, ymax = m + se))
+}
+
+merged_df$Time <- as.numeric(as.character(merged_df$Time))
+
+glm_preds$Allocation <- factor(glm_preds$Allocation, levels = c("PLACEBO", "ACTIVE"))
+
+Decay_Full_Df_5_long <- Decay_Full_Df_5 %>%
+  pivot_longer(
+    cols = matches("^(a|v|t|z_trans)\\.(?:0|1)\\.?$"),
+    names_to = c(".value", "Trial_type"),
+    names_pattern = "^(.*)\\.(\\d)\\.?$"
+  ) %>%
+  mutate(Trial_type = factor(Trial_type, levels = c("0", "1")))
+
+# Log transform decision policy in pivot df to maintain consistency
+
+Decay_Full_Df_5_long$a <- log(Decay_Full_Df_5_long$a)
+
+Decay_Full_Df_5_long$Trial_type <- recode_factor(Decay_Full_Df_5_long$Trial_type, "0" = "Unseen", "1" = "Seen")
+
+# Figure 2G generation
+
+Figure.2G <- ggplot(glm_preds, aes(x = Time, y = fit, color = Allocation, fill = Allocation, linetype = Allocation)) +
+  geom_ribbon(
+    aes(ymin = fit - se, ymax = fit + se),
+    fill = "grey70",
+    alpha = 0.15,
+    colour = NA
+  ) +
+  geom_line(size = 2.4) +
+  scale_color_manual(values = rev(RColorBrewer::brewer.pal(3, "Set2")[1:2])) +
+  scale_fill_manual(values = rev(RColorBrewer::brewer.pal(3, "Set2")[1:2])) +
+  scale_linetype_manual(values = rev(c("solid", "dashed"))) +
+  labs(
+    x = "Time (Bins)\n",
+    y = "Δ Signal Decay ETC Cluster\n"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 16), # Increase tick text size
+    axis.text.y = element_text(size = 16), # Y-axis tick size
+    axis.title = element_text(size = 18), # Axis labels
+    plot.title = element_text(size = 18, face = "bold")
+  )
+
+# Figure 2H generation
+
+cor_result <- cor.test(Decay_Full_Df_4$Edge.Strengths, Decay_Full_Df_4$H3R_Hipp)
+
+# Create the scatterplot
+Scatterplot_check2 <- ggplot(data = Decay_Full_Df_4, aes(x = Edge.Strengths, y = H3R_Hipp)) +
+  geom_smooth(method = "lm", se = TRUE, color = "black", fill = "lightgray", alpha = 0.3) + # Enable CI shading
+  labs(
+    x = "\nΔ Signal Decay ETC Cluster\n",
+    y = "\nBilateral Hippocampus β - Novel Memory Encoding\n"
+  ) +
+  annotate("text",
+    x = Inf, y = -Inf, hjust = 1, vjust = -0.5, size = 5,
+    label = paste(
+      "r =", round(cor_result$estimate, 3),
+      "\np =", ifelse(cor_result$p.value < 0.001, 0.001, format(cor_result$p.value, scientific = FALSE, digits = 3))
+    )
+  ) +
+  geom_point(size = 3.25, color = "#2E5984", alpha = 0.75) +
+  theme_minimal() +
+  theme(
+    axis.title.y = element_text(size = 16),
+    axis.title.x = element_text(size = 16),
+    axis.text.y = element_text(size = 15),
+    axis.text.x = element_text(size = 15)
+  )
+
+Figure.2H <- ggMarginal(Scatterplot_check2, type = "density", linetype = "blank", fill = "lightblue", color = "black", alpha = 0.8)
+
+# Figure 2I
+
+cor_result <- cor.test(Decay_Full_Df_4$Edge.Strengths, Decay_Full_Df_4$H3R.Decay)
+
+# Create the scatterplot
+Scatterplot_check2 <- ggplot(data = Decay_Full_Df_4, aes(x = Edge.Strengths, y = H3R.Decay)) +
+  geom_smooth(method = "lm", se = TRUE, color = "black", fill = "lightgray", alpha = 0.3) + # Enable CI shading
+  labs(
+    x = "\nMammillary Zone ↔ Hippocampus Connectivity\n",
+    y = "\nΔ Signal Decay ETC Cluster\n"
+  ) +
+  annotate("text",
+    x = Inf, y = -Inf, hjust = 1, vjust = -0.5, size = 5,
+    label = paste(
+      "r =", round(cor_result$estimate, 3),
+      "\np =", ifelse(cor_result$p.value < 0.001, 0.001, format(cor_result$p.value, scientific = FALSE, digits = 3))
+    )
+  ) +
+  geom_point(size = 3.25, color = "#2E5984", alpha = 0.75) +
+  theme_minimal() +
+  theme(
+    axis.title.y = element_text(size = 16),
+    axis.title.x = element_text(size = 16),
+    axis.text.y = element_text(size = 15),
+    axis.text.x = element_text(size = 15)
+  )
+
+Figure.2I <- ggMarginal(Scatterplot_check2, type = "density", linetype = "blank", fill = "lightblue", color = "black", alpha = 0.8)
+```
+
+
+```{r pressure, echo=FALSE}
+# DDM Analysis - Checking relationship between signal persistence and encoding-related activity (lateralised to check specificity).
+
+# Left hemisphere - Entorhinal cortex (encoding)
+
+med.fit <- lm(H3R.Decay ~ H3R_leftento, data = Decay_Full_Df_4)
+
+cor_result <- cor.test(Decay_Full_Df_4$Decay.Beta, Decay_Full_Df_4$H3R_leftento)
+
+summary(med.fit)
+
+# Left hemisphere - Hippocampus  (encoding)
+
+med.fit <- lm(H3R.Decay ~ H3R_lefthipp, data = Decay_Full_Df_4)
+
+summary(med.fit)
+
+cor_result <- cor.test(Decay_Full_Df_4$Decay.Beta, Decay_Full_Df_4$H3R_lefthipp)
+
+## Right hemisphere - Entorhinal cortex (encoding)
+
+med.fit <- lm(H3R.Decay ~ H3R_rightento, data = Decay_Full_Df_4)
+
+cor_result <- cor.test(Decay_Full_Df_4$Decay.Beta, Decay_Full_Df_4$H3R_rightento)
+
+summary(med.fit)
+
+# Left hemisphere - Hippocampus  (encoding)
+
+med.fit <- lm(H3R.Decay ~ H3R_righthipp, data = Decay_Full_Df_4)
+
+summary(med.fit)
+
+cor_result <- cor.test(Decay_Full_Df_4$Decay.Beta, Decay_Full_Df_4$H3R_righthipp)
+
+##########################################################################
+
+# DDM Analysis - Checking relationship between signal persistence and DDM params
+
+# Persistence Analysis - Merging relevant files
+
+###########
+
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/Memory_Encoding_Task")
+
+ddm_df <- read.csv("pivoted_traces.csv")
+
+Decay_Full_Df_5 <- merge(ddm_df, Decay_Full_Df, by = "Participant.ID")
+
+Decay_Full_Df_5 <- merge(Decay_Full_Df_5, Allocation_and_Demographics, by = "Participant.ID")
+
+
+# Arcscin transform non-decision time to maintain consistency across analyses
+Decay_Full_Df_5$t.a.0 <- asin(sqrt(Decay_Full_Df_5$t.0.))
+Decay_Full_Df_5$t.a.1 <- asin(sqrt(Decay_Full_Df_5$t.1.))
+
+# Log transform decision policy to maintain consistency across DDM analyses
+Decay_Full_Df_5$a.0.log <- log(Decay_Full_Df_5$a.0)
+Decay_Full_Df_5$a.1.log <- log(Decay_Full_Df_5$a.1)
+
+# Legend: v [drift rate], a [decision policy], t [non-decision time], z_trans [initial choice bias]
+
+# Parameter symbols ending in '.0' refer to distractor trials; '.1' refers to previously encoded trials
+
+############################################
+
+#### Figures for publication
+
+# Figure 3E
+
+# Compute correlation coefficient and p-value
+cor_result <- cor.test(Decay_Full_Df_5$v.1., Decay_Full_Df_5$H3R.Decay)
+
+# Create the scatterplot
+Scatterplot_check2 <- ggplot(data = Decay_Full_Df_5, aes(x = v.1., y = H3R.Decay)) +
+  geom_smooth(method = "lm", se = TRUE, color = "black", fill = "lightgray", alpha = 0.3) + # Enable CI shading
+  labs(
+    x = "\nDrift rate (v) - Previously encoded\n",
+    y = "\nΔ Signal Decay ETC Cluster\n"
+  ) +
+  annotate("text",
+    x = Inf, y = -Inf, hjust = 1, vjust = -0.5, size = 5,
+    label = paste(
+      "r =", round(cor_result$estimate, 3),
+      "\np =", ifelse(cor_result$p.value < 0.001, 0.001, format(cor_result$p.value, scientific = FALSE, digits = 3))
+    )
+  ) +
+  geom_point(size = 3.25, color = "#2E5984", alpha = 0.75) +
+  theme_minimal() +
+  theme(
+    axis.title.y = element_text(size = 16),
+    axis.title.x = element_text(size = 16),
+    axis.text.y = element_text(size = 15),
+    axis.text.x = element_text(size = 15)
+  )
+
+Figure.3E <- ggMarginal(Scatterplot_check2, type = "density", linetype = "blank", fill = "lightblue", color = "black", alpha = 0.8)
+
+# Figure 3F
+
+# Compute correlation coefficient and p-value
+cor_result <- cor.test(Decay_Full_Df_5$a.0., Decay_Full_Df_5$H3R.Decay)
+
+# Create the scatterplot
+Scatterplot_check2 <- ggplot(data = Decay_Full_Df_5, aes(x = a.0., y = H3R.Decay)) +
+  geom_smooth(method = "lm", se = TRUE, color = "black", fill = "lightgray", alpha = 0.3) + # Enable CI shading
+  labs(
+    x = "\nDecision Policy (a) - Unseen distractors\n",
+    y = "\nΔ Signal Decay ETC Cluster\n"
+  ) +
+  annotate("text",
+    x = Inf, y = -Inf, hjust = 1, vjust = -0.5, size = 5,
+    label = paste(
+      "r =", round(cor_result$estimate, 3),
+      "\np =", ifelse(cor_result$p.value < 0.001, 0.001, format(cor_result$p.value, scientific = FALSE, digits = 3))
+    )
+  ) +
+  geom_point(size = 3.25, color = "#2E5984", alpha = 0.75) +
+  theme_minimal() +
+  theme(
+    axis.title.y = element_text(size = 16),
+    axis.title.x = element_text(size = 16),
+    axis.text.y = element_text(size = 15),
+    axis.text.x = element_text(size = 15)
+  )
+
+Figure.3F <- ggMarginal(Scatterplot_check2, type = "density", linetype = "blank", fill = "lightblue", color = "black", alpha = 0.8)
+
+######################################################
+
+# Checking LMs for DDM parameters ~ Signal Decay
+
+# Decision policy
+
+med.fit <- lm(a.0.log ~ Decay.Beta, data = Decay_Full_Df_5)
+
+summary(med.fit)
+
+med.fit <- lm(a.1.log ~ Decay.Beta, data = Decay_Full_Df_5)
+
+summary(med.fit)
+
+# Fit regression within each sample
+regression_results <- Decay_Full_Df_5_long %>%
+  group_by(Trial_type) %>%
+  group_map(~ tidy(lm(a ~ H3R.Decay + Allocation.y, data = .x)))
+
+# Combine into one data frame
+regression_df <- bind_rows(regression_results, .id = "Participant.ID")
+
+# Summarize posterior over betas
+beta_summary <- regression_df %>%
+  group_by(term) %>%
+  summarise(
+    mean = mean(estimate),
+    lower = quantile(estimate, 0.025),
+    upper = quantile(estimate, 0.975)
+  )
+
+# Drift rate
+
+med.fit <- lm(v.0. ~ Decay.Beta, data = Decay_Full_Df_5)
+
+summary(med.fit)
+
+med.fit <- lm(v.1. ~ Decay.Beta, data = Decay_Full_Df_5)
+
+summary(med.fit)
+
+# Fit regression within each sample
+regression_results <- Decay_Full_Df_5_long %>%
+  group_by(Trial_type) %>%
+  group_map(~ tidy(lm(v ~ H3R.Decay + Allocation.y, data = .x)))
+
+# Combine into one data frame
+regression_df <- bind_rows(regression_results, .id = "Participant.ID")
+
+# Summarize posterior over betas
+beta_summary <- regression_df %>%
+  group_by(term) %>%
+  summarise(
+    mean = mean(estimate),
+    lower = quantile(estimate, 0.025),
+    upper = quantile(estimate, 0.975)
+  )
+
+######################################################
+````
+
+
+```{r pressure, echo=FALSE}
+########
+
+### Figures for publication
+
+# Figure 3C
+
+mean_se <- function(x) {
+  m <- mean(x)
+  se <- sd(x) / sqrt(length(x))
+  return(c(y = m, ymin = m - se, ymax = m + se))
+}
+
+# Plot to demonstrate LR interaction effect
+Interaction_Graph <- ggplot(Decay_Full_Df_5_long, aes(x = Trial_type, y = v, color = Allocation, group = Allocation)) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  # Left side (for 'Loss')
+  stat_slab(
+    data = subset(Decay_Full_Df_5_long, Trial_type == "Seen"), # Only data where Trial_type is 'Loss'
+    side = "left", scale = 0.5, show.legend = F, alpha = 0.5,
+    aes(fill = Allocation), # Color the slabs based on 'Allocation'
+    .width = c(.50, .95, 1), linetype = "blank", position = position_nudge(x = -0.15)
+  ) +
+
+  # Right side (for 'Win')
+  stat_slab(
+    data = subset(Decay_Full_Df_5_long, Trial_type == "Unseen"), # Only data where Trial_type is 'Win'
+    side = "right", scale = 0.5, show.legend = F, alpha = 0.5,
+    aes(fill = Allocation), # Color the slabs based on 'Allocation'
+    .width = c(.50, .95, 1), linetype = "blank", position = position_nudge(x = 0.15)
+  ) +
+  geom_line(aes(group = Participant.ID), linetype = "dashed", size = 0.175, alpha = 0.38) +
+
+  # Points and lines (jittered and connected by Participant.ID)
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.2, jitter.height = -0.3, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.15, alpha = 0.55) +
+
+  # Lines connecting points for each Participant.ID (grouping)
+
+  # Labels and title
+  labs(
+    title = "",
+    x = "",
+    y = "\nDrift Rate (v)\n"
+  ) +
+  theme_minimal() +
+  scale_shape_manual(values = c(19, 15)) + # Custom shape for Allocation
+
+  # Confidence ribbon (mean ± SE)
+  stat_summary(
+    fun.data = mean_se,
+    geom = "ribbon",
+    aes(group = Allocation),
+    fill = "grey70", # or "lightgrey", "#CCCCCC", etc.
+    alpha = 0.25,
+    colour = NA # removes border
+  ) +
+
+  # Group mean line
+  stat_summary(
+    fun = mean,
+    geom = "line",
+    aes(group = Allocation, color = Allocation),
+    size = 1.9
+  )
+
+# Figure 3D
+
+# Plot to demonstrate LR interaction effect
+Interaction_Graph <- ggplot(Decay_Full_Df_5_long, aes(x = Trial_type, y = a, color = Allocation, group = Allocation)) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  # Left side (for 'Loss')
+  stat_slab(
+    data = subset(Decay_Full_Df_5_long, Trial_type == "Seen"), # Only data where Trial_type is 'Loss'
+    side = "left", scale = 0.5, show.legend = F, alpha = 0.5,
+    aes(fill = Allocation), # Color the slabs based on 'Allocation'
+    .width = c(.50, .95, 1), linetype = "blank", position = position_nudge(x = -0.15)
+  ) +
+
+  # Right side (for 'Win')
+  stat_slab(
+    data = subset(Decay_Full_Df_5_long, Trial_type == "Unseen"), # Only data where Trial_type is 'Win'
+    side = "right", scale = 0.5, show.legend = F, alpha = 0.5,
+    aes(fill = Allocation), # Color the slabs based on 'Allocation'
+    .width = c(.50, .95, 1), linetype = "blank", position = position_nudge(x = 0.15)
+  ) +
+  geom_line(aes(group = Participant.ID), linetype = "dashed", size = 0.175, alpha = 0.36) +
+
+  # Points and lines (jittered and connected by Participant.ID)
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.2, jitter.height = -0.3, seed = 123
+  ), aes(color = Allocation, shape = Allocation), size = 4.4, stroke = 0.15, alpha = 0.55) +
+
+  # Lines connecting points for each Participant.ID (grouping)
+
+  # Labels and title
+  labs(
+    title = "",
+    x = "",
+    y = "\nLog Decision Policy (a)\n"
+  ) +
+  theme_minimal() +
+  scale_shape_manual(values = c(19, 15)) + # Custom shape for Allocation
+
+  # Confidence ribbon (mean ± SE)
+  stat_summary(
+    fun.data = mean_se,
+    geom = "ribbon",
+    aes(group = Allocation),
+    fill = "grey70", # or "lightgrey", "#CCCCCC", etc.
+    alpha = 0.2,
+    colour = NA # removes border
+  ) +
+
+  # Group mean line
+  stat_summary(
+    fun = mean,
+    geom = "line",
+    aes(group = Allocation, color = Allocation),
+    size = 1.9
+  )
+
+###
+
+# Non-decision time plot (Supplementary Mats.)
+
+Ter_plot <- Decay_Full_Df_5_long %>% ggplot(aes(x = Allocation.y, y = t, fill = Allocation.y)) +
+  facet_wrap(~Trial_type) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "holm",
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 0.20, " " = 2),
+    margin_top = 0.05, textsize = 12
+  ) +
+  labs(title = " ") +
+  ylab("Non-decision time (Ter)\n") +
+  xlab("") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation.y, shape = Allocation.y), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+
+Decay_Full_Df_5_long <- Decay_Full_Df_5 %>%
+  pivot_longer(
+    cols = c(z_trans.0., z_trans.1.),
+    names_to = "Trial_type",
+    names_prefix = "z",
+    values_to = "z"
+  )
+
+# Initial choice bias plot (Supplementary Mats.)
+
+bias_plot <- Decay_Full_Df_5_long %>% ggplot(aes(x = Allocation.y, y = z_trans, fill = Allocation.y)) +
+  facet_wrap(~Trial_type) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "holm",
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 0.20, " " = 2),
+    margin_top = 0.05, textsize = 12
+  ) +
+  labs(title = " ") +
+  ylab("Initial Choice Bias (z)\n") +
+  xlab("") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation.y, shape = Allocation.y), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+# Inter-trial variability in non-decision time plot (Supplementary Mats.)
+
+st_plot <- Decay_Full_Df_5 %>% ggplot(aes(x = Allocation.y, y = st, fill = Allocation.y)) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "holm",
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 0.20, " " = 2),
+    margin_top = 0.05, textsize = 12
+  ) +
+  labs(title = " ") +
+  ylab("Inter-trial variability - non-decision time (st)\n") +
+  xlab("") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation.y, shape = Allocation.y), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+
+# Inter-trial variability in initial choice bias plot (Supplementary Mats.)
+
+sz_plot <- Decay_Full_Df_5 %>% ggplot(aes(x = Allocation.y, y = sz, fill = Allocation.y)) +
+  stat_slab(
+    side = "right", scale = 0.55, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_color_brewer(palette = "Set2") +
+  geom_signif(
+    comparisons = list(c("ACTIVE", "PLACEBO")),
+    p.adjust.method = "holm",
+    map_signif_level = c("***" = 0.001, "**" = 0.01, "*" = 0.05, " " = 0.20, " " = 2),
+    margin_top = 0.05, textsize = 12
+  ) +
+  labs(title = " ") +
+  ylab("Inter-trial variability - initial choice bias (sz)\n") +
+  xlab("") +
+  theme_minimal() +
+  theme(
+    legend.position = "none", text = element_text(size = 14), axis.text.y = element_text(size = 14), axis.title = element_text(size = 20), axis.text.x = element_text(size = 14), strip.text = element_text(hjust = 0.41, vjust = 1, size = 14.5),
+    panel.spacing = unit(-8, "lines")
+  ) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(position = position_jitternudge(
+    jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+  ), aes(color = Allocation.y, shape = Allocation.y), size = 4.4, stroke = 0.2, alpha = 0.5) +
+  scale_shape_manual(values = c(19, 15))
+````
+
+```{r pressure, echo=FALSE}
+# Inferential analysis - DDM across allocation groups
+
+# Non-decision time
+
+ANCOVA_Drift <- aov(t ~ Allocation.y * Trial_type + Error(Participant.ID), data = Decay_Full_Df_5_long)
+
+summary(ANCOVA_Drift)
+
+# Initial choice bias
+
+ANCOVA_Drift <- aov(z_trans ~ Allocation.y * Trial_type + Error(Participant.ID), data = Decay_Full_Df_5_long)
+
+summary(ANCOVA_Drift)
+
+# Decision policy
+
+ANCOVA_Drift <- aov(a ~ Allocation.y * Trial_type + Error(Participant.ID), data = Decay_Full_Df_5_long)
+
+summary(ANCOVA_Drift)
+
+# Significant
+
+model_linear <- lmer(a ~ Allocation.y + Trial_type + Allocation.y:Trial_type + (1 | Participant.ID), data = Decay_Full_Df_5_long)
+
+summary(model_linear)
+
+anova(model_linear, type = 2) # Type III ANOVA-like table
+
+eta_squared(model_linear, ci = 0.95, alternative = "two.sided")
+
+EMM_2 <- emmeans(model_linear, ~ Allocation.y | Trial_type)
+
+confint(model_linear, method = "Wald")
+
+# Calculate pairwise comparisons for the specified contrasts
+pairwise_comparisons <- pairs(EMM_2, adjust = "holm")
+
+summary(pairwise_comparisons)
+
+effect_size <- eff_size(EMM_2, sigma = sigma(model_linear), edf = df.residual(model_linear))
+
+summary(effect_size)
+
+#######
+
+ANCOVA_Drift <- aov(v ~ Allocation.y * Trial_type + Error(Participant.ID), data = Decay_Full_Df_5_long)
+
+summary(ANCOVA_Drift)
+
+# Significant
+
+model_linear <- lmer(v ~ Allocation.y + Trial_type + Allocation.y:Trial_type + (1 | Participant.ID), data = Decay_Full_Df_5_long)
+
+summary(model_linear)
+
+anova(model_linear, type = 2) # Type III ANOVA-like table
+
+eta_squared(model_linear, ci = 0.95, alternative = "two.sided")
+
+EMM_2 <- emmeans(model_linear, ~ Allocation.y | Trial_type)
+
+confint(model_linear, method = "Wald")
+
+# Calculate pairwise comparisons for the specified contrasts
+pairwise_comparisons <- pairs(EMM_2, adjust = "holm")
+
+summary(pairwise_comparisons)
+
+effect_size <- eff_size(EMM_2, sigma = sigma(model_linear), edf = df.residual(model_linear))
+
+summary(effect_size)
+````
+
+```{r pressure, echo=FALSE}
+# DDM Param recovery
+
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/Memory_Encoding_Task/DDM/")
+
+MasterDDM_sim <- read.csv("Param_recovery.csv", header = TRUE, stringsAsFactors = FALSE)
+
+MasterDDM_sim$Blank <- "Blank"
+
+BoundarySep <- MasterDDM_sim %>% ggplot(aes(x = Blank, y = log(a.0.), fill = Blank)) +
+  stat_slab(
+    side = "right", scale = 0.5, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  scale_color_manual(values = c("#828283")) +
+  scale_fill_manual(values = c("#828283")) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  labs(title = " ") +
+  ylab("Log boundary separation (a)") +
+  xlab("") +
+  theme_minimal() +
+  theme(legend.position = "none", text = element_text(size = 14), axis.title.y = element_text(size = 17), strip.text = element_blank(), axis.text.x = element_blank()) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(
+    position = position_jitternudge(
+      jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+    ), aes(color = Blank, shape = Blank),
+    size = 4.4, stroke = 0.2, alpha = 0.5
+  ) +
+  scale_shape_manual(values = c(19, 15)) +
+  geom_hline(yintercept = log(1.5), linetype = "dashed", color = "orange", size = 1)
+
+DriftRate <- MasterDDM_sim %>% ggplot(aes(x = Blank, y = v.0., fill = Blank)) +
+  stat_slab(
+    side = "right", scale = 0.5, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  scale_color_manual(values = c("#828283")) +
+  scale_fill_manual(values = c("#828283")) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  labs(title = " ") +
+  ylab("Drift rate (v)") +
+  xlab("") +
+  theme_minimal() +
+  theme(legend.position = "none", text = element_text(size = 14), axis.title.y = element_text(size = 17), strip.text = element_blank(), axis.text.x = element_blank()) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(
+    position = position_jitternudge(
+      jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+    ), aes(color = Blank, shape = Blank),
+    size = 4.4, stroke = 0.2, alpha = 0.5
+  ) +
+  scale_shape_manual(values = c(19, 15)) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "orange", size = 1) +
+  ylim(NA, 2.9)
+
+Dec <- MasterDDM_sim %>% ggplot(aes(x = Blank, y = asin(sqrt(MasterDDM_sim$t.0.)), fill = Blank)) +
+  stat_slab(
+    side = "right", scale = 0.5, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  scale_color_manual(values = c("#828283")) +
+  scale_fill_manual(values = c("#828283")) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  labs(title = " ") +
+  ylab("Non-decision time (Ter)") +
+  xlab("") +
+  theme_minimal() +
+  theme(legend.position = "none", text = element_text(size = 14), axis.title.y = element_text(size = 17), strip.text = element_blank(), axis.text.x = element_blank()) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(
+    position = position_jitternudge(
+      jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+    ), aes(color = Blank, shape = Blank),
+    size = 4.4, stroke = 0.2, alpha = 0.5
+  ) +
+  scale_shape_manual(values = c(19, 15)) +
+  geom_hline(yintercept = asin(sqrt(0.15)), linetype = "dashed", color = "orange", size = 1)
+
+Non_Bias <- MasterDDM_sim %>% ggplot(aes(x = Blank, y = z_trans.0., fill = Blank)) +
+  stat_slab(
+    side = "right", scale = 0.5, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  scale_color_manual(values = c("#828283")) +
+  scale_fill_manual(values = c("#828283")) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  labs(title = " ") +
+  ylab("Initial Choice Bias (z)") +
+  xlab("") +
+  theme_minimal() +
+  theme(legend.position = "none", text = element_text(size = 14), axis.title.y = element_text(size = 17), strip.text = element_blank(), axis.text.x = element_blank()) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(
+    position = position_jitternudge(
+      jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+    ), aes(color = Blank, shape = Blank),
+    size = 4.4, stroke = 0.2, alpha = 0.5
+  ) +
+  scale_shape_manual(values = c(19, 15)) +
+  geom_hline(yintercept = 0.6681878, linetype = "dashed", color = "orange", size = 1)
+
+var_v <- MasterDDM_sim %>% ggplot(aes(x = Blank, y = sz, fill = Blank)) +
+  stat_slab(
+    side = "right", scale = 0.5, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  scale_color_manual(values = c("#828283")) +
+  scale_fill_manual(values = c("#828283")) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  labs(title = " ") +
+  ylab("Inter-trial bias variability (sz)") +
+  xlab("") +
+  theme_minimal() +
+  theme(legend.position = "none", text = element_text(size = 14), axis.title.y = element_text(size = 17), strip.text = element_blank(), axis.text.x = element_blank()) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(
+    position = position_jitternudge(
+      jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+    ), aes(color = Blank, shape = Blank),
+    size = 4.4, stroke = 0.2, alpha = 0.5
+  ) +
+  scale_shape_manual(values = c(19, 15)) +
+  geom_hline(yintercept = 0.2, linetype = "dashed", color = "orange", size = 1)
+
+var_ter <- MasterDDM_sim %>% ggplot(aes(x = Blank, y = st, fill = Blank)) +
+  stat_slab(
+    side = "right", scale = 0.5, show.legend = F,
+    position = position_dodge(width = .8), alpha = 0.5,
+    aes(fill_ramp = stat(level)), .width = c(.50, .95, 1)
+  ) +
+  scale_color_manual(values = c("#828283")) +
+  scale_fill_manual(values = c("#828283")) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  labs(title = " ") +
+  ylab("Inter-trial non-decision time variability (st)") +
+  xlab("") +
+  theme_minimal() +
+  theme(legend.position = "none", text = element_text(size = 14), axis.title.y = element_text(size = 17), strip.text = element_blank(), axis.text.x = element_blank()) +
+  stat_boxplot(
+    geom = "errorbar",
+    width = 0.15
+  ) +
+  geom_point(
+    position = position_jitternudge(
+      jitter.width = 0.125, jitter.height = -0.3, nudge.x = -0.265, seed = 123
+    ), aes(color = Blank, shape = Blank),
+    size = 4.4, stroke = 0.2, alpha = 0.5
+  ) +
+  scale_shape_manual(values = c(19, 15)) +
+  geom_hline(yintercept = 0.2, linetype = "dashed", color = "orange", size = 1)
+
+CombinedPlots2 <- plot_grid(BoundarySep, DriftRate, Dec, Non_Bias, var_v, var_ter, labels = c(""), label_size = 20)
+````
+
+```{r pressure, echo=FALSE}
+## Posterior predictive checks
+
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/Memory_Encoding_Task/DDM")
+
+# Load and clean
+real_data <- read_csv("Memory_Task_DDM.csv")
+sim_data <- read_csv("posterior_predictive_simulation.csv")
+
+# Label
+real_data$Data_Type <- "Real"
+sim_data$Data_Type <- "Simulated"
+
+# Fix types
+real_data <- real_data %>%
+  mutate(
+    correct = as.numeric(response == stim),
+    rt = as.numeric(rt),
+    stim = as.numeric(stim)
+  )
+
+sim_data <- sim_data %>%
+  mutate(
+    correct = as.numeric(correct),
+    rt = as.numeric(rt),
+    stim = as.numeric(stim)
+  )
+
+# Combine
+all_data <- bind_rows(real_data, sim_data)
+
+# Summarise per subject + stim
+summary_data <- all_data %>%
+  group_by(subj_idx, stim, Data_Type) %>%
+  summarise(
+    mean_rt = mean(rt, na.rm = TRUE),
+    accuracy = mean(correct, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Plot
+one <- ggplot(summary_data, aes(x = mean_rt, fill = Data_Type, linetype = Data_Type)) +
+  geom_density(alpha = 0.4) +
+  facet_wrap(~stim) +
+  xlab("\nTime to Choice (ms)\n") +
+  ylab("\nP(Density)\n") +
+  theme(legend.position = "none", text = element_text(size = 14), axis.title = element_text(size = 16)) +
+  theme_minimal()
+
+
+two <- ggplot(summary_data, aes(x = accuracy, fill = Data_Type, linetype = Data_Type)) +
+  geom_density(alpha = 0.4) +
+  facet_wrap(~stim) +
+  xlab("\nOverall Accuracy\n") +
+  ylab("\nP(Density)\n") +
+  theme(legend.position = "none", text = element_text(size = 14), axis.title = element_text(size = 16)) +
+  theme_minimal()
+
+combined <- plot_grid(one, two, cols = 1)
+````
+```{r b0, echo=FALSE, include=TRUE}
+# Metachecks - checking RL task parameters and relationship with DDM parameters (see Supplementary Note 8, final paragraph).
+
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/Memory_Encoding_Task/DDM")
+
+# Load and clean
+RL_ddm <- read_csv("Meta_DDM_3.csv")
+
+collapsed_df <- RL_ddm %>%
+  group_by(Participant.ID) %>%
+  summarise(across(c(LR_recipmodel, inv_recipmodel, Excl_LR, Excl_Inv), mean, na.rm = TRUE))
+
+n_back_ddm <- read_csv("Meta_DDM_2.csv")
+
+memory_ddm <- read_csv("Meta_DDM_1.csv")
+
+Merged_1 <- merge(collapsed_df, n_back_ddm, by = "Participant.ID")
+Merged_DDM_Meta <- merge(Merged_1, memory_ddm, by = "Participant.ID")
+
+win_df <- RL_ddm %>%
+  filter(Trial_type == "Win") %>%
+  group_by(Participant.ID) %>%
+  summarise(across(c(LR_recipmodel, inv_recipmodel, Excl_LR, Excl_Inv), mean, na.rm = TRUE))
+
+loss_df <- RL_ddm %>%
+  filter(Trial_type == "Loss") %>%
+  group_by(Participant.ID) %>%
+  summarise(across(c(LR_recipmodel, inv_recipmodel, Excl_LR, Excl_Inv), mean, na.rm = TRUE))
+
+Merged_1 <- merge(win_df, n_back_ddm, by = "Participant.ID")
+Merged_2 <- merge(loss_df, Merged_1, by = "Participant.ID")
+Merged_DDM_Meta <- merge(Merged_2, memory_ddm, by = "Participant.ID")
+
+## LM analysis - working memory params
+
+# Win trials - LR ~ working memory DDM
+
+med.fit <- lm(LR_recipmodel.x ~ v_ddm, data = Merged_DDM_Meta)
+
+summary(med.fit)
+
+# Win trials - inv. decision temp ~ working memory drift rate
+
+med.fit <- lm(inv_recipmodel.x ~ v_ddm, data = Merged_DDM_Meta)
+
+summary(med.fit)
+
+###
+
+# Loss trials - LR ~ working memory ddm
+
+med.fit <- lm(LR_recipmodel.y ~ v_ddm, data = Merged_DDM_Meta)
+
+summary(med.fit)
+
+# Loss trials - inv. decision temp ~ working memory ddm
+
+med.fit <- lm(inv_recipmodel.y ~ v_ddm, data = Merged_DDM_Meta)
+
+summary(med.fit)
+
+####################
+
+## LM analysis - memory recognition drift rate
+
+# Win trials - LR ~ unseen distractor v
+
+med.fit <- lm(LR_recipmodel.x ~ `v(0)`, data = Merged_DDM_Meta)
+
+summary(med.fit)
+
+# Win trials - inv. decision temp ~ unseen distractor v
+
+med.fit <- lm(inv_recipmodel.x ~ `v(0)`, data = Merged_DDM_Meta)
+
+summary(med.fit)
+
+# Win trials - LR ~ previously encoded v
+
+med.fit <- lm(LR_recipmodel.x ~ `v(1)`, data = Merged_DDM_Meta)
+
+summary(med.fit)
+
+# Win trials - inv. decision temp ~ previously encoded v
+
+med.fit <- lm(inv_recipmodel.x ~ `v(1)`, data = Merged_DDM_Meta)
+
+summary(med.fit)
+
+####
+
+# Loss trials - LR ~ unseen distractor v
+
+med.fit <- lm(LR_recipmodel.y ~ `v(0)`, data = Merged_DDM_Meta)
+
+summary(med.fit)
+
+# Loss trials - inv. decision temp ~ unseen distractor v
+
+med.fit <- lm(inv_recipmodel.y ~ `v(0)`, data = Merged_DDM_Meta)
+
+summary(med.fit)
+
+# Loss trials - LR ~ previously encoded v
+
+med.fit <- lm(LR_recipmodel.y ~ `v(1)`, data = Merged_DDM_Meta)
+
+summary(med.fit)
+
+# Loss trials - inv. decision temp ~ previously encoded v
+
+med.fit <- lm(inv_recipmodel.y ~ `v(1)`, data = Merged_DDM_Meta)
+
+summary(med.fit)
+
+# Only the working memory v ~ RL params analysis is reported in the Supplementary Mats., as v during working memory is a more representative measure of general cognitive ability. All results remain non-significant.
+
+##################################################################
+````

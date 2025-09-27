@@ -1,0 +1,95 @@
+---
+title: "WeightedCluster_Analysis"
+author: "Michael Colwell"
+date: "2025-09-20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Weighted cluster analysis
+
+Pre-processing and analysis script for the weighted cluster analysis
+
+```{r cars}
+library(metafor)
+library(dplyr)
+library(tidyverse)
+library(gtools)
+library(knitr)
+library(data.table)
+library(ggplot2)
+library(car)
+library(ggbeeswarm)
+library(ggrepel)
+library(readxl)
+library(data.table)
+library(openxlsx)
+library(ggpubr)
+library(sdamr)
+library(rstatix)
+library("ez")
+library(ggsignif)
+library(RColorBrewer)
+library(emmeans)
+library(plotrix)
+library(sdamr)
+library(cowplot)
+library(psycho)
+library(ggridges)
+library(viridis)
+library(ggstance)
+library(ggdist)
+library(gghalves)
+library(ggpp)
+library(effectsize)
+library(lme4)
+library(lmerTest)
+library(brms)
+library(BayesFactor)
+library("ggExtra")
+library(purrr)
+library(broom)
+library(moments)
+library(gtools)
+library(stringr)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+# Cluster analysis
+
+setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/ROI_Data/")
+
+forest_df <- read.xlsx("Cluster_Metaanalysis.xlsx")
+
+forest_df$se <- (forest_df$CI_high - forest_df$CI_low) / (2 * 1.96)
+
+# Combine cluster and weighting for the y-axis label
+forest_df <- forest_df %>%
+  mutate(Label = paste0(Cluster, " – ", Weighting)) %>%
+  mutate(Label = factor(Label, levels = rev(Label))) # Reverse order for plotting
+
+# Plot
+foplot_1 <- ggplot(forest_df, aes(x = d, y = Label, color = Weighting)) +
+  geom_point(position = position_dodge(width = 0.6), size = 3) +
+  geom_errorbar(aes(xmin = CI_low, xmax = CI_high),
+    position = position_dodge(width = 0.6), width = 0.2
+  ) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray40") +
+  scale_fill_brewer(palette = "Set1") +
+  scale_color_brewer(palette = "Set1") +
+  labs(
+    x = "Cohen's d (Effect Size)",
+    y = NULL,
+    title = "Cluster-Based Effect Sizes: H3R Weighted vs Non-weighted",
+    color = "Weighting"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(panel.grid.major.y = element_blank())
+```

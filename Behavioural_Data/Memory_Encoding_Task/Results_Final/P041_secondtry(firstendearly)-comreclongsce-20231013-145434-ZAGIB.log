@@ -1,0 +1,171 @@
+Scenario - comrecognition long version
+Logfile written - 10/13/2023 15:01:52
+
+Subject	Trial	Event Type	Code	Time	TTime	Uncertainty	Duration	Uncertainty	ReqTime	ReqDur	Stim Type	Pair Index
+
+P041_secondtry(firstendearly)	1	Picture	rec001	10166	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	1	Response	A	24992	14826	1
+P041_secondtry(firstendearly)	2	Picture	rec002	60328	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	2	Response	L	96842	36513	1
+P041_secondtry(firstendearly)	3	Picture	rec003	110491	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	3	Response	L	124181	13691	1
+P041_secondtry(firstendearly)	4	Picture	rec004	160653	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	4	Response	A	170771	10118	1
+P041_secondtry(firstendearly)	5	Picture	rec005	210815	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	5	Response	A	232622	21807	1
+P041_secondtry(firstendearly)	6	Picture	rec006	260978	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	6	Response	A	269690	8712	1
+P041_secondtry(firstendearly)	7	Picture	rec007	311140	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	7	Response	L	328590	17450	1
+P041_secondtry(firstendearly)	8	Picture	rec008	361302	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	8	Response	L	401290	39987	1
+P041_secondtry(firstendearly)	9	Picture	rec009	411465	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	9	Response	A	427372	15907	1
+P041_secondtry(firstendearly)	10	Picture	rec010	461627	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	10	Response	A	469300	7672	1
+P041_secondtry(firstendearly)	11	Picture	rec011	511789	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	11	Response	A	520860	9070	1
+P041_secondtry(firstendearly)	12	Picture	rec012	561952	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	12	Response	L	571420	9468	1
+P041_secondtry(firstendearly)	13	Picture	rec013	612114	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	13	Response	A	625070	12956	1
+P041_secondtry(firstendearly)	14	Picture	rec014	662277	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	14	Response	L	694861	32584	1
+P041_secondtry(firstendearly)	15	Picture	rec015	712439	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	15	Response	L	726021	13582	1
+P041_secondtry(firstendearly)	16	Picture	rec016	762601	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	16	Response	A	769070	6468	1
+P041_secondtry(firstendearly)	17	Picture	rec017	812764	0	1	40143	21	0	40000	other	0
+P041_secondtry(firstendearly)	17	Response	A	827042	14278	1
+P041_secondtry(firstendearly)	18	Picture	rec018	862926	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	18	Response	L	875381	12455	1
+P041_secondtry(firstendearly)	19	Picture	rec019	913088	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	19	Response	A	920541	7453	1
+P041_secondtry(firstendearly)	20	Picture	rec020	963250	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	20	Response	A	994602	31352	1
+P041_secondtry(firstendearly)	21	Picture	rec021	1013413	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	21	Response	A	1027131	13718	1
+P041_secondtry(firstendearly)	22	Picture	rec022	1063575	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	22	Response	L	1081409	17834	1
+P041_secondtry(firstendearly)	23	Picture	rec023	1113738	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	23	Response	A	1138239	24502	1
+P041_secondtry(firstendearly)	24	Picture	rec024	1163900	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	24	Response	A	1179459	15559	1
+P041_secondtry(firstendearly)	25	Picture	rec025	1214062	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	25	Response	A	1232909	18847	1
+P041_secondtry(firstendearly)	26	Picture	rec026	1264225	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	26	Response	A	1277739	13515	1
+P041_secondtry(firstendearly)	27	Picture	rec027	1314387	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	27	Response	L	1327790	13402	1
+P041_secondtry(firstendearly)	28	Picture	rec028	1364549	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	28	Response	L	1371689	7140	1
+P041_secondtry(firstendearly)	29	Picture	rec029	1414712	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	29	Response	A	1430239	15527	1
+P041_secondtry(firstendearly)	30	Picture	rec030	1464874	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	30	Response	A	1483149	18275	1
+P041_secondtry(firstendearly)	31	Picture	rec031	1515036	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	31	Response	L	1530349	15313	1
+P041_secondtry(firstendearly)	32	Picture	rec032	1565199	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	32	Response	A	1574669	9471	1
+P041_secondtry(firstendearly)	33	Picture	rec033	1615361	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	33	Response	A	1627079	11718	1
+P041_secondtry(firstendearly)	34	Picture	rec034	1665524	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	34	Response	L	1690509	24986	1
+P041_secondtry(firstendearly)	35	Picture	rec035	1715686	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	35	Response	L	1731819	16133	1
+P041_secondtry(firstendearly)	36	Picture	rec036	1765848	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	36	Response	A	1784079	18231	1
+P041_secondtry(firstendearly)	37	Picture	rec037	1816011	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	37	Response	A	1826149	10139	1
+P041_secondtry(firstendearly)	38	Picture	rec038	1866173	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	38	Response	A	1885809	19636	1
+P041_secondtry(firstendearly)	39	Picture	rec039	1916335	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	39	Response	L	1939249	22914	1
+P041_secondtry(firstendearly)	40	Picture	rec040	1966498	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	40	Response	L	1982620	16122	1
+P041_secondtry(firstendearly)	41	Picture	rec041	2016660	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	41	Response	L	2035689	19029	1
+P041_secondtry(firstendearly)	42	Picture	rec042	2066822	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	42	Response	A	2084389	17567	1
+P041_secondtry(firstendearly)	43	Picture	rec043	2116985	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	43	Response	L	2133029	16045	1
+P041_secondtry(firstendearly)	44	Picture	rec044	2167147	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	44	Response	L	2177139	9992	1
+P041_secondtry(firstendearly)	45	Picture	rec045	2217309	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	45	Response	L	2226019	8710	1
+P041_secondtry(firstendearly)	46	Picture	rec046	2267472	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	46	Response	A	2277189	9717	1
+P041_secondtry(firstendearly)	47	Picture	rec047	2317634	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	47	Response	A	2327779	10145	1
+P041_secondtry(firstendearly)	48	Picture	rec048	2367796	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	48	Response	A	2375889	8093	1
+P041_secondtry(firstendearly)	49	Picture	rec049	2417959	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	49	Response	A	2426569	8611	1
+P041_secondtry(firstendearly)	50	Picture	rec050	2468121	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	50	Response	A	2475649	7528	1
+P041_secondtry(firstendearly)	51	Picture	rec052	2518283	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	51	Response	L	2526480	8196	1
+P041_secondtry(firstendearly)	52	Picture	rec053	2568446	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	52	Response	L	2591761	23315	1
+P041_secondtry(firstendearly)	53	Picture	rec054	2618608	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	53	Response	L	2626241	7633	1
+P041_secondtry(firstendearly)	54	Picture	rec055	2668771	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	54	Response	L	2682909	14138	1
+P041_secondtry(firstendearly)	55	Picture	rec057	2718933	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	55	Response	L	2737551	18618	1
+P041_secondtry(firstendearly)	56	Picture	rec058	2769095	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	56	Response	L	2783619	14524	1
+P041_secondtry(firstendearly)	57	Picture	rec059	2819258	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	57	Response	L	2829620	10362	1
+P041_secondtry(firstendearly)	58	Picture	rec060	2869420	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	58	Response	L	2876519	7099	1
+P041_secondtry(firstendearly)	59	Picture	rec061	2919582	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	59	Response	L	2927650	8068	1
+P041_secondtry(firstendearly)	60	Picture	rec062	2969745	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	60	Response	A	2983061	13317	1
+P041_secondtry(firstendearly)	61	Picture	rec063	3019907	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	61	Response	L	3039659	19752	1
+P041_secondtry(firstendearly)	62	Picture	rec064	3070069	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	62	Response	A	3098310	28240	1
+P041_secondtry(firstendearly)	63	Picture	rec065	3120232	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	63	Response	A	3148129	27897	1
+P041_secondtry(firstendearly)	64	Picture	rec066	3170394	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	64	Response	A	3176880	6486	1
+P041_secondtry(firstendearly)	65	Picture	rec068	3220556	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	65	Response	A	3232109	11552	1
+P041_secondtry(firstendearly)	66	Picture	rec069	3270719	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	66	Response	L	3287400	16681	1
+P041_secondtry(firstendearly)	67	Picture	rec070	3320881	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	67	Response	A	3344101	23220	1
+P041_secondtry(firstendearly)	68	Picture	rec073	3371043	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	68	Response	L	3392139	21096	1
+P041_secondtry(firstendearly)	69	Picture	rec074	3421206	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	69	Response	A	3438858	17653	1
+P041_secondtry(firstendearly)	70	Picture	rec075	3471368	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	70	Response	A	3500199	28831	1
+P041_secondtry(firstendearly)	71	Picture	rec076	3521530	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	71	Response	L	3539560	18029	1
+P041_secondtry(firstendearly)	72	Picture	rec077	3571693	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	72	Response	L	3589230	17537	1
+P041_secondtry(firstendearly)	73	Picture	rec078	3621855	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	73	Response	A	3636109	14253	1
+P041_secondtry(firstendearly)	74	Picture	rec079	3672018	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	74	Response	L	3689689	17671	1
+P041_secondtry(firstendearly)	75	Picture	rec081	3722180	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	75	Response	A	3742160	19981	1
+P041_secondtry(firstendearly)	76	Picture	rec082	3772342	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	76	Response	A	3802789	30446	1
+P041_secondtry(firstendearly)	77	Picture	rec083	3822505	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	77	Response	A	3845739	23234	1
+P041_secondtry(firstendearly)	78	Picture	rec085	3872667	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	78	Response	L	3888630	15963	1
+P041_secondtry(firstendearly)	79	Picture	rec086	3922829	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	79	Response	A	3945221	22392	1
+P041_secondtry(firstendearly)	80	Picture	rec087	3972992	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	80	Response	A	3996021	23029	1
+P041_secondtry(firstendearly)	81	Picture	rec088	4023154	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	81	Response	L	4042218	19064	1
+P041_secondtry(firstendearly)	82	Picture	rec090	4073316	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	82	Response	L	4111209	37892	1
+P041_secondtry(firstendearly)	83	Picture	rec091	4123479	0	1	40163	1	0	40000	other	0
+P041_secondtry(firstendearly)	83	Response	L	4136871	13392	1

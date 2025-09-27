@@ -1,0 +1,59 @@
+Participant.ID,Allocation,Gender,Digit.Span.Aggregate,Age.Yrs,Age.Months,Fluency.in.English,First.Lang,Highes.Ed.Attain,Yrs.Formal.Ed,Smoker,Smoke.count.per.day,Weight.kg,BMI.unadj,Current.med.use,Past.recr.drug,Contracept.use,Allocation.Guess
+P001,ACTIVE,Male,34,33,407,Yes,English,Undergraduate.degree,16,Yes,1,88,27.77427093,None,Yes,NA,Placebo
+P002,PLACEBO,Male,40,25,306,Yes,English,Undergraduate.degree,18,No,NA,69,20.83081753,None,Yes,NA,Placebo
+P003,ACTIVE,Female,40,23,281,Yes,English,Postgraduate.Masters,18,No,NA,54,20.32443826,None,No,FALSE,Placebo
+P004,PLACEBO,Female,32,43,516,Yes,English,Secondary school,16,No,NA,59,22.76146754,None,No,TRUE,Drug
+P005,ACTIVE,Male,24,29,355,Yes,English,Undergraduate.degree,16,No,NA,69,21.68000563,None,No,NA,Placebo
+P006,PLACEBO,Female,45,26,315,Yes,English,Undergraduate.degree,17,No,NA,70,26.4112672,None,No,FALSE,Drug
+P007,PLACEBO,Female,26,24,290,Yes,English,Postgraduate.Masters,19,No,NA,52,19.81405274,Yes,No,TRUE,Drug
+P008,ACTIVE,Male,36,28,346,Yes,English,Postgraduate.Masters,17,No,NA,86.5,26.81658325,None,No,NA,Placebo
+P009,ACTIVE,Female,33,38,466,Yes,English,Postgraduate.Masters,19,No,NA,80,30.67220044,None,No,FALSE,Placebo
+P010,PLACEBO,Female,36,38,460,Yes,French,Postgraduate.Masters,19,No,NA,60.1,22.07529844,None,No,FALSE,Placebo
+P011,ACTIVE,Female,44,19,233,Yes,English,Secondary school,14,No,NA,65,25.6142595,None,No,FALSE,Drug
+P012,PLACEBO,Female,42,29,348,Yes,English,Postgraduate.Masters,20,No,NA,70.2,25.3530649,None,No,TRUE,Placebo
+P013,PLACEBO,Male,37,27,333,Yes,English,Doctorate.qualification,19,No,NA,87,29.00170143,None,No,NA,Placebo
+P014,ACTIVE,Female,33,32,388,Yes,English,Doctorate.qualification,20,No,NA,60.5,21.69314066,None,No,FALSE,Drug
+P015,ACTIVE,Female,41,19,233,Yes,English,Secondary school,13,No,NA,53,21.50188649,None,No,FALSE,Placebo
+P016,PLACEBO,Female,34,36,441,Yes,English,Postgraduate.Masters,18,No,NA,65,21.64293879,None,No,FALSE,Placebo
+P017,PLACEBO,Female,28,25,302,Yes,English,Postgraduate.Masters,19,No,NA,57,21.45357371,Yes,,FALSE,Placebo
+P018,ACTIVE,Female,37,33,406,Yes,English,Postgraduate.Masters,22,No,NA,71,24.42359457,None,No,FALSE,Placebo
+P019,ACTIVE,Female,27,23,286,Yes,English,Undergraduate.degree,15,No,NA,60,20.2812331,None,No,FALSE,Drug
+P020,PLACEBO,Male,30,34,413,Yes,Spanish,Secondary school,13,No,NA,76,22.32651053,None,No,NA,Drug
+P021,ACTIVE,Female,35,31,382,Yes,Portuguese,Undergraduate.degree,15,No,NA,59.1,23.52496293,Yes,No,TRUE,Placebo
+P022,PLACEBO,Female,40,31,372,Yes,Cantanese,Doctorate.qualification,21,No,NA,50,20.81165453,None,No,FALSE,Placebo
+P023,ACTIVE,Male,42,32,394,Yes,Belgian,Doctorate.qualification,21,No,NA,96,29.92816306,None,No,NA,Placebo
+P024,PLACEBO,Female,40,26,316,Yes,English,Postgraduate.Masters,18,No,NA,49,20.93212012,None,No,FALSE,Placebo
+P025,ACTIVE,Female,42,23,283,Yes,English,Undergraduate.degree,17,No,NA,51,19.36123857,Yes,No,TRUE,Placebo
+P026,PLACEBO,Female,39,20,247,Yes,English,Secondary school,16,No,NA,70,24.56705824,None,No,FALSE,Placebo
+P027,PLACEBO,Male,34,23,276,Yes,English,Undergraduate.degree,17,No,NA,107,30.92843103,Yes,No,NA,Placebo
+P028,ACTIVE,Female,40,26,318,Yes,Spanish,Undergraduate.degree,21,No,NA,62,23.91883029,Yes,No,TRUE,Placebo
+P029,ACTIVE,Female,33,22,266,Yes,Cantanese,Undergraduate.degree,15,No,NA,53,19.11821732,None,No,FALSE,Placebo
+P030,PLACEBO,Male,26,43,523,Yes,English,Secondary school,16,No,NA,84,26.07056122,None,No,NA,Placebo
+P031,PLACEBO,Female,40,35,421,Yes,Spanish,Undergraduate.degree,16,No,NA,52,20.06095444,Yes,No,TRUE,Placebo
+P032,ACTIVE,Male,42,20,251,Yes,Gujarati,Secondary school,15,No,NA,55,18.06224908,None,No,NA,Placebo
+P033,ACTIVE,Female,34,27,330,Yes,Hungarian,Undergraduate.degree,16,No,NA,64,22.89324878,None,No,FALSE,Drug
+P034,PLACEBO,Female,40,35,423,Yes,English,Doctorate.qualification,20,No,NA,49,18.90359168,None,No,FALSE,Placebo
+P035,PLACEBO,Female,42,24,292,Yes,English,Postgraduate.Masters,18,No,NA,52,19.38097176,None,No,FALSE,Placebo
+P036,ACTIVE,Female,37,24,291,Yes,English,Undergraduate.degree,16,No,NA,70,24.36456348,None,No,FALSE,Placebo
+P037,ACTIVE,Female,33,31,375,Yes,English,Postgraduate.Masters,17,No,NA,59,21.93634741,Yes,No,TRUE,Drug
+P038,PLACEBO,Female,43,36,437,Yes,English,Postgraduate.Masters,19,No,NA,62,25.80645161,Yes,No,FALSE,Placebo
+P039,ACTIVE,Male,48,29,350,Yes,English,Postgraduate.Masters,18,No,NA,91,27.77692989,None,No,NA,Placebo
+P040,PLACEBO,Male,31,20,242,Yes,English,Secondary school,13,No,NA,92,28.45826719,Yes,No,NA,Placebo
+P041,PLACEBO,Male,45,26,320,Yes,English,Undergraduate.degree,17,Yes,8 to 10,80,26.48441855,Yes,No,NA,Placebo
+P042,ACTIVE,Female,40,21,257,Yes,English,Undergraduate.degree,17,No,NA,60,24.09557268,None,No,FALSE,Placebo
+P043,ACTIVE,Male,42,35,423,Yes,English,Undergraduate.degree,17,No,NA,96,30.29920465,None,No,NA,Placebo
+P044,PLACEBO,Male,40,32,392,Yes,Bangladeshi,Doctorate.qualification,26,No,NA,59,18.62138619,None,No,NA,Placebo
+P045,ACTIVE,Male,44,19,230,Yes,English,Secondary school,11,No,NA,78,22.30547056,None,No,NA,Drug
+P046,PLACEBO,Female,40,23,277,Yes,English,Undergraduate.degree,18,No,NA,57,24.57395445,None,No,FALSE,Placebo
+P047,ACTIVE,Female,37,38,459,Yes,English,Doctorate.qualification,23,No,NA,74,26.53375883,Yes,No,TRUE,Placebo
+P048,PLACEBO,Female,37,20,242,Yes,Spanish,Secondary school,14,No,NA,59,23.63403301,None,No,FALSE,Placebo
+P049,ACTIVE,Female,34,29,348,Yes,English,Doctorate.qualification,21,No,NA,58,21.8299522,None,No,FALSE,Placebo
+P050,PLACEBO,Male,34,39,477,Yes,English,Undergraduate.degree,19,No,NA,92,28.7132112,None,No,NA,Placebo
+P051,ACTIVE,Male,27,29,355,Yes,English,Secondary school,14,No,NA,75,24.9150811,None,No,NA,Placebo
+P052,PLACEBO,Male,31,31,376,Yes,English,Undergraduate.degree,17,No,NA,70,23.99508581,None,No,NA,Placebo
+P054,ACTIVE,Female,42,23,286,Yes,English,Undergraduate.degree,17,No,NA,56,19.15119182,Yes,No,TRUE,Placebo
+P055,ACTIVE,Male,37,23,278,Yes,Slovenian,Postgraduate.Masters,17,No,NA,79,24.65590962,None,No,NA,Placebo
+P056,PLACEBO,Female,43,23,280,Yes,English,Postgraduate.Masters,16,No,NA,67,23.29287558,None,No,FALSE,Drug
+P057,ACTIVE,Female,30,28,346,Yes,Cantanese,Postgraduate.Masters,20,No,NA,69,27.63980131,None,No,FALSE,Placebo
+P058,PLACEBO,Female,24,25,311,Yes,English,Postgraduate.Masters,21,No,NA,58,23.23345618,Yes,No,TRUE,Placebo
+P059,PLACEBO,Male,28,28,337,Yes,English,Postgraduate.Masters,21,No,NA,71,23.99945917,None,No,NA,Drug
