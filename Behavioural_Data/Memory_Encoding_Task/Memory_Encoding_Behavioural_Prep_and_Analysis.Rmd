@@ -2225,7 +2225,7 @@ CombinedPlots2 <- plot_grid(BoundarySep, DriftRate, Dec, Non_Bias, var_v, var_te
 ```{r pressure, echo=FALSE}
 ## Posterior predictive checks
 
-setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/Memory_Encoding_Task/DDM")
+setwd("C:/Users/micha/Desktop/Histamine_Learning_Data_and_Code/Behavioural_Data/Memory_Encoding_Task/DDM")
 
 # Load and clean
 real_data <- read_csv("Memory_Task_DDM.csv")
@@ -2285,7 +2285,7 @@ combined <- plot_grid(one, two, cols = 1)
 ```{r b0, echo=FALSE, include=TRUE}
 # Metachecks - checking RL task parameters and relationship with DDM parameters (see Supplementary Note 8, final paragraph).
 
-setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/Memory_Encoding_Task/DDM")
+setwd("C:/Users/micha/Desktop/Histamine_Learning_Data_and_Code/Behavioural_Data/Memory_Encoding_Task/DDM")
 
 # Load and clean
 RL_ddm <- read_csv("Meta_DDM_3.csv")
@@ -2347,57 +2347,36 @@ summary(med.fit)
 
 ## LM analysis - memory recognition drift rate
 
-# Win trials - LR ~ unseen distractor v
+#Average v across unseen and distractor conditions to simplify analysis
 
-med.fit <- lm(LR_recipmodel.x ~ `v(0)`, data = Merged_DDM_Meta)
+Merged_DDM_Meta$avg_v <- (Merged_DDM_Meta$`v(0)` + Merged_DDM_Meta$`v(1)`) / 2
 
-summary(med.fit)
+# Win trials - LR ~ v
 
-# Win trials - inv. decision temp ~ unseen distractor v
-
-med.fit <- lm(inv_recipmodel.x ~ `v(0)`, data = Merged_DDM_Meta)
+med.fit <- lm(LR_recipmodel.x ~ avg_v, data = Merged_DDM_Meta)
 
 summary(med.fit)
 
-# Win trials - LR ~ previously encoded v
+# Win trials - inv. decision temp ~  v
 
-med.fit <- lm(LR_recipmodel.x ~ `v(1)`, data = Merged_DDM_Meta)
-
-summary(med.fit)
-
-# Win trials - inv. decision temp ~ previously encoded v
-
-med.fit <- lm(inv_recipmodel.x ~ `v(1)`, data = Merged_DDM_Meta)
+med.fit <- lm(inv_recipmodel.x ~ avg_v, data = Merged_DDM_Meta)
 
 summary(med.fit)
 
 ####
 
-# Loss trials - LR ~ unseen distractor v
+# Loss trials - LR ~ v
 
-med.fit <- lm(LR_recipmodel.y ~ `v(0)`, data = Merged_DDM_Meta)
-
-summary(med.fit)
-
-# Loss trials - inv. decision temp ~ unseen distractor v
-
-med.fit <- lm(inv_recipmodel.y ~ `v(0)`, data = Merged_DDM_Meta)
+med.fit <- lm(LR_recipmodel.y ~ avg_v, data = Merged_DDM_Meta)
 
 summary(med.fit)
 
-# Loss trials - LR ~ previously encoded v
+# Loss trials - inv. decision temp ~  v
 
-med.fit <- lm(LR_recipmodel.y ~ `v(1)`, data = Merged_DDM_Meta)
-
-summary(med.fit)
-
-# Loss trials - inv. decision temp ~ previously encoded v
-
-med.fit <- lm(inv_recipmodel.y ~ `v(1)`, data = Merged_DDM_Meta)
+med.fit <- lm(inv_recipmodel.y ~ avg_v, data = Merged_DDM_Meta)
 
 summary(med.fit)
 
-# Only the working memory v ~ RL params analysis is reported in the Supplementary Mats., as v during working memory is a more representative measure of general cognitive ability. All results remain non-significant.
 
 ##################################################################
 ````
