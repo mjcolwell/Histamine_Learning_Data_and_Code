@@ -1,6 +1,6 @@
 # Description
 
-This repository contains source data and scripts (preprocessing, modelling and analyses) used in pre-print (link) by Colwell _et al._ concerning the influence of histamine autoreceptor blockade on human learning.
+This repository contains source data and scripts (preprocessing, modelling and analyses) used in pre-print ([link](https://www.biorxiv.org/content/10.1101/2025.10.05.680501v1)) by Colwell _et al._ concerning the influence of histamine autoreceptor blockade on human learning.
 
 The code reproduces behavioural and computational analyses contained within the main paper from raw data. These analyses link to raw beta estimates extracted from the neuroimaging analyses. 
 
@@ -14,7 +14,7 @@ All code within this datapack was validated on 64-bit Windows 11 (10.0, build 26
 
 ## Pre-print reference
 
-(Forthcoming)
+Colwell, M. J., van Uum, F., Cowen, P. J., Martens, M., Browning, M., Barron, H., Harmer, C. J., & Murphy, S. (2024). Synaptic histamine shapes the neurocomputational dynamics of human learning. _bioRxiv_. [https://doi.org/10.1101/2024.09.23.614642](https://www.biorxiv.org/content/10.1101/2025.10.05.680501v1).
 
 ## Requirements
 
