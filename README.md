@@ -67,6 +67,30 @@ To run the DDM computational modelling scripts you will need to use Docker to en
 
 To run the network analysis scripts, you will require a FSL packages (including fslnets) and scikit-learn actively loaded into your library (signularity container recommended). Once done, open './ROI_Data/network_analysis.py' and modify the base directories accordingly, then hit run. More detailed instructions and node descriptions are contained within the .py file. On a modern machine, it should take less than 5-10 minutes for the network analysis to complete.
 
+The repository contains two files with participant-level connectivity (edge strength) values used in the network analyses:
+
+* Network_Analysis_EdgeValues_Unweighted.xlsx
+
+* Network_Analysis_EdgeValues_H3RWeighted.xlsx
+
+Both files contain identical network edges but differ in the weighting scheme applied in the analysis (unweighted vs. H3 receptor–weighted connectivity).
+
+Each row represents one participant.
+
+Column structure
+
+* Column 1: Participant identifier
+
+* Columns 2–4: Connectivity between the mammillary zone (containing the TMN) and other network nodes (hippocampus, basal forebrain, and rhinal cortices)
+
+* Columns 5–8: Connectivity between the hippocampus and other network nodes (basal forebrain and rhinal cortices)
+
+* Columns 9–10: Connectivity between the basal forebrain and rhinal cortices
+
+* Column 11: Local rhinal cortex connectivity (perirhinal–entorhinal)
+
+These columns therefore represent all pairwise edge strengths used in the network analyses described in the manuscript.
+
 ## Reinforcement Learning Model instructions
 
 Reinforcement modelling scripts for the PILT were created by Prof Michael Browning (michael.browning@psych.ox.ac.uk). These scripts have been tested on MATLAB version R2022a which can be downloaded [here](https://uk.mathworks.com/products/new_products/release2022a.html) (approxmiate installation time: 10-30 minutes), but may work on later versions. You will need to extract the scripts (./PILT_fitting_scripts/) to a location on your computer. Once extracted, you will need to set the directory within the main wrapper script (run_fit_all_chdr.m) and the extractor script (lucy_extractc.m). You will also need to make sure the 'Data' folder corresponds to the source data (.dat files) from the folder ./PILT_nonmodel/. Make sure to create an empty './Test' folder in the relevant directory to save the fitting procedure output. You can use the wrapper script to execute all code (selected 'Run all' setions or F5 while within the wrapper script). Running each script with the relevant modelling procedures will reproduce the modelling parameter/likehood data found in ./PILT_Reinforcement_Learning_Mod/Reinforcement_Learning_PILT_full.csv (run time: approximately 1-2 hours). Instructions for changing modelling procedures are included as comments within the script. 
