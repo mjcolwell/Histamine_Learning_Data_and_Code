@@ -73,11 +73,9 @@ The repository contains two files with participant-level connectivity (edge stre
 
 * Network_Analysis_EdgeValues_H3RWeighted.xlsx
 
-Both files contain identical network edges but differ in the weighting scheme applied in the analysis (unweighted vs. H3 receptor–weighted connectivity).
+Both files contain identical network edges but differ in the weighting scheme applied in the analysis (unweighted vs. H3 receptor–weighted connectivity). Each row represents one participant.
 
-Each row represents one participant.
-
-Column structure
+Column structure:
 
 * Column 1: Participant identifier
 
