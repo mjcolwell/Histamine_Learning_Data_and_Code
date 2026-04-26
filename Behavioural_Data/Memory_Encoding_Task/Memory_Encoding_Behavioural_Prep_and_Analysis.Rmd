@@ -1409,20 +1409,6 @@ merged_df$Time <- as.numeric(as.character(merged_df$Time))
 
 glm_preds$Allocation <- factor(glm_preds$Allocation, levels = c("PLACEBO", "ACTIVE"))
 
-Decay_Full_Df_5_long <- Decay_Full_Df_5 %>%
-  pivot_longer(
-    cols = matches("^(a|v|t|z_trans)\\.(?:0|1)\\.?$"),
-    names_to = c(".value", "Trial_type"),
-    names_pattern = "^(.*)\\.(\\d)\\.?$"
-  ) %>%
-  mutate(Trial_type = factor(Trial_type, levels = c("0", "1")))
-
-# Log transform decision policy in pivot df to maintain consistency
-
-Decay_Full_Df_5_long$a <- log(Decay_Full_Df_5_long$a)
-
-Decay_Full_Df_5_long$Trial_type <- recode_factor(Decay_Full_Df_5_long$Trial_type, "0" = "Unseen", "1" = "Seen")
-
 # Figure 2G generation
 
 Figure.2G <- ggplot(glm_preds, aes(x = Time, y = fit, color = Allocation, fill = Allocation, linetype = Allocation)) +
@@ -1555,10 +1541,11 @@ setwd("C:/Users/micha/Desktop/PEACE_Data_and_Code/Behavioural_Data/Memory_Encodi
 
 ddm_df <- read.csv("pivoted_traces.csv")
 
-Decay_Full_Df_5 <- merge(ddm_df, Decay_Full_Df, by = "Participant.ID")
+#Decay_Full_Df_5 <- merge(ddm_df, Decay_Full_Df, by = "Participant.ID")
 
-Decay_Full_Df_5 <- merge(Decay_Full_Df_5, Allocation_and_Demographics, by = "Participant.ID")
+#Swap below and above depending on analysis (Correlation between params should have N=47 participants; between-groups analysis between params should have N=52 participants).
 
+Decay_Full_Df_5 <- merge(ddm_df, Allocation_and_Demographics, by = "Participant.ID")
 
 # Arcscin transform non-decision time to maintain consistency across analyses
 Decay_Full_Df_5$t.a.0 <- asin(sqrt(Decay_Full_Df_5$t.0.))
@@ -1567,6 +1554,16 @@ Decay_Full_Df_5$t.a.1 <- asin(sqrt(Decay_Full_Df_5$t.1.))
 # Log transform decision policy to maintain consistency across DDM analyses
 Decay_Full_Df_5$a.0.log <- log(Decay_Full_Df_5$a.0)
 Decay_Full_Df_5$a.1.log <- log(Decay_Full_Df_5$a.1)
+
+Decay_Full_Df_5_long <- Decay_Full_Df_5 %>%
+  pivot_longer(
+    cols = matches("^(a|v|t|z_trans)\\.(?:0|1)\\.?$"),
+    names_to = c(".value", "Trial_type"),
+    names_pattern = "^(.*)\\.(\\d)\\.?$"
+  ) %>%
+  mutate(Trial_type = factor(Trial_type, levels = c("0", "1")))
+
+#Decay_Full_Df_5_long$Trial_type <- recode_factor(Decay_Full_Df_5_long$Trial_type, "0" = "Unseen", "1" = "Seen")
 
 # Legend: v [drift rate], a [decision policy], t [non-decision time], z_trans [initial choice bias]
 
@@ -1975,6 +1972,10 @@ sz_plot <- Decay_Full_Df_5 %>% ggplot(aes(x = Allocation.y, y = sz, fill = Alloc
 
 ```{r pressure, echo=FALSE}
 # Inferential analysis - DDM across allocation groups
+
+removal_df <- subset(Decay_Full_Df_5_long, Participant.ID != "P003" & Participant.ID != "P007" & Participant.ID != "P011" & Participant.ID != "P034" & Participant.ID != "P045" & Participant.ID != "P059")
+
+Decay_Full_Df_5_long <- droplevels(removal_df) #This dataset should have N=52 participants.
 
 # Non-decision time
 
