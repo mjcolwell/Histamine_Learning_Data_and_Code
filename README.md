@@ -14,7 +14,9 @@ All code within this datapack was validated on 64-bit Windows 11 (10.0, build 26
 
 ## Pre-print reference
 
-Colwell, M. J., van Uum, F., Cowen, P. J., Martens, M., Browning, M., Barron, H., Harmer, C. J., & Murphy, S. (2024). Synaptic histamine shapes the neurocomputational dynamics of human learning. _bioRxiv_. [https://doi.org/10.1101/2024.09.23.614642](https://www.biorxiv.org/content/10.1101/2025.10.05.680501v1).
+Colwell, M. J.*, van Uum, F., Cowen, P. J., Martens, M., Browning, M., Barron, H., Harmer, C. J., & Murphy, S. (2024). Synaptic histamine shapes the neurocomputational dynamics of human learning. _bioRxiv_. [https://doi.org/10.1101/2024.09.23.614642](https://www.biorxiv.org/content/10.1101/2025.10.05.680501v1).
+
+*Corresponding Author
 
 ## Requirements
 
