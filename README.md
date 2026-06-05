@@ -1,6 +1,6 @@
 # Description
 
-This repository contains source data and scripts (preprocessing, modelling and analyses) used in pre-print ([link](https://www.biorxiv.org/content/10.1101/2025.10.05.680501v1)) by Colwell _et al._ concerning the influence of histamine autoreceptor blockade on human learning.
+This repository contains source data and scripts (preprocessing, modelling and analyses) used in the paper ([link](https://doi.org/10.1038/s41467-026-73865-9)) by Colwell _et al._ concerning the influence of histamine 3 inverse agonism on the neural dynamics of learning. 
 
 The code reproduces behavioural and computational analyses contained within the main paper from raw data. These analyses link to raw beta estimates extracted from the neuroimaging analyses. 
 
@@ -12,9 +12,9 @@ For any questions or to report any issues, please contact Michael Colwell (micha
 
 All code within this datapack was validated on 64-bit Windows 11 (10.0, build 26100). No non-standard hardware is required to run this code.
 
-## Pre-print reference
+## Paper reference
 
-Colwell, M. J.*, van Uum, F., Cowen, P. J., Martens, M., Browning, M., Barron, H., Harmer, C. J., & Murphy, S. (2024). Synaptic histamine shapes the neurocomputational dynamics of human learning. _bioRxiv_. [https://doi.org/10.1101/2024.09.23.614642](https://www.biorxiv.org/content/10.1101/2025.10.05.680501v1).
+Colwell, M.J., van Uum, F.J.E., Cowen, P.J. et al. Histamine shapes the neurocomputational dynamics of human learning. Nat Commun (2026). https://doi.org/10.1038/s41467-026-73865-9
 
 *Corresponding Author
 
