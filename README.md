@@ -1,6 +1,6 @@
 # Description
 
-This repository contains source data and scripts (preprocessing, modelling and analyses) used in the paper ([link](https://doi.org/10.1038/s41467-026-73865-9)) by Colwell _et al._ concerning the influence of histamine 3 inverse agonism on the neural dynamics of learning. 
+This repository contains source data and scripts (preprocessing, modelling and analyses) used in the paper ([link](https://doi.org/10.1038/s41467-026-73865-9)) by Colwell _et al._ concerning the influence of H3R inverse agonism on the neural dynamics of learning. 
 
 The code reproduces behavioural and computational analyses contained within the main paper from raw data. These analyses link to raw beta estimates extracted from the neuroimaging analyses. 
 
